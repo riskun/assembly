@@ -1,0 +1,22 @@
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes.dex : \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\com\aotg\assembly\Assembly.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\com\aotg\assembly\BuildConfig.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\com\aotg\assembly\R$attr.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\com\aotg\assembly\R$drawable.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\com\aotg\assembly\R$string.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\com\aotg\assembly\R$xml.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\com\aotg\assembly\R.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$1.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$2.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$3.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$4.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$5$1.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$5$2.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$5$3.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$5$4.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$5$5.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$5.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser$InAppBrowserClient.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppBrowser.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\classes\org\apache\cordova\inappbrowser\InAppChromeClient.class \
+E:\Work\Dropbox\Dropbox\projects\assembly\android\aotg\platforms\android\bin\dexedLibs\cordova-3.2.0-4fcbd1f06720a83dbf0de0750733eabd.jar \

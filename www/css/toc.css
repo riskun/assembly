@@ -1,0 +1,146 @@
+#toc-header
+{
+	margin-bottom: 20px;
+	font-size:2em;
+	background-color: #0e72ba;
+	padding: 20px;
+	display:inline-block;
+	color:#fff;
+	font-family:'HelveticaNeueW01-77BdCn 692722';
+
+}
+
+#toc
+{
+	overflow: hidden;
+}
+
+.toc-item
+{
+	background-color:;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;         /* Opera/IE 8+ */
+	float:left;
+	position: relative;
+	/*box-shadow:0px 0px 100px -0px #000 inset;*/
+	border:0px solid #000;
+	margin-bottom: 3px;
+	width:100%;
+	cursor: pointer;
+}
+
+.toc-item:last-child
+{
+	margin-bottom: 0 !important;
+}
+
+.toc-item-cover
+{
+	position:absolute;
+	background-color:#0e72ba;
+	opacity:0;
+	width:100%;
+	height:100%;
+	border:0px solid #fff;
+	z-index: 1;
+}
+
+.toc-item-image
+{
+	/*height:200px;*/
+	background-color:;
+	display:;
+	width:100%;
+	height:100%;
+	position:absolute;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;	
+	top:0;
+	left:0;	
+}
+
+.toc-item-text
+{
+	position: absolute;
+	z-index: 2;
+	padding:10px;
+	bottom: 0px;
+	background-color:;
+	width:100%;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;         /* Opera/IE 8+ */	
+	background-image: url(../images/toc_text_bg.png);
+	/*background-color: #*/
+}
+
+.toc-item-text>h1
+{
+	font-weight:;
+	font-size:1.2em;
+	line-height: 1.2;	
+	color:#fff;
+	font-family:'HelveticaNeueW01-77BdCn 692722';
+
+}
+
+.toc-item-text p
+{
+	font-weight:;
+	font-size:1em;
+	line-height: 1.4;	
+	margin-top: 0.2em;
+	width:80%;
+	color:#fff;
+	display:block;
+}
+
+@media (min-width: 1200px){
+/*
+	.toc-item
+	{
+		display:block;
+		width: 100% !important;
+
+	}
+*/
+
+	.toc-item-text>h1
+	{
+		font-size:2em;
+	}
+
+
+	.toc-item-text p
+	{
+		display:;
+	}
+
+
+}
+
+@media (max-width: 640px){
+/*
+	.toc-item
+	{
+		display:block;
+		width: 100% !important;
+
+	}
+*/
+
+	.toc-item-text>h1
+	{
+		font-size:1em;
+	}
+
+
+	.toc-item-text p
+	{
+		display:none;
+	}
+
+
+}
