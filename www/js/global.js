@@ -557,25 +557,11 @@ function resizeElements(page){
 			//If we are moving before swipe, and we are going L or R, then manually drag the images
 
 
-			var initialDirection = null;
-
-			if (initialDirection == null) {
-
-				initialDirection = direction;
-
-			}
-
-			console.log("initial" + initialDirection);
-			console.log(phase);
-
 			if( phase=="move" && (direction=="left" || direction=="right"))
 			{
 				var duration=0;
 
 
-
-
-				//if (distance > 100) {
 
 				if (direction == "left")
 					scrollImages((IMG_WIDTH * currentImg) + distance, duration);
@@ -617,8 +603,8 @@ function resizeElements(page){
 						previousImage()
 					else if (direction == "left")
 						nextImage()
-					else 
-						scrollImages(IMG_WIDTH * currentImg, speed);
+					/*else 
+						scrollImages(IMG_WIDTH * currentImg, speed);*/
 				
 
 				} else {
@@ -637,18 +623,8 @@ function resizeElements(page){
 		function resizeContainer(index) {
 
 
-			$("html, body").stop().animate({ scrollTop: "0" }, "fast", function(){
-
 				var currentLi = $("#article_pages>li:eq("+index+")");
 				$("#main").height(currentLi.height());
-
-				console.log(index);
-
-				//$("#article_pages>li:eq("+index+")").transition({opacity:1});
-				//$("#article_pages>li:eq("+index+")").siblings("li").transition({opacity:0.2});
-
-			});
-
 
 
 		}
@@ -656,11 +632,16 @@ function resizeElements(page){
 		function particularImage(index)
 		{
 
-			currentImg = parseInt(index);
 
-			console.log("current: " + currentImg);
-			scrollImages( IMG_WIDTH * currentImg, speed);
-			resizeContainer(index);
+			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
+
+				currentImg = parseInt(index);
+
+				console.log("current: " + currentImg);
+				scrollImages( IMG_WIDTH * currentImg, speed);
+				resizeContainer(index);
+
+			});
 
 
 		}
@@ -668,22 +649,36 @@ function resizeElements(page){
 
 		function previousImage()
 		{
-			currentImg = Math.max(currentImg-1, 0);
-			//alert(currentImg);
 
-			scrollImages( IMG_WIDTH * currentImg, speed);
-			resizeContainer(currentImg);
+
+
+			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
+
+				currentImg = Math.max(currentImg-1, 0);
+				scrollImages( IMG_WIDTH * currentImg, speed);
+				resizeContainer(currentImg);
+
+			});
+
+
+
 
 		}
 
 		function nextImage()
 		{
 
-			currentImg = Math.min(currentImg+1, maxImages-1);
 
-			resizeContainer(currentImg);
-			scrollImages( IMG_WIDTH * currentImg, speed);
-			resizeContainer(currentImg);
+
+			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
+
+				currentImg = Math.min(currentImg+1, maxImages-1);			
+				scrollImages( IMG_WIDTH * currentImg, speed);
+				resizeContainer(currentImg);
+
+			});
+
+
 
 		}
 
