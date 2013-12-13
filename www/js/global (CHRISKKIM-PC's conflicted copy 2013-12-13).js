@@ -454,14 +454,16 @@ function resizeElements(page){
 	} else if (page == "detail") {
 
 		
-		$(".article_image_slide").stop().delay(1000).transition({opacity: 1}, 400, function(){
+		$(".article_image_slide").stop().delay(0).transition({opacity: 1}, 400, function(){
 
+			/*
 			$(".article_image_slide").delay(5000).transition({opacity: 0}, 400, function(){
 
 
 				//$("#swipe_bar").remove();
 
 			});
+*/
 
 		});
 		

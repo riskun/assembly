@@ -187,8 +187,6 @@ a
 	overflow: hidden;
 	/*margin-left:20px;
 	margin-right:20px;*/
-
-	float:left;	
 	position: relative;
 	cursor: pointer;
 	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
@@ -209,21 +207,9 @@ a
 	box-sizing: border-box;         /* Opera/IE 8+ */		
 	position: relative;
 	z-index: 9;
-	width:100%;
+	float:left;
 /*	width:240px;
 	height:320px;	*/
-}
-
-#magazine-list li h1
-{
-	font-size:1.3em;
-	font-weight:bold;
-	margin-top:0.75em;
-	text-align: center;
-	text-transform: uppercase;
-	letter-spacing: -1px;
-	font-family:'HelveticaNeueW01-77BdCn 692722';
-
 }
 
 .magazine-list-cover
@@ -231,8 +217,8 @@ a
 	position:;
 	/*height: 100%;*/
 	top:;
-	display: none;
-	width:100%;
+	display:;
+	float:right;
 	display:;
 	overflow: hidden;
 	z-index: 10
@@ -273,6 +259,39 @@ a
 
 	background-color: #0e72ba;
 	font-size:0.8em;
+}
+
+
+#magazine-list li h1
+{
+	font-size:1.5em;
+	font-weight:;
+	margin-top:0em;
+	text-align: ;
+	text-transform: uppercase;
+	letter-spacing: -1px;
+	font-family:'HelveticaNeueW01-77BdCn 692722';
+
+}
+
+
+.magazine-list-button-container
+{
+	overflow: hidden;
+	text-align: ;
+	margin-top:1em;
+}
+
+.magazine-list-button-container>li
+{
+	width:auto;
+	display:inline-block;
+	padding:0.5em;
+	font-size:1.2em;
+	margin-right: 0.5em;
+	background-color: #0e72ba;
+	color:#fff;
+	font-family:'HelveticaNeueW01-77BdCn 692722';
 }
 
 .alt-button
