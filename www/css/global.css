@@ -10,6 +10,7 @@ body
 	background-color:;
 	color:#333;
 	position: relative;
+	font-size:medium;
 	background-color: #eee;
 	background-image: url(../images/aotg_bg.png);
 }
@@ -54,6 +55,11 @@ a
 {
 	font-size:1.5em;
 	text-transform: uppercase;
+	vertical-align: top;
+	height:1em;
+	display:block;
+	overflow: hidden;
+	padding-top:;
 }
 
 #logo

@@ -150,6 +150,7 @@ function placeElements(page, data){
 		var articleImage = '\
 			<li>\
 				<div class="article_image" style="background-image:url('+data.image+')">\
+					<div class="article_image_slide">Slide left to begin</div>\
 					<div class="article_title">\
 						'+data.title+'\
 					</div>\
@@ -166,18 +167,7 @@ function placeElements(page, data){
 		
 		//$("#header").append('<div id="swipe_bar">SWIPE HERE</div>');
 		
-		/*
-		$("#swipe_bar").stop().delay(1000).transition({opacity: 1}, 400, function(){
 
-			$("#swipe_bar").delay(3000).transition({opacity: 0}, 400, function(){
-
-
-				$("#swipe_bar").remove();
-
-			});
-
-		});
-		*/
 
 		if (data.sections.length > 0) {
 
@@ -203,9 +193,33 @@ function placeElements(page, data){
 								'+o.content+'\
 							</div>\
 						</div>\
+						<ul class="article_adjacent" rel="'+i+'">\
+						</ul>\
 					</li>';
 
 				$("#article_pages").append(articleText);			
+
+				if (i == 0) {
+
+				var articleAdjacentText = '\
+					<li class="next full">Next <i class="fa fa-angle-double-right"></i></li>';
+
+				} else if (i == data.sections.length - 1) {
+
+				var articleAdjacentText = '\
+					<li class="prev full"><i class="fa fa-angle-double-left"></i> Previous</li>';
+
+				} else {
+
+				var articleAdjacentText = '\
+					<li class="prev"><i class="fa fa-angle-double-left"></i> Previous</li>\
+					<li class="next">Next <i class="fa fa-angle-double-right"></i></li>';
+
+				}
+
+				$(".article_adjacent[rel='"+i+"']").append(articleAdjacentText);
+
+		
 
 
 				/*
@@ -221,6 +235,17 @@ function placeElements(page, data){
 				*/
 
 			});
+
+		$(".article_text_content a").each(function(i,o){
+
+			if ($(this).find("img").size() == 0) {
+
+				$(this).prepend('<i class="fa fa-file"></i> ');
+
+				
+			}
+
+		});
 
 		}
 
@@ -428,6 +453,18 @@ function resizeElements(page){
 		
 	} else if (page == "detail") {
 
+		
+		$(".article_image_slide").stop().delay(1000).transition({opacity: 1}, 400, function(){
+
+			$(".article_image_slide").delay(5000).transition({opacity: 0}, 400, function(){
+
+
+				//$("#swipe_bar").remove();
+
+			});
+
+		});
+		
 
 		$("#back_button").attr("destination", "toc-"+currentToc);
 		$("#status").text("");
@@ -456,14 +493,19 @@ function resizeElements(page){
 
 		$(".article_title").css("padding", magazineUnit + "px");
 		$(".section_title").css("padding", magazineUnit + "px");
+		$(".article_image_slide").css("padding", magazineUnit + "px");
+		$(".article_image_slide").css("top", magazineUnit*2 + "px");
 
 		$(".article_text").css("padding-top", magazineUnit*2 + "px");
 
 		$(".article_text, .article_text_content").css("margin-left", magazineUnit*2 + "px");
 		$(".article_text, .article_text_content").css("margin-right", magazineUnit*2 + "px");
 
-		$(".article_text").css("min-height", (windowHeight - headerHeight) / 3 * 2 - magazineUnit*4 + "px");
 
+		
+		var adjacentNavHeight = $(".article_adjacent").outerHeight();
+
+		$(".article_text").css("min-height", (windowHeight - headerHeight) / 3 * 2 - magazineUnit*4 - adjacentNavHeight + "px");
 
 		$(".article_text").css("padding-bottom", magazineUnit*2 + "px");
 
@@ -508,13 +550,11 @@ function resizeElements(page){
 			threshold: 50
 		});
 
-		imgs.find("li").each(function(i,o){
+		imgs.children("li").each(function(i,o){
 
 			$("#status").append("<a class='article_navigation' index='"+i+"'><i class='fa fa-circle' /></a>");
 
 		});
-
-
 
 
 		$(".article_navigation:first").addClass("navigation_highlight");
@@ -549,6 +589,48 @@ function resizeElements(page){
 		});
 
 
+		$(document).on(onHandler, ".article_adjacent>li", function(e) {
+
+			if ($(this).hasClass("next") == true) {
+
+				$(".navigation_highlight").next().click();
+
+			} else if ($(this).hasClass("prev") == true) {
+
+				$(".navigation_highlight").prev().click();
+
+			}
+
+
+			//$(window).scrollTop(0);
+			//$("html, body").animate({ scrollTop: "0" });
+
+
+			//currentImg = parseInt(index);
+
+			//particularImage(parseInt(index));
+
+
+		});
+
+		$(document).on(onHandler, ".article_image", function(e) {
+
+			//$(".article_navigation:eq(1)").click();
+
+
+			//$(window).scrollTop(0);
+			//$("html, body").animate({ scrollTop: "0" });
+
+
+			//currentImg = parseInt(index);
+
+			//particularImage(parseInt(index));
+
+
+		});
+
+
+
 		//alert("Fired");
 
 
@@ -557,25 +639,11 @@ function resizeElements(page){
 			//If we are moving before swipe, and we are going L or R, then manually drag the images
 
 
-			var initialDirection = null;
-
-			if (initialDirection == null) {
-
-				initialDirection = direction;
-
-			}
-
-			console.log("initial" + initialDirection);
-			console.log(phase);
-
 			if( phase=="move" && (direction=="left" || direction=="right"))
 			{
 				var duration=0;
 
 
-
-
-				//if (distance > 100) {
 
 				if (direction == "left")
 					scrollImages((IMG_WIDTH * currentImg) + distance, duration);
@@ -617,8 +685,8 @@ function resizeElements(page){
 						previousImage()
 					else if (direction == "left")
 						nextImage()
-					else 
-						scrollImages(IMG_WIDTH * currentImg, speed);
+					/*else 
+						scrollImages(IMG_WIDTH * currentImg, speed);*/
 				
 
 				} else {
@@ -637,18 +705,8 @@ function resizeElements(page){
 		function resizeContainer(index) {
 
 
-			$("html, body").stop().animate({ scrollTop: "0" }, "fast", function(){
-
 				var currentLi = $("#article_pages>li:eq("+index+")");
 				$("#main").height(currentLi.height());
-
-				console.log(index);
-
-				//$("#article_pages>li:eq("+index+")").transition({opacity:1});
-				//$("#article_pages>li:eq("+index+")").siblings("li").transition({opacity:0.2});
-
-			});
-
 
 
 		}
@@ -656,11 +714,16 @@ function resizeElements(page){
 		function particularImage(index)
 		{
 
-			currentImg = parseInt(index);
 
-			console.log("current: " + currentImg);
-			scrollImages( IMG_WIDTH * currentImg, speed);
-			resizeContainer(index);
+			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
+
+				currentImg = parseInt(index);
+
+				console.log("current: " + currentImg);
+				scrollImages( IMG_WIDTH * currentImg, speed);
+				resizeContainer(index);
+
+			});
 
 
 		}
@@ -668,22 +731,36 @@ function resizeElements(page){
 
 		function previousImage()
 		{
-			currentImg = Math.max(currentImg-1, 0);
-			//alert(currentImg);
 
-			scrollImages( IMG_WIDTH * currentImg, speed);
-			resizeContainer(currentImg);
+
+
+			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
+
+				currentImg = Math.max(currentImg-1, 0);
+				scrollImages( IMG_WIDTH * currentImg, speed);
+				resizeContainer(currentImg);
+
+			});
+
+
+
 
 		}
 
 		function nextImage()
 		{
 
-			currentImg = Math.min(currentImg+1, maxImages-1);
 
-			resizeContainer(currentImg);
-			scrollImages( IMG_WIDTH * currentImg, speed);
-			resizeContainer(currentImg);
+
+			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
+
+				currentImg = Math.min(currentImg+1, maxImages-1);			
+				scrollImages( IMG_WIDTH * currentImg, speed);
+				resizeContainer(currentImg);
+
+			});
+
+
 
 		}
 
@@ -884,6 +961,7 @@ $(document).on(onHandler, "#back_button", function(e) {
 
 	e.preventDefault();
 
+	$(this).hide();
 	var destination = $(this).attr("destination");
 	window.location.hash = destination;
 
@@ -930,18 +1008,24 @@ $(document).on(onHandler, ".toc-item", function(e) {
 });	
 
 
-$(document).on(onHandler, ".resource", function(e) {
+$(document).on(onHandler, ".article_text_content a", function(e) {
 
 	e.preventDefault();
-	
+	var href = $(this).attr("href");
+	window.open(href, '_blank', 'location=yes');
+
+
+	/*	
 	var confirm = window.confirm("Would you like to leave the app and open AOTG?");
+
+
 
 	if (confirm == true) {
 
 		//window.location.href = "http://aotg.com";
 		window.open('http://aotg.com', '_blank', 'location=yes');
 	}
-
+	*/
 
 });	
 
