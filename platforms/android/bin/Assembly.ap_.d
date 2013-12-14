@@ -16,6 +16,7 @@ E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\config.xml 
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\cordova.js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\cordova_plugins.js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\data \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\fonts \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\icon.png \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\images \
@@ -36,6 +37,7 @@ E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\font-aw
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\Fonts \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\fonts-async.css \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\fonts.css \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\global (CHRISKKIM-PC's conflicted copy 2013-12-13).css \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\global.css \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\index.css \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\reset.css \
@@ -88,6 +90,7 @@ E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\Fonts\e
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\Fonts\ecaa98fe-425a-42de-846b-c235f0dbc449.eot \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\Fonts\f751c8ae-1057-46d9-8d74-62592e002568.svg \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\css\Fonts\fe7d63fc-e92b-4a46-b4f4-fd73aefeede6.eot \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\data\toc.json \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\fonts\fontawesome-webfont.eot \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\fonts\fontawesome-webfont.svg \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\fonts\fontawesome-webfont.ttf \
@@ -101,10 +104,12 @@ E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\images\logo
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\images\toc_text_bg.png \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\img\logo.png \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\js\fastclick.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\js\global (CHRISKKIM-PC's conflicted copy 2013-12-13).js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\js\global.js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\js\index.js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\js\jgestures.min.js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\js\jquery.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\js\jquery.scrollTo.min.js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\js\jquery.tap.js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\js\jquery.tap.min.js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\js\jquery.touchSwipe.min.js \
@@ -124,7 +129,30 @@ E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\less\rotate
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\less\spinning.less \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\less\stacked.less \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\less\variables.less \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file-transfer \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.inappbrowser \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\DirectoryEntry.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\DirectoryReader.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\Entry.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\File.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\FileEntry.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\FileError.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\FileReader.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\FileSystem.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\FileUploadOptions.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\FileUploadResult.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\FileWriter.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\Flags.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\LocalFileSystem.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\Metadata.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\ProgressEvent.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\requestFileSystem.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file\www\resolveLocalFileSystemURI.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file-transfer\www \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file-transfer\www\FileTransfer.js \
+E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.file-transfer\www\FileTransferError.js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.inappbrowser\www \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\plugins\org.apache.cordova.inappbrowser\www\InAppBrowser.js \
 E:\Work\Dropbox\Dropbox\GitHub\assembly\platforms\android\assets\www\res\icon \

@@ -25,7 +25,15 @@ function loadPage(page, number){
 	//alert($(window).width());
 	$("#main").removeClass("notransition");
 
-	$("#main").transition({x: -$(window).width()}, function(){
+	if (page == "") {
+
+		page = "list";
+
+	}
+
+
+
+	$("#main").transition({x: -$(window).width(), opacity: 0}, function(){
 
 		$("#main").html("");
  
@@ -46,7 +54,9 @@ function loadPage(page, number){
 
 				} else {
 
-					window.location.hash = page;
+					if (page != "list") {
+						window.location.hash = page;
+					}
 
 				}
  
@@ -57,7 +67,7 @@ function loadPage(page, number){
 				resizeElements(currentPage);
 
 
-				$("#main").transition({x: 0}, function(){
+				$("#main").transition({x: 0, opacity: 1}, function(){
 
 
 					$("#main").addClass("notransition");
@@ -83,6 +93,75 @@ function placeElements(page, data){
 
 	if (page == "list") {
 
+		/*
+
+    	var existingIssues = [];
+
+
+		if (window.requestFileSystem) {
+
+			alert("exists!");
+
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
+
+			function gotFS(fileSystem) {
+			   fileSystem.root.getDirectory("data", {create: true}, gotDir);
+			}
+
+			function gotDir(dirEntry) {
+			    dirEntry.getFile("lockfile.txt", {create: true, exclusive: true}, gotFile);
+			}
+
+			function gotFile(fileEntry) {
+			    // Do something with fileEntry here
+			}
+
+			window.requestFileSystem(window.PERSISTENT, 0, function(fileSystem) {
+
+			   fileSystem.root.getDirectory("", {
+			           create: true
+			       },
+
+			       function(directory) {
+
+				        var directoryReader = directory.createReader();
+				        directoryReader.readEntries(function(entries) {
+				            
+				            var i;
+
+				            for (i=0; i<entries.length; i++) {
+
+				                existingIssues.push(entries[i].name);
+
+				            }
+
+				        }, function (error) {
+
+				            alert(error.code);
+
+				        });
+
+			       });
+
+			}, function(error) {
+			   alert("can't even get the file system: " + error.code);
+			});
+
+			console.log(existingIssues);
+
+			$.each(existingIssues, function(i,o){
+
+				alert(o);
+
+			});
+
+			*/
+
+		}
+
+	
+
+
 
 		$("#main").append('<div id="magazine-list-container"></div>');
 		$("#magazine-list-container").append('<ul id="magazine-list"></ul>');
@@ -91,15 +170,14 @@ function placeElements(page, data){
 
 			var format = '\
 				<li issue="'+o.issue+'">\
-					<div class="magazine-list-cover">\
-						<div class="magazine-list-button-container">\
-								<i class="fa fa-shopping-cart"></i> BUY\
-								<i class="fa fa-eye"></i> VIEW\
-						</div>\
-					</div>\
 					<div class="magazine-list-image" style="background-image:url('+o.image+')">\
 					</div>\
-					<h1>'+o.title+'</h1>\
+					<div class="magazine-list-cover">\
+						<h1>'+o.title+'</h1>\
+						<ul class="magazine-list-button-container">\
+								<li><i class="fa fa-download"></i> DOWNLOAD</li><li><i class="fa fa-eye"></i> VIEW</li>\
+						</ul>\
+					</div>\
 				</li>';
 
 			$("#magazine-list").append(format);
@@ -290,22 +368,7 @@ function removeTransit(elem) {
 
 function resizeElements(page){
 
-	//alert(page);
-	//$("body").stop().transition({opacity: 0}, 0);
 
-	//$(window).scrollTop(0);
-
-	/*
-	  $("#main").swipe( {
-	    //Generic swipe handler for all directions
-	    swipe:function(event, direction, distance, duration, fingerCount) {
-	      
-	      $("#status").text("You swiped " + direction );  
-	    
-	    },
-	     threshold:0
-	  });	
-*/
 	$("#main").height("");
 
 
@@ -351,39 +414,54 @@ function resizeElements(page){
 		
 		if (windowWidth > 640) { 
 
-			var magazineWidth = parseInt(($("#main").width() - magazineUnit*3) / 4);
-			var magazineHeight = parseInt(magazineWidth * 1.3175);
+
 			//var magazineMargin = parseInt(magazineWidth * 0.05);
 
 			//alert(magazineWidth);
+			var magazineWidth = parseInt($("#main").width() / 2 / 3);
+			var magazineHeight = parseInt(magazineWidth * 1.3175);
 
 			$("#magazine-list div.magazine-list-image").css("height", magazineHeight+"px");
-			$("#magazine-list li").css("width", magazineWidth +"px"); 
-
-			
+			$("#magazine-list div.magazine-list-image").css("width", magazineWidth +"px"); 
+			$("#magazine-list>li").css("width", "50%"); 
+			$("#magazine-list>li").css("float", "left"); 		
 			//$("#magazine-list li").css("padding-left", (magazineMargin + "px"));
 			//$("#magazine-list li").css("padding-right", (magazineMargin + "px"));
 			//$("#magazine-list li").css("padding-top", (magazineMargin + "px"));
-			$("#magazine-list li").css("padding-bottom", (magazineUnit + "px"));
-			$("#magazine-list li:nth-child(3n-1)").css("margin-right", (magazineUnit + "px"));
-			$("#magazine-list li:nth-child(3n-1)").css("margin-left", (magazineUnit + "px"));
+			//$("#magazine-list li").css("padding-bottom", (magazineUnit + "px"));
+			//$("#magazine-list li:nth-child(3n-1)").css("margin-right", (magazineUnit + "px"));
+			//$("#magazine-list li:nth-child(3n-1)").css("margin-left", (magazineUnit + "px"));
 		
 
 		} else {
 
-			var magazineWidth = parseInt(($("#main").width() - magazineUnit) / 2);
+			var magazineWidth = parseInt($("#main").width() / 3);
 			var magazineHeight = parseInt(magazineWidth * 1.3175);
 
-
+			$("#magazine-list>li").css("width", "100%"); 
+			$("#magazine-list>li").css("float", ""); 	
 			$("#magazine-list div.magazine-list-image").css("height", magazineHeight+"px");
-			$("#magazine-list li").css("width", magazineWidth +"px"); 
+			$("#magazine-list div.magazine-list-image").css("width", magazineWidth +"px"); 
+			$("#magazine-list>li").css("margin-bottom", magazineUnit + "px"); 	
 
 
-			$("#magazine-list li").css("padding-bottom", (magazineUnit + "px"));
-			$("#magazine-list li:nth-child(2n)").css("margin-right", (magazineUnit / 2 + "px"));
-			$("#magazine-list li:nth-child(2n)").css("margin-left", (magazineUnit / 2 + "px"));
+			//$("#magazine-list li").css("padding-bottom", (magazineUnit + "px"));
+			//$("#magazine-list li:nth-child(2n)").css("margin-right", (magazineUnit / 2 + "px"));
+			//$("#magazine-list li:nth-child(2n)").css("margin-left", (magazineUnit / 2 + "px"));
 
 		}
+
+
+		$("#magazine-list div.magazine-list-cover").css("width", $("#magazine-list li").width() - magazineWidth - magazineUnit +"px"); 
+
+		$("#magazine-list div.magazine-list-cover").each(function(i,o) {
+
+		$(this).css("margin-top", (magazineHeight - $(this).height()) / 2 + "px");
+
+		})
+
+ 				
+
 
 
 		var magazineCount = $("#magazine-list li").size();
@@ -412,7 +490,7 @@ function resizeElements(page){
 		//console.log("MARGIN-TOP: " + ((windowHeight / 2) - (magazineListHeight / 2))); 
 
 		var coverHeight = $(".magazine-list-cover").height();
-		var buttonContainerHeight = $(".magazine-list-button-container").height();
+		//var buttonContainerHeight = $(".magazine-list-button-container").height();
 
 		//alert(buttonContainerHeight);
 
@@ -454,14 +532,16 @@ function resizeElements(page){
 	} else if (page == "detail") {
 
 		
-		$(".article_image_slide").stop().delay(1000).transition({opacity: 1}, 400, function(){
+		$(".article_image_slide").stop().delay(0).transition({opacity: 1}, 400, function(){
 
+			/*
 			$(".article_image_slide").delay(5000).transition({opacity: 0}, 400, function(){
 
 
 				//$("#swipe_bar").remove();
 
 			});
+*/
 
 		});
 		
@@ -714,16 +794,27 @@ function resizeElements(page){
 		function particularImage(index)
 		{
 
+			//alert();
 
-			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
+			if ($("body").scrollTop() > 0) {
+
+
+				$("body").animate({ scrollTop: "0" }, "fast", function(){
+
+					currentImg = parseInt(index);
+					scrollImages( IMG_WIDTH * currentImg, speed);
+					resizeContainer(index);
+
+				});
+
+
+			} else {
 
 				currentImg = parseInt(index);
-
-				console.log("current: " + currentImg);
 				scrollImages( IMG_WIDTH * currentImg, speed);
 				resizeContainer(index);
 
-			});
+			}
 
 
 		}
@@ -732,35 +823,18 @@ function resizeElements(page){
 		function previousImage()
 		{
 
-
-
-			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
-
 				currentImg = Math.max(currentImg-1, 0);
 				scrollImages( IMG_WIDTH * currentImg, speed);
 				resizeContainer(currentImg);
-
-			});
-
-
-
 
 		}
 
 		function nextImage()
 		{
 
-
-
-			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
-
 				currentImg = Math.min(currentImg+1, maxImages-1);			
 				scrollImages( IMG_WIDTH * currentImg, speed);
 				resizeContainer(currentImg);
-
-			});
-
-
 
 		}
 
@@ -823,13 +897,13 @@ $(window).on('hashchange', function(){
 
 	if (hash == "") {
 
-		hash = "list";
+		//hash = "list";
 
 	}
 
 	if (hash != "detail") {
 
-		closeResource();
+		//closeResource();
 
 	}
 
@@ -842,34 +916,134 @@ $(window).on('hashchange', function(){
 
 });
 
-$(window).load(function(){
+
+
+
+$(document).ready(function(){
+
+
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+ // some code..
+ 		//alert("PHONE");
+	    document.addEventListener("deviceready", onDeviceReady, false);
+
+	} else {
+
+		onDeviceReady();
+
+	}
+
+});
+
+
+
+function onDeviceReady() {
+
+	
+	var fs = null;
+
+	function errorHandler(e) {
+	  var msg = '';
+	  switch (e.code) {
+	    case FileError.QUOTA_EXCEEDED_ERR:
+	      msg = 'QUOTA_EXCEEDED_ERR';
+	      break;
+	    case FileError.NOT_FOUND_ERR:
+	      msg = 'NOT_FOUND_ERR';
+	      break;
+	    case FileError.SECURITY_ERR:
+	      msg = 'SECURITY_ERR';
+	      break;
+	    case FileError.INVALID_MODIFICATION_ERR:
+	      msg = 'INVALID_MODIFICATION_ERR';
+	      break;
+	    case FileError.INVALID_STATE_ERR:
+	      msg = 'INVALID_STATE_ERR';
+	      break;
+	    default:
+	      msg = 'Unknown Error';
+	      break;
+	  };
+	  alert(msg);
+	}
+
+	function initFS() {
+	  window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(filesystem) {
+	    fs = filesystem;
+	  }, errorHandler);
+	}
+
+    function download(url) {
+        var remoteFile = encodeURI(url);
+        var localFileName = "temp/"+remoteFile.substring(remoteFile.lastIndexOf('/')+1);
+        console.log(localFileName);
+        //var localPath = localPathRoot + localFileName;
+        
+            fs.root.getFile("dummy.html", {create: true, exclusive: false}, function(fileEntry) {
+                
+                console.log(fileEntry);
+                var localPath = fileEntry.fullPath;
+		        var ft = new FileTransfer();
+		        ft.download(remoteFile, localPath, function(entry) {
+
+		        		alert("Success");
+		        		alert(entry.fullPath);
+		            	$("body").append("<img src='"+entry.fullPath+"'/>")
+		                //alert();
+
+		            }, fail);
+
+                localPathRootTemp = localPath.replace(localFileName, "");
+
+            }, fail);
+
+    }
+    
+    
+    function fail(error) {
+        alert(error.code);
+    }
+
+	window.requestFileSystem(LocalFileSystem.PERSISTENT, 0 , initFS, errorHandler);
+
+	console.log("Hello");
+
+
+
+	var localPathRoot = "";
+
+	
+
+
+
+    download("http://www.nicenicejpg.com/600/400");
+
 
     FastClick.attach(document.body);
-
 
 	hashSplit = hash.split("-");
 	//loadPage(hashSplit[0], hashSplit[1]);
 
+	/*
 
 	if (hashSplit[0] == "toc") {
 
-		$(window).trigger("hashchange");
+		//$(window).trigger("hashchange");
 
 
 	} else if (hashSplit[0] == "detail") {
 
 		//window.location.hash = "list";
-		$(window).trigger("hashchange");
+		//$(window).trigger("hashchange");
 
 	} else {
 
-		window.location.hash = "list";
-		$(window).trigger("hashchange");
-		$(window).trigger("hashchange");
+		//window.location.hash = "list";
+		//$(window).trigger("hashchange");
+		//$(window).trigger("hashchange");
 
 		//loadPage("list");
 
-		/*
 		$.ajax({
 
 			url: "modules/list.php",
@@ -884,17 +1058,20 @@ $(window).load(function(){
 			}
 
 		})
-		*/
 
 	}
+		*/
 
-
+	//$(window).trigger("hashchange");
+	loadPage("list");
 	$("body").stop().transition({opacity: 1});
 
 
 
 
-});
+}
+
+
 
 
 
@@ -967,6 +1144,22 @@ $(document).on(onHandler, "#back_button", function(e) {
 
 });	
 
+$(document).on("touchstart", ".article_adjacent>li", function(e) {
+
+
+	e.preventDefault();
+	$(this).addClass("header-toolbar-touch");
+
+});	
+
+$(document).on("touchend", ".article_adjacent>li", function(e) {
+
+
+	e.preventDefault();
+	$(this).removeClass("header-toolbar-touch");
+
+});	
+
 $(document).on("touchstart", "#back_button", function(e) {
 
 
@@ -975,6 +1168,7 @@ $(document).on("touchstart", "#back_button", function(e) {
 	$(this).addClass("header-toolbar-touch");
 
 });	
+
 
 
 

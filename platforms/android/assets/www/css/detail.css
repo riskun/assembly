@@ -265,6 +265,7 @@ a.navigation_highlight
 	text-align: center;
 	font-size:1.2em;
 	padding-top: 0.83333em;
+	cursor: pointer;
 	padding-bottom: 0.83333em;	
 }
 

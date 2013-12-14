@@ -31,7 +31,9 @@ function loadPage(page, number){
 
 	}
 
-	$("#main").transition({x: -$(window).width()}, function(){
+
+
+	$("#main").transition({x: -$(window).width(), opacity: 0}, function(){
 
 		$("#main").html("");
  
@@ -52,9 +54,14 @@ function loadPage(page, number){
 
 				} else {
 
-					window.location.hash = page;
+					if (page != "list") {
+						window.location.hash = page;
+					}
 
 				}
+
+ 				$("body").scrollTop(0);
+
  
  				placeElements(page, data);
 
@@ -63,7 +70,7 @@ function loadPage(page, number){
 				resizeElements(currentPage);
 
 
-				$("#main").transition({x: 0}, function(){
+				$("#main").transition({x: 0, opacity: 1}, function(){
 
 
 					$("#main").addClass("notransition");
@@ -88,6 +95,75 @@ function placeElements(page, data){
 	$("#resource_container").remove();
 
 	if (page == "list") {
+
+		/*
+
+    	var existingIssues = [];
+
+
+		if (window.requestFileSystem) {
+
+			alert("exists!");
+
+		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
+
+			function gotFS(fileSystem) {
+			   fileSystem.root.getDirectory("data", {create: true}, gotDir);
+			}
+
+			function gotDir(dirEntry) {
+			    dirEntry.getFile("lockfile.txt", {create: true, exclusive: true}, gotFile);
+			}
+
+			function gotFile(fileEntry) {
+			    // Do something with fileEntry here
+			}
+
+			window.requestFileSystem(window.PERSISTENT, 0, function(fileSystem) {
+
+			   fileSystem.root.getDirectory("", {
+			           create: true
+			       },
+
+			       function(directory) {
+
+				        var directoryReader = directory.createReader();
+				        directoryReader.readEntries(function(entries) {
+				            
+				            var i;
+
+				            for (i=0; i<entries.length; i++) {
+
+				                existingIssues.push(entries[i].name);
+
+				            }
+
+				        }, function (error) {
+
+				            alert(error.code);
+
+				        });
+
+			       });
+
+			}, function(error) {
+			   alert("can't even get the file system: " + error.code);
+			});
+
+			console.log(existingIssues);
+
+			$.each(existingIssues, function(i,o){
+
+				alert(o);
+
+			});
+
+
+
+		}
+
+			*/	
+
 
 
 		$("#main").append('<div id="magazine-list-container"></div>');
@@ -320,7 +396,7 @@ function resizeElements(page){
 	if ($("#article_pages").hasClass("swiped") == true) {
 
 		//alert("Removing swipe");
-		//$("#article_pages").swipe("destroy");		
+		//$("#article_pages").swipe("destroy");		 
 
 	}
 
@@ -335,8 +411,6 @@ function resizeElements(page){
 		$("#main").css("padding-right", (magazineUnit*2 + "px"));
 		$("#main").css("padding-top", (magazineUnit*2 + "px"));
 		$("#main").css("padding-bottom", (magazineUnit*2 + "px"));
-
-
 
 		
 		if (windowWidth > 640) { 
@@ -376,20 +450,16 @@ function resizeElements(page){
 			//$("#magazine-list li:nth-child(2n)").css("margin-right", (magazineUnit / 2 + "px"));
 			//$("#magazine-list li:nth-child(2n)").css("margin-left", (magazineUnit / 2 + "px"));
 
-		}
+		};
 
 
 		$("#magazine-list div.magazine-list-cover").css("width", $("#magazine-list li").width() - magazineWidth - magazineUnit +"px"); 
 
 		$("#magazine-list div.magazine-list-cover").each(function(i,o) {
 
-		$(this).css("margin-top", (magazineHeight - $(this).height()) / 2 + "px");
+			$(this).css("margin-top", (magazineHeight - $(this).height()) / 2 + "px");
 
-		})
-
- 				
-
-
+		});
 
 		var magazineCount = $("#magazine-list li").size();
 		var magazineWidthNew = $("#magazine-list li").outerWidth(true);
@@ -400,13 +470,6 @@ function resizeElements(page){
 		//$("#magazine-list").width(magazineListWidth);
 
 		var toolbarWidth = $("#header-toolbar-right").outerHeight();
-
-		/*
-		$("#magazine-list").css("padding-top", magazineMargin*2 + "px");
-		$("#magazine-list").css("padding-bottom", magazineMargin*2 + "px");
-		$("#magazine-list").css("padding-left", windowWidth/2 - magazineWidthNew/2 + "px");
-		$("#magazine-list").css("padding-right", windowWidth/2 - magazineWidthNew/2 + "px");
-		*/
 
 		var magazineListHeight = $("#magazine-list-container").outerHeight();
 
@@ -461,14 +524,6 @@ function resizeElements(page){
 		
 		$(".article_image_slide").stop().delay(0).transition({opacity: 1}, 400, function(){
 
-			/*
-			$(".article_image_slide").delay(5000).transition({opacity: 0}, 400, function(){
-
-
-				//$("#swipe_bar").remove();
-
-			});
-*/
 
 		});
 		
@@ -579,8 +634,13 @@ function resizeElements(page){
 
 		//$("").
 
-		$(document).on(onHandler, ".article_navigation", function(e) {
+		$(document).off(onHandler, ".article_navigation");
+		$(document).off(onHandler, "ul.article_adjacent>li");
 
+		$(document).on(onHandler, "ul.article_adjacent>li", adjacentChapter);
+		$(document).on(onHandler, ".article_navigation", navigationChapter);
+
+		function navigationChapter(e){
 
 			e.preventDefault();
 			var index = $(this).attr("index");
@@ -593,10 +653,12 @@ function resizeElements(page){
 			particularImage(parseInt(index));
 
 
-		});
+		}
 
+		function adjacentChapter(){
 
-		$(document).on(onHandler, ".article_adjacent>li", function(e) {
+			//alert("Clicked");
+
 
 			if ($(this).hasClass("next") == true) {
 
@@ -609,40 +671,15 @@ function resizeElements(page){
 			}
 
 
-			//$(window).scrollTop(0);
-			//$("html, body").animate({ scrollTop: "0" });
+		}
 
-
-			//currentImg = parseInt(index);
-
-			//particularImage(parseInt(index));
-
-
-		});
-
-		$(document).on(onHandler, ".article_image", function(e) {
-
-			//$(".article_navigation:eq(1)").click();
-
-
-			//$(window).scrollTop(0);
-			//$("html, body").animate({ scrollTop: "0" });
-
-
-			//currentImg = parseInt(index);
-
-			//particularImage(parseInt(index));
-
-
-		});
 
 
 
 		//alert("Fired");
 
 
-		function swipeStatus(event, phase, direction, distance, fingers)
-		{
+		function swipeStatus(event, phase, direction, distance, fingers) {
 			//If we are moving before swipe, and we are going L or R, then manually drag the images
 
 
@@ -714,6 +751,7 @@ function resizeElements(page){
 
 				var currentLi = $("#article_pages>li:eq("+index+")");
 				$("#main").height(currentLi.height());
+				$('body').unbind('touchmove');
 
 
 		}
@@ -721,16 +759,32 @@ function resizeElements(page){
 		function particularImage(index)
 		{
 
+				//alert();
 
-			$("body").animate({ scrollTop: "0" }, "fast", function(){
+			if ($("body").scrollTop() > 0) {
+
+				$('body').bind('touchmove', function(e){e.preventDefault()})
+
+				$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
+
+					currentImg = parseInt(index);
+					scrollImages( IMG_WIDTH * currentImg, speed);
+					resizeContainer(index);
+
+
+
+				});
+
+
+			} else {
 
 				currentImg = parseInt(index);
-
-				console.log("current: " + currentImg);
 				scrollImages( IMG_WIDTH * currentImg, speed);
 				resizeContainer(index);
 
-			});
+			}
+
+
 
 
 		}
@@ -739,35 +793,18 @@ function resizeElements(page){
 		function previousImage()
 		{
 
-
-
-			$("body").animate({ scrollTop: "0" }, "fast", function(){
-
 				currentImg = Math.max(currentImg-1, 0);
 				scrollImages( IMG_WIDTH * currentImg, speed);
 				resizeContainer(currentImg);
-
-			});
-
-
-
 
 		}
 
 		function nextImage()
 		{
 
-
-
-			$("body").animate({ scrollTop: "0" }, "fast", function(){
-
 				currentImg = Math.min(currentImg+1, maxImages-1);			
 				scrollImages( IMG_WIDTH * currentImg, speed);
 				resizeContainer(currentImg);
-
-			});
-
-
 
 		}
 
@@ -849,14 +886,111 @@ $(window).on('hashchange', function(){
 
 });
 
-$(window).load(function(){
+
+
+
+$(document).ready(function(){
+
+
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+ // some code..
+ 		//alert("PHONE");
+	    document.addEventListener("deviceready", onDeviceReady, false);
+
+	} else {
+
+		onDeviceReady();
+
+	}
+
+});
+
+
+var fs = null;
+
+function onDeviceReady() {
+
+	function errorHandler(e) {
+	  var msg = '';
+	  switch (e.code) {
+	    case FileError.QUOTA_EXCEEDED_ERR:
+	      msg = 'QUOTA_EXCEEDED_ERR';
+	      break;
+	    case FileError.NOT_FOUND_ERR:
+	      msg = 'NOT_FOUND_ERR';
+	      break;
+	    case FileError.SECURITY_ERR:
+	      msg = 'SECURITY_ERR';
+	      break;
+	    case FileError.INVALID_MODIFICATION_ERR:
+	      msg = 'INVALID_MODIFICATION_ERR';
+	      break;
+	    case FileError.INVALID_STATE_ERR:
+	      msg = 'INVALID_STATE_ERR';
+	      break;
+	    default:
+	      msg = 'Unknown Error';
+	      break;
+	  };
+	  alert(msg);
+	}
+
+	function initFS() {
+	  window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(filesystem) {
+	    fs = filesystem;
+	  }, errorHandler);
+	}
+
+    function download(url) {
+        var remoteFile = encodeURI(url);
+        var localFileName = "temp/"+remoteFile.substring(remoteFile.lastIndexOf('/')+1);
+        console.log(localFileName);
+
+		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(filesystem) {
+
+	        filesystem.root.getFile("dummy.html", {create: true, exclusive: false}, function(fileEntry) {
+	            
+	            console.log(fileEntry);
+	            var localPath = fileEntry.fullPath;
+		        var ft = new FileTransfer();
+		        ft.download(remoteFile, localPath, function(entry) {
+
+		        		//alert("Success");
+		        		//alert(entry.fullPath);
+		            	$("body").append("<img src='"+entry.fullPath+"'/>")
+
+		            }, fail);
+
+	            localPathRootTemp = localPath.replace(localFileName, "");
+
+	        }, fail);
+
+		}, errorHandler);
+
+    };
+    
+    
+    function fail(error) {
+        alert(error.code);
+    }
+
+
+	console.log("Hello");
+
+	var localPathRoot = "";
+
+	if (window.requestFileSystem) {
+
+    	download("http://www.nicenicejpg.com/600/400");
+
+	}
 
     FastClick.attach(document.body);
-
 
 	hashSplit = hash.split("-");
 	//loadPage(hashSplit[0], hashSplit[1]);
 
+	/*
 
 	if (hashSplit[0] == "toc") {
 
@@ -876,7 +1010,6 @@ $(window).load(function(){
 
 		//loadPage("list");
 
-		/*
 		$.ajax({
 
 			url: "modules/list.php",
@@ -891,19 +1024,22 @@ $(window).load(function(){
 			}
 
 		})
-		*/
 
 	}
+		*/
 
-	$(window).trigger("hashchange");
+	//$(window).trigger("hashchange");
 
+	loadPage("list");
 
 	$("body").stop().transition({opacity: 1});
 
 
 
 
-});
+}
+
+
 
 
 
@@ -976,15 +1112,21 @@ $(document).on(onHandler, "#back_button", function(e) {
 
 });	
 
-$(document).on("touchstart", "#article_adjacent>li", function(e) {
+$(document).on("touchstart", ".article_adjacent>li", function(e) {
 
 
 	e.preventDefault();
-
 	$(this).addClass("header-toolbar-touch");
 
 });	
 
+$(document).on("touchend", ".article_adjacent>li", function(e) {
+
+
+	e.preventDefault();
+	$(this).removeClass("header-toolbar-touch");
+
+});	
 
 $(document).on("touchstart", "#back_button", function(e) {
 
