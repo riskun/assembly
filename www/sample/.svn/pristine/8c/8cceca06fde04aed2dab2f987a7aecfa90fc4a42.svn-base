@@ -1,0 +1,217 @@
+<?php get_header();?>
+<?php query_posts('post_type=sn-products'); ?>
+
+<section class="content-static-pages clearfix">
+  <aside> &nbsp; </aside>
+  <article class="contentstwrapdiv content2 left clearfix">
+    <section class="productDetailsWrap clearfix">
+      <div class="productDetails">
+        <h3>
+          <?= get_the_title(); ?>
+          
+          <?
+          
+		  $oldVisitors = get_post_meta(get_the_ID(), 'visitors', true);
+		  $newVisitors = (int)$oldVisitors+1;
+		  update_post_meta(get_the_ID(), 'visitors', $newVisitors); ?>
+          
+          <? $currentCats = get_the_category();
+		  
+		  
+		  $currentCats_active = array();
+		  
+		  foreach ($currentCats as $cat) {
+			
+			if ($cat->parent == 366) {
+			
+				$currentCats_active[$cat->term_id] = get_post_meta(get_the_ID(), $cat->term_id, true);
+				
+			}
+			  
+			  
+		  }
+		  
+		  arsort($currentCats_active);
+//		  var_dump($currentCats_active);
+	  
+		  
+		  ?>
+		  
+		  
+          
+        </h3>
+        <div class="productDetailsDescription">
+		<?= apply_filters("the_content", get_post_meta(get_the_ID(), "_wp_editor_product_description", true)); ?>
+        </div>
+        <div class="productDetailsCopy">
+
+		<?= apply_filters("the_content", get_post_meta(get_the_ID(), "_wp_editor_product_ingredients", true)); ?>
+
+		<?= apply_filters("the_content", get_post_meta(get_the_ID(), "_wp_editor_product_health", true)); ?>
+
+        </div>
+      </div>
+      <div class="productDetailsRight">
+        <div class="productDetailsFeaturedImg centeredImage"><? //get_the_ID() ?><img src="<?= get_post_meta(get_the_ID(), "sn_product_image", true); ?>" alt="" /> </div>
+        <div class="productDetailsCatWrap clearfix">
+          <h3>Categories</h3>
+          <div class="productDetailsCat">
+            <ul>
+            	<? foreach ($currentCats_active as $key => $value) {
+					
+					$catobj = get_term_by('id', $key, 'category');
+					$description = $catobj->description;
+					$description_array = explode("\r\n\r\n", $description);
+
+					
+					echo '<li class="cat-'.$key.'" style="color:#'.$description_array[0].'"><span style="hello:#868686">'.ucwords($catobj->name).'</span></li>';
+					
+				}
+				
+				reset($currentCats_active); // make sure array pointer is at first element 
+				$topKey = key($currentCats_active);  
+				
+				?>
+<!--              <li class="cat-2"> Cognitive Health </li>
+              <li class="cat-3"> Weight Management </li> -->
+            </ul>
+          </div>
+          
+
+          
+          <div class="productDetailsGoback"> <a href="../#<?= $topKey ?>">Go back to <br />
+            <?= ucwords(get_the_category_by_ID($topKey)) ?></a> </div>
+        </div>
+  
+  					<?php include 'inc/include-addthis-compact.php';?>
+      
+        
+      </div>
+      
+
+      
+    </section>
+  </article>
+  <section class="accordionWrapper accordionProductDetails">
+    <article class="accordion noMarginBottom accordionIngredients">
+      <h6 id="ingredients"><a href="javascript:void(0);">Ingredients</a></h6>
+      <div>
+        <div class="contentwrapdiv clearfix">
+          <div class="accordionIngredientsTbl">
+            <table>
+              <tbody>
+                <tr>
+                  <th>Ingredient Name</th>
+                  <th>Label Name</th>
+                  <th>Herbal Claim Equivalent</th>
+                </tr>
+                
+		<? $ingredientsTable = get_post_meta(get_the_ID(), "_wp_editor_product_ingredients_additional_table", true);
+		
+//			var_dump($ingredientsTable);
+		
+			$ingredients = explode("\r\n\r\n", $ingredientsTable);
+			
+			foreach ($ingredients as $ingredient) {
+				
+				$ingredientArray = explode("\r\n", $ingredient);
+				
+				?>
+                
+                <tr>
+                  <td><?= $ingredientArray[0] ?></td>
+                  <td><?= $ingredientArray[1] ?></td>
+                  <td><?= $ingredientArray[2] ?></td>
+                </tr>
+                
+                
+                <?
+				
+				
+			}
+?>
+                
+              </tbody>
+            </table>
+          </div>
+          <div class="accordionIngredientsSummary">
+            <p> Non-medicinal ingredients and additives lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris . </p>
+          </div>
+        </div>
+      </div>
+    </article>
+    <article class="accordion noMarginBottom accordionInfo">
+      <h6 id="additional-info"><a href="javascript:void(0);">Additional Info</a></h6>
+      <div>
+        <div class="contentwrapdiv">
+          <div class="contentdiv">
+
+		<?= apply_filters("the_content", get_post_meta(get_the_ID(), "_wp_editor_product_additional", true)); ?>
+
+          </div>
+        </div>
+      </div>
+    </article>
+    
+
+<?
+
+		  $relatedArray = array(
+
+		  get_post_meta(get_the_ID(), "relatedproduct_0", true),
+		  get_post_meta(get_the_ID(), "relatedproduct_1", true),
+		  get_post_meta(get_the_ID(), "relatedproduct_2", true),
+		  get_post_meta(get_the_ID(), "relatedproduct_3", true)		  
+		  
+		  );
+
+		  $relatedArray = array_filter($relatedArray);
+
+
+?>		  
+    
+    <article class="accordion accordionRelatedProducts">
+      <h6 id="related-products"><a href="javascript:void(0);">Related Products</a></h6>
+      <div>
+        <div class="contentwrapdiv">
+          <div class="listProducts clearfix">
+          
+          <?
+		  
+		  
+		  foreach ($relatedArray as $item) {
+			  
+			
+			$image = get_post_meta($item, "sn_product_image", true);
+			
+			if ($image == "") {
+				
+				$image = "http://lorempixel.com/170/170/food/".rand(1, 10);
+				
+			}
+			
+			echo '<a href="'.get_permalink($item).'"><img src="'.$image.'" alt="" />'.get_the_title($item).'</a>';
+			  
+		  }
+		  
+
+		
+			if (count($relatedArray) == 0) { echo "No product found."; }
+		  
+		  
+		  ?>
+          
+          
+          
+          
+          </div>
+        </div>
+      </div>
+    </article>
+    
+    
+    
+  </section>
+  <div class="list-side-bg"></div>
+</section>
+<?php get_footer();?>

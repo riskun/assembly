@@ -1,0 +1,91 @@
+<?php
+// Custom Post Type Registration (Banners Events Items)
+add_action( 'init', 'create_banners' );
+function create_banners() {
+	$labels = array(
+		'name' => __( 'Event Page Vanities' ),
+		'singular_name' => __( 'Blocks' ),
+		'add_new' => __( 'Add a Vanity' ),
+		'add_new_item' => __( 'Add a Vanity' ),
+		'edit_item' => __( 'Edit Vanity' ),
+		'new_item' => __( 'Add a Vanity' ),
+		'view_item' => __( 'View Vanities' ),
+		'search_items' => __( 'Search Vanities' ),
+		'not_found' => __( 'No Vanity were found' ),
+		'not_found_in_trash' => __( 'No Vanity found in trash' ),
+		'parent_item_colon' => '',
+	);
+	$args = array(
+		'label' => __('Banners'),
+		'labels' => $labels,
+		'public' => true,
+		'can_export' => true,
+		'show_ui' => true,
+		'_builtin' => false,
+		'_edit_link' => 'post.php?post=%d', // ?
+		'capability_type' => 'post',
+		'menu_icon' => get_bloginfo('stylesheet_directory').'/assets/images/admin/icon_banners.png',
+		'hierarchical' => false,
+		'menu_position' => 8,
+		'supports'=> array('title','editor') ,
+		'show_in_nav_menus' => true
+	);
+	register_post_type( 'sn-banners', $args);
+}
+
+add_filter("manage_banners_edit_columns", "feature_edit_columns");
+add_action( 'add_meta_boxes', 'sn_banners_metabox_add' );
+
+function sn_banners_metabox_add()
+{
+add_meta_box('sn_banners_image', 'Banner Image', 'sn_banners_image', 'sn-banners', 'normal', 'default');
+}
+
+function sn_banners_image() {
+
+global $post;
+
+// adjust values here
+$id = "img1"; // this will be the name of form field. Image url(s) will be submitted in $_POST using this key. So if $id == “img1” then $_POST["img1"] will have all the image urls
+$svalue = ""; // this will be initial value of the above form field. Image urls.
+$multiple = false; // allow multiple files upload
+$width = null; // If you want to automatically resize all uploaded images then provide width here (in pixels)
+$height = null; // If you want to automatically resize all uploaded images then provide height here (in pixels)
+?>
+<input type="hidden" name="<?php echo $id; ?>" id="<?php echo $id; ?>" value="<?php echo get_post_meta($post -> ID, 'sn_banners_image', true); ?>" />
+<div class="plupload-upload-uic hide-if-no-js <?php if ($multiple): ?>plupload-upload-uic-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-upload-ui">
+	<input id="<?php echo $id; ?>plupload-browse-button" type="button" value="<?php esc_attr_e('Select A File'); ?>" class="button" />
+	<span class="ajaxnonceplu" id="ajaxnonceplu<?php echo wp_create_nonce($id . 'pluploadan'); ?>"></span>
+	<?php if ($width && $height): ?>
+	<span class="plupload-resize"></span><span class="plupload-width" id="plupload-width<?php echo $width; ?>"></span>
+	<span class="plupload-height" id="plupload-height<?php echo $height; ?>"></span>
+	<?php endif; ?>
+	<div class="filelist"></div>
+</div>
+<div class="plupload-thumbs <?php if ($multiple): ?>plupload-thumbs-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-thumbs"></div>
+<div class="clear"></div>
+<?
+}
+
+add_action( 'save_post', 'sn_banners_save' );
+
+function sn_banners_save($post_id)
+{
+if ($_POST['post_type'] == "sn-banners") {
+global $post;
+update_post_meta($post->ID, 'url', $_POST['url']);
+update_post_meta($post->ID, 'sn_banners_image', trim($_POST['img1']));
+$imageArray = explode(",", trim($_POST['img1']));
+$imageArray2 = array();
+foreach ($imageArray as $item) {
+$output = parse_url($item);
+parse_str($output['query'], $output2);
+array_push($imageArray2, $output2['id']);
+}
+$attachmentIds = implode(",", $imageArray2);
+update_post_meta($post->ID, 'sn_banners_image2', $attachmentIds);
+update_post_meta($post->ID, 'sn_banners_imagehover', trim($_POST['img2']));
+
+}
+}
+?>

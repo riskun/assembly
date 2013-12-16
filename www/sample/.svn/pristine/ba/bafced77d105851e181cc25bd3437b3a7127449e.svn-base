@@ -1,0 +1,922 @@
+<? 	require('../../../../../wp-load.php');
+
+
+
+
+function categoriesPrep($totalPosts) {
+
+
+	global $wpdb;
+	
+	$currentCatArray = array();
+	
+	foreach ($totalPosts as $item) {
+	
+		$item_id = $item->ID;
+		$rows = $wpdb->get_results( 
+			"
+		SELECT term_id
+		FROM wp_term_relationships
+		INNER JOIN wp_term_taxonomy ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id
+		WHERE wp_term_relationships.object_id = $item_id AND taxonomy = 'category'
+			"
+		);
+			
+		foreach ($rows as $object) {
+		
+			array_push($currentCatArray, $object->term_id);
+			
+		}
+		
+		$currentCatArray = array_unique($currentCatArray);
+			
+	}
+	
+	
+	return $currentCatArray;
+	
+	
+};
+
+function postsPrep($totalPosts) {
+
+
+	$postidArray = array();
+	
+	foreach ($totalPosts as $item) {
+	
+		$item_id = $item->ID;
+		array_push($postidArray, $item_id);
+			
+	}
+	
+	return $postidArray;
+	
+};
+
+
+function parseKeywords($keyword) {
+
+
+	$searchTerm = $keyword;
+	$searchTermArray = explode(" ", $keyword); //SPLIT BY SPACE
+	$searchTermArray = array_unique($searchTermArray); //NO DUPLICATES
+	$searchTermArray = array_filter($searchTermArray); //REMOVE EMPTY ARRAY ITEMS
+	$searchTermArray = array_merge($searchTermArray); //REMOVE EMPTY ARRAY ITEMS
+	
+	$i = 0;
+	
+	$searchTermArrayCount = count($searchTermArray);
+	
+	$searchTermArray_temp = array();
+	
+	$searchTermArrayCount_temp = count($searchTermArray) - 1;
+
+
+
+	foreach ($searchTermArray as $key=>$value) {
+
+		for ($i = $key; $i <= $searchTermArrayCount - 1; $i++) {
+		
+
+		$z_temp = "";
+		
+			for ($z = $key; $z <= $i; $z++) {
+
+				$z_temp;					
+				$z_temp = $z_temp." ".$searchTermArray[$z];
+				
+
+
+			};
+
+		$z_temp = preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', $z_temp);
+
+		array_push($searchTermArray_temp, trim($z_temp));			
+			
+		
+		};
+		
+		
+		
+		
+		
+	
+	}
+
+	
+	return($searchTermArray_temp);
+	
+	
+};
+
+
+function pertainingCats($keywordArray) {
+
+
+
+	$autoArray = array();
+	$termArray = array();
+
+
+	global $wpdb;
+
+	foreach ($keywordArray as $searchTermItem) {
+
+			$rows = $wpdb->get_results( 
+				"
+			SELECT name, slug, parent, wp_terms.term_id, taxonomy, count, term_taxonomy_id
+			FROM wp_terms
+			INNER JOIN wp_term_taxonomy ON wp_terms.term_id = wp_term_taxonomy.term_id
+			WHERE (name LIKE '%".rtrim(strtolower($searchTermItem))."%') AND (count > 0)
+				"
+			);
+			
+			foreach ($rows as $item) 
+			{
+
+				//array_push($autoArray, $item->term_taxonomy_id);
+				//ADDING ALL THE "PARENT-CHILD / EXISTENCE INSTANCES"
+				array_push($autoArray, $item->term_id/*.": ".$item->name*/);
+				//ADDING ALL THE DISCRETE TAXONOMY "TERMS"
+				
+			}
+			
+			$autoArray = array_unique($autoArray);
+	
+	};
+	
+	
+	return $autoArray;
+	
+	
+}
+
+
+
+	function accuracy($a,$b)
+	{ 
+	  return ($a->accuracy > $b->accuracy) ? 1 : -1;
+	} 
+
+	function relevance($a,$b)
+	{ 
+	  return ($a->relevance > $b->relevance) ? 1 : -1;
+	} 
+
+
+
+function osort(&$array, $prop)
+{
+
+	usort($array,$prop);
+	
+}
+
+
+function matchbyString($idArray, $termArray) {
+	
+	global $wpdb;
+
+	$matchedArray = array();
+	
+	$termArray_bk = $termArray;
+	
+	
+	foreach ($termArray as $key=>$value) 
+	{
+		
+		if (!is_numeric($value))
+
+//		$termArray[$key] = "post_title LIKE '%$value%' OR meta_value LIKE '%$value%'";
+		$termArray[$key] = "post_title LIKE '%$value%'";
+
+	}
+	
+	$termArraySQL = implode(" OR ", $termArray);
+
+	//return $termArraySQL;
+		
+	foreach ($idArray as $item) 
+	{
+		
+
+
+		$prodObj = new StdClass;
+		$prodObj->ID = $item;
+
+		$relevance = 0;
+
+
+		$postidArray_rows = $wpdb->get_results( 
+		"
+		SELECT post_id, meta_key, meta_value, post_title
+		FROM wp_postmeta
+		INNER JOIN wp_posts ON wp_postmeta.post_id = wp_posts.ID
+		WHERE (post_id = ".$item.")
+		LIMIT 0, 999
+		"
+		);
+		
+//	 AND (".$termArraySQL.")		
+//		var_dump($postidArray_rows);
+		
+		if (count($postidArray_rows) > 0) {
+		
+	/*		
+			return $termArraySQL;
+			
+			foreach ($postidArray_rows as $item) {
+						
+				$relevance = $relevance + $item->meta_value;
+	
+			}
+	
+			$prodObj->relevance = $relevance;
+	*/
+	
+	//		var_dump($postidArray_rows);
+			
+			
+			$accuracy = 0;
+
+			$prodObj->post_title = get_the_title($prodObj->ID);
+
+
+//			var_dump($prodObj->post_title);
+			
+			
+			
+			
+			foreach ($termArray_bk as $termArray_bk_item) {
+
+//				var_dump($termArray_bk_item);
+//				var_dump(strtolower($prodObj->post_title));
+	
+			$searchTitle = strtolower(preg_replace("/&#?[a-z0-9]{2,8};/i","",$prodObj->post_title));
+			$searchQuery = strtolower(preg_replace("/&#?[a-z0-9]{2,8};/i","",$termArray_bk_item));
+	
+	//		echo "ORIGINAL: ".$prodObj->post_title."<br/>";
+	//		echo "TITLE: ".$searchTitle."<br/>";
+	//		echo "QUERY: ".$searchQuery."<br/>";
+//			echo "REPLACE:".str_replace($searchQuery, "", $searchTitle)."<br/><br/>";
+				
+				
+				// RESULTS IN BROKEN HTML ENTITY FOR NOW
+				
+//				$prodObj->post_title = wptexturize($prodObj->post_title);
+//				$termArray_bk_item = wptexturize($termArray_bk_item);
+//				echo str_replace("'", '', preg_replace("/[^A-Za-z0-9]/"," ",$prodObj->post_title));
+
+//				echo $text = str_replace("'","", html_entity_decode($prodObj->post_title, ENT_QUOTES)); 
+
+
+//					var_dump(preg_replace("/[^A-Za-z0-9]/"," ",$prodObj->post_title))." / ".preg_replace("/[^A-Za-z0-9]/"," ",$termArray_bk_item);
+
+				
+				
+				if (strpos(strtolower(preg_replace("/&#?[a-z0-9]{2,8};/i","",$prodObj->post_title)),strtolower(preg_replace("/&#?[a-z0-9]{2,8};/i","",$termArray_bk_item))) !== false) {
+					
+					$accuracy = $accuracy + 100;
+					
+				} else {
+					
+				
+//					echo "FALSE";	
+					
+				}
+			};
+			
+			$prodObj->accuracy = $accuracy;
+//			$prodObj->accuracy_details = ($postidArray_rows);
+			$prodObj->relevance = $accuracy*1000;
+	
+			
+	/*		
+			if ($relevance > 0) {
+			
+			$prodObj->string = true;
+			
+			} else {
+				
+			$prodObj->string = false;
+	
+				
+			}
+	*/
+	
+			array_push($matchedArray, $prodObj);
+
+		};
+
+	}
+
+
+	osort($matchedArray, "accuracy");
+	$matchedArray = array_reverse($matchedArray);
+
+
+	return $matchedArray;
+		
+	
+}
+
+
+function relevanceCalculateForString($array, $autoArray) {
+
+	global $wpdb;
+
+	$filteredArray = array();
+
+	foreach ($autoArray as $key=>$value) 
+	{
+
+		$autoArray[$key] = "meta_key = '$value'";
+
+	}
+	
+	$query = implode(" OR ", $autoArray);
+
+	foreach ($array as $item) 
+	{
+		
+
+
+		$prodObj = new StdClass;
+		$prodObj->ID = $item->ID;
+
+		$relevance = $item->relevance;
+//		$relevance = 0;
+
+		$postidArray_rows = $wpdb->get_results( 
+		"
+		SELECT meta_key, meta_value, post_id
+		FROM $wpdb->postmeta
+		WHERE (post_id = ".$item->ID.") AND (".$query.")
+		LIMIT 0, 999
+		"
+		);
+		
+		foreach ($postidArray_rows as $item2) {
+					
+			$relevance = $relevance + $item2->meta_value;
+
+		}
+
+
+		$prodObj->post_title = get_the_title($prodObj->ID);
+		$prodObj->relevance = $relevance;
+		
+		
+		if ($relevance > 0) {
+		
+		$prodObj->meta = true;
+		$prodObj->string = true;
+
+		array_push($filteredArray, $prodObj);
+		
+		} else {
+			
+
+			
+		}
+
+
+
+	}
+
+
+	osort($filteredArray, "relevance");		
+	$filteredArray = array_reverse($filteredArray);
+
+	return $filteredArray;
+
+}
+
+
+
+function relevanceCalculate($array, $autoArray) {
+
+	global $wpdb;
+
+	$filteredArray = array();
+
+	foreach ($autoArray as $key=>$value) 
+	{
+
+		$autoArray[$key] = "meta_key = '$value'";
+
+	}
+	
+	$query = implode(" OR ", $autoArray);
+
+	foreach ($array as $item) 
+	{
+		
+
+
+		$prodObj = new StdClass;
+		$prodObj->ID = $item;
+
+		$relevance = 0;
+
+
+		$postidArray_rows = $wpdb->get_results( 
+		"
+		SELECT meta_key, meta_value, post_id
+		FROM $wpdb->postmeta
+		WHERE (post_id = ".$item.") AND (".$query.")
+		LIMIT 0, 999
+		"
+		);
+		
+		foreach ($postidArray_rows as $item2) {
+					
+			$relevance = $relevance + $item2->meta_value;
+
+		}
+
+
+		$prodObj->post_title = get_the_title($prodObj->ID);
+		$prodObj->relevance = $relevance;
+		
+		
+		if ($relevance > 0) {
+		
+		$prodObj->meta = true;
+		$prodObj->string = false;
+
+		array_push($filteredArray, $prodObj);
+		
+		} else {
+			
+
+			
+		}
+
+
+
+	}
+
+
+	osort($filteredArray, "relevance");		
+	$filteredArray = array_reverse($filteredArray);
+
+	return $filteredArray;
+
+}
+
+
+function ounique($obj) {
+
+
+	static $idList = array();
+	$search = array_search($obj->ID,$idList);
+	
+	if($search > 0) {
+		
+		
+		if($obj->relevance > $idList[$search]->relevance) {
+		
+//			return false;
+			unset($idList[$search]);
+			$idList[]= $obj->ID;
+			return true;			
+		
+		} else {
+			
+			return false;	
+			
+		}
+		
+		
+	} else {
+	
+	$idList[]= $obj->ID;
+	return true;
+
+
+	}
+
+}
+
+
+
+function removeDuplicates($totalArray) {
+
+
+	$totalArray2 = array();
+
+	foreach ($totalArray as $item) {
+	
+		$item_id = $item->ID;
+		array_push($totalArray2, $item_id);
+	}
+			
+			
+	$totalArray2_count = array_count_values($totalArray2);			
+
+	$totalArray3 = array();
+
+			
+	foreach ($totalArray2_count as $key=>$value) {
+	
+		if ($value > 1) {
+			
+			$totalArray3[] = $key;
+			
+		}
+
+
+	}
+
+
+	foreach ($totalArray as $key => $item) {
+	
+		$item_id = $item->ID;	
+		array_push($totalArray2, $item_id);
+		
+		
+		if (in_array($item->ID, $totalArray3) && ($item->string === false)) {
+		
+//			unset($totalArr
+	//		var_dump($key);	
+//			var_dump($item);
+			unset($totalArray[$key]);	
+		
+			
+		}
+		
+	
+	
+	}
+	
+	
+	return $totalArray;
+	
+	
+	
+}
+
+
+// ON PAGE LOAD
+
+if (count($_POST['categories']) == 1) {
+
+$meta_key = "priority_temp";
+$orderby = "meta_value_num";
+
+} else {
+
+$meta_key = "";
+$orderby = "title";
+
+}
+
+$postidArray = array();
+$args = array(
+	
+	'category__in' => $_POST['categories'],
+	'post_type' => 'sn-product',
+	'posts_per_page' => "-1",
+	'paged' => $_POST['page'],
+	'order' => 'ASC',
+//	'orderby' => 'title'
+	'orderby' => $orderby,
+	'meta_key' => $meta_key,
+//	'meta_value' => $matrix_item[2],
+
+
+);
+
+$productQuery = new WP_Query($args);
+
+if (count($_POST['categories']) > 0) {
+
+$categoriesStr = implode(",", $_POST['categories']);
+
+};
+
+
+$totalCount = $productQuery->post_count;
+$totalPosts = $productQuery->posts;
+
+
+//var_dump($totalPosts);
+
+$search_q = $_POST['search_q'];
+
+
+if (!empty($search_q) && empty($_POST['categories'])) {
+	
+//	echo "NO CAT BUT YES SEARCH";
+
+
+
+	$currentCatArray = categoriesPrep($totalPosts);	
+	$postidArray = postsPrep($totalPosts);
+	
+	$searchTermArray = parseKeywords($_POST['search_q']);
+	$autoArray = pertainingCats($searchTermArray);
+
+
+
+	for ($i = 0; $i <= count($searchTermArray) - 1; $i++) {
+
+		if (strlen($searchTermArray[$i]) < 3) {
+
+		//	REMOVE 'ORPHAN" ARRAY ITEM WHOSE LENGTH IS SHORTER THAN 3 CHARACTERS
+		unset($searchTermArray[$i]);
+		
+
+		}
+
+	}
+
+
+
+	$autoArray = pertainingCats($searchTermArray);
+
+	$matchedArray = matchbyString($postidArray, $searchTermArray);
+	$matchedArray2 = relevanceCalculateForString($matchedArray, $autoArray);
+
+
+	$filteredArray = relevanceCalculate($postidArray, $autoArray);
+
+
+	$totalArray = array();
+	$totalArray = array_merge($matchedArray2, $filteredArray);
+
+	osort($totalArray, "relevance");
+	$totalArray = array_reverse($totalArray);
+
+//	var_dump(count($totalArray));
+	
+
+	//SEARCHING DUPLICATES AND ELIMINATING LESSER ONES
+	$totalArray = removeDuplicates($totalArray);
+	
+//	var_dump(count($totalArray));
+
+
+
+			
+	
+	$totalPosts = $totalArray;
+	$totalCount = count($totalPosts);
+
+
+	
+	
+} else if (!empty($search_q) && !empty($_POST['categories'])){
+
+	
+	
+//	var_dump($currentCatArray);
+//	var_dump($postidArray);
+	
+
+	$currentCatArray = categoriesPrep($totalPosts);	
+	$postidArray = postsPrep($totalPosts);
+	
+	$searchTermArray = parseKeywords($_POST['search_q']);
+	$autoArray = pertainingCats($searchTermArray);
+
+
+
+	for ($i = 0; $i <= count($searchTermArray) - 1; $i++) {
+
+		if (strlen($searchTermArray[$i]) < 3) {
+
+		//	REMOVE 'ORPHAN" ARRAY ITEM WHOSE LENGTH IS SHORTER THAN 3 CHARACTERS
+		unset($searchTermArray[$i]);
+		
+
+		}
+
+	}
+	
+
+//	var_dump($searchTermArray);
+	
+
+	$autoArray = pertainingCats($searchTermArray);
+
+
+
+
+
+//	echo "<h2>Currently Selected Categories</h2>";
+
+//	var_dump($_POST['categories']);
+/*
+	echo "<h2>Total Categories for These Posts</h2>";
+
+	var_dump($currentCatArray);
+*/
+
+/*	echo "<h2>Relevant Cateories for Keyword</h2>";
+
+	var_dump($autoArray);
+
+	echo "<h2>Intersecting Array</h2>";
+*/
+
+//	$intersectArray = array_intersect($currentCatArray, $autoArray);
+//	$intersectArray = array_intersect($_POST['categories'], $autoArray);
+
+//	var_dump($intersectArray);
+	
+/*	
+	if (count($intersectArray) == 0) {
+		
+		echo "<h3>NO OVERLAP</h3>";
+		
+	} else {
+*/		
+	
+	
+	
+//		$postidArray = array();
+	
+	
+//		echo "<h2>All keywords</h2>";
+		
+//		var_dump($searchTermArray);
+
+//		echo "<h2>All pertaining categories</h2>";
+		
+//		var_dump($autoArray);
+
+	
+//		echo "<h2>All the posts that belong to the current category array</h2>";
+	
+/*	
+		foreach ($currentCatArray as $item) {
+			
+				$rows = $wpdb->get_results( 
+				"
+				SELECT object_id, count, wp_term_relationships.term_taxonomy_id, term_id
+				FROM wp_term_relationships
+				INNER JOIN wp_term_taxonomy ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id
+				WHERE (term_id = ".$item.") AND (object_id != 0)
+				"
+				);
+				
+				
+				foreach ($rows as $item) {
+					
+					array_push($postidArray, (int)$item->object_id);
+					
+				}
+				
+					
+				
+		};
+*/		
+		
+	//	var_dump(count($postidArray));
+	
+
+
+
+//	echo "<h2>All the posts that match by string, but not calculated by category relevance</h2>";
+
+
+	$matchedArray = matchbyString($postidArray, $searchTermArray);
+	//var_dump(count($matchedArray));
+
+//	var_dump($matchedArray);
+
+//	echo "<h2>All the posts that match by string, and sorted by category relevance</h2>";
+
+	$matchedArray2 = relevanceCalculateForString($matchedArray, $autoArray);
+
+//	var_dump(count($matchedArray2));
+
+//	var_dump($matchedArray2);
+	
+	//echo $autoArraySQL;
+
+
+//	echo "<h2>All the posts that do not match by string, but calculated by category relevance</h2>";
+
+	$filteredArray = relevanceCalculate($postidArray, $autoArray);
+//	var_dump(count($filteredArray));
+
+
+//	var_dump($filteredArray);
+	
+		
+	//var_dump($filteredArray);
+	
+	
+//	echo "<h2>TOTAL ARRAY</h2>";
+
+
+	$totalArray = array();
+	$totalArray = array_merge($matchedArray2, $filteredArray);
+
+	osort($totalArray, "relevance");
+	$totalArray = array_reverse($totalArray);
+
+//	var_dump(count($totalArray));
+	
+	
+	//SEARCHING DUPLICATES AND ELIMINATING LESSER ONES
+	$totalArray = removeDuplicates($totalArray);
+	
+//	var_dump(count($totalArray));
+
+
+
+			
+	
+	$totalPosts = $totalArray;
+	$totalCount = count($totalPosts);
+			
+		
+}
+	
+
+	//$termArray = array_unique($termArray);
+	
+
+//};
+
+
+
+//var_dump(parseKeywords($_POST['search_q']));
+?>
+
+<!--
+<h2><? 
+
+
+echo (count($totalPosts));
+
+
+?></h2>
+-->
+
+
+
+
+<?
+
+
+//SPLITTING PAGES
+
+
+$ppp = $_POST['ppp'];
+$page = $_POST['page'] - 1;
+$offset = $page * $ppp;
+
+$pagedPosts = array_slice($totalPosts, $page * $ppp, $ppp);
+
+//var_dump($page);
+
+
+?>
+
+   	<h1 id="count" style="display:none;"><?= $totalCount ?></h1>
+
+<?
+
+//var_dump($totalPosts);
+
+foreach ($pagedPosts as $post) {
+
+?>
+
+
+
+	<?
+	
+	$catArray = wp_get_post_categories($post->ID);
+	if (empty($catArray) === true) {
+
+	$catArray = wp_get_post_categories($post->ID);		
+		
+	};
+	
+	//var_dump($catArray);
+	
+
+//	echo ("ADFDS");
+	
+	$catString = implode(",", $catArray);
+	
+	
+	?>
+
+	<a cats="<?= $catString ?>" href="<?= get_permalink($post->ID) ?>"> <img src="http://lorempixel.com/170/170/food/<?= rand(1, 10) ?>"/><?= $post->post_title ?><!-- (<?= $post->relevance ?>)--></a>
+   
+
+<?
+
+
+}
+
+
+?>

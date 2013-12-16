@@ -1,0 +1,32 @@
+$(document).ready(function() {
+    String.prototype.capitalize  = function()  {
+        return this.charAt(0).toUpperCase()  + this.slice(1);
+    }
+    $(".list-products-wrap li").click(function() {
+        var title  = $(this).find("a").html();
+        var color  = $(this).find("a").attr("col");
+        var descA  = $(this).find("a").attr("rel");
+        var descB  = $(this).find("a").attr("rel2");
+        var href  = $(this).find("a").attr("id");
+        if (color  < 6)  {
+            color  = "F79D4D"
+        }
+        if (descA.length  > 250)  {
+            descA  = descA.substr(0, 250)  + "...";
+        } else if (descA.length  == 0)  {
+            descA  = "Integer nulla lectus, porta sed cursus at, egestas sit amet mi. Nulla vitae turpis vel quam imperdiet laoreet a sit amet purus. Quisque elementum, urna ac fermentum aliquam, est mi vehicula ligula, a interdum ipsum libero.";
+        };
+        if (descB.length  > 250)  {
+            descB  = descB.substr(0, 250)  + "...";
+        } else if (descB.length  == 0)  {
+            descB  = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere tellus et mauris scelerisque condimentum. Vivamus vel leo vitae mi suscipit posuere. Curabitur turpis libero. Nunc sed mi quis magna tincidunt porta.";
+        };
+        $("article h1").html(title.capitalize());
+        $("article h1").css("color", "#" + color);
+        $("article h2").html(descA);
+        $(".summaryLeft p:first, #summarySecondary").html(descB);
+        $("#seeProd").attr("href", "../products#" + href);
+        $(".stepNext").attr("href", "../products#" + href);
+    });
+    $(".list-products-wrap li:first").click();
+});

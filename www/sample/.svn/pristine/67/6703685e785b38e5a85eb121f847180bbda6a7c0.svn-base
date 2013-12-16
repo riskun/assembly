@@ -1,0 +1,423 @@
+<?
+
+	$postID = $_GET['post'];
+
+
+	$rows = $wpdb->get_results( 
+		"
+			SELECT *
+			FROM wp_term_taxonomy
+			INNER JOIN wp_term_relationships ON wp_term_taxonomy.term_taxonomy_id = wp_term_relationships.term_taxonomy_id
+			WHERE (object_id = $postID)
+		"
+		
+	);
+
+	$postIDtaxArray = array();
+
+	foreach ($rows as $item) 
+	{
+	
+		array_push($postIDtaxArray, $item->term_id);
+		
+	}
+
+
+
+add_action('edit_category_form', "create_products_categories");
+
+function create_products_categories() {
+
+//	die();
+    wp_enqueue_script('category-products', get_stylesheet_directory_uri().'/assets/js/category_products.js', array('jquery'), '', TRUE);
+	
+
+};
+
+
+
+
+add_action( 'init', 'create_products_posttype' );
+function create_products_posttype() {
+	
+	
+	
+$labels = array(
+    'name' => _x('Products', 'post type general name'),
+    'singular_name' => _x('product', 'post type singular name'),
+    'add_new' => __('Add New Product', 'Term'),
+	'add_new_item' => __('Add New Product'),
+	'edit_item' => __('Edit Product'),
+    'view_item' => __('View Product'),
+    'search_items' => __('Search Products Index'),
+    'not_found' =>  __('No matching Product found'),
+    'not_found_in_trash' => __('No Product found in Trash'),
+    'parent_item_colon' => '',
+);
+$args = array(
+    'label' => __('Products'),
+    'labels' => $labels,
+    'public' => true,
+    'can_export' => true,
+    'show_ui' => true,
+    '_builtin' => false,
+    '_edit_link' => 'post.php?post=%d', // ?
+    'capability_type' => 'post',
+    'menu_icon' => get_bloginfo('stylesheet_directory').'/assets/images/admin/icon_products.png',
+    'hierarchical' => false,
+    'rewrite' => array( "slug" => "hello" ),
+    'supports'=> array('title','excerpt','author','revisions','thumbnail','custom-fields'),
+    'show_in_nav_menus' => true,
+    'taxonomies' => array( 'category'),
+    'register_meta_box_cb' => 'mb_products_add_metaboxes'
+);
+register_post_type( 'sn-product', $args);
+
+add_action('save_post', 'mb_products_save_meta', 1, 1); // save the custom fields
+
+
+}
+
+
+function create_category_taxonomy() {
+
+    $labels = array(
+        'name' => _x( 'Categories', 'taxonomy general name' ),
+        'singular_name' => _x( 'Category', 'taxonomy singular name' ),
+        'search_items' =>  __( 'Search Categories' ),
+        'popular_items' => __( 'Popular Categories' ),
+        'all_items' => __( 'All Categories' ),
+        'parent_item' => null,
+        'parent_item_colon' => null,
+        'edit_item' => __( 'Edit Category' ),
+        'update_item' => __( 'Update Category' ),
+        'add_new_item' => __( 'Add New Category' ),
+        'new_item_name' => __( 'New Category Name' ),
+        'separate_items_with_commas' => __( 'Separate categories with commas' ),
+        'add_or_remove_items' => __( 'Add or remove categories' ),
+        'choose_from_most_used' => __( 'Choose from the most used categories' ),
+    );
+
+    register_taxonomy('category','sn-product', array(
+        'label' => __('Products Category'),
+        'labels' => $labels,
+        'hierarchical' => true,
+        'show_ui' => true,
+        'query_var' => true,
+        'rewrite' => array( 'slug' => 'product-category' ),
+    ));
+
+}
+
+add_action( 'init', 'create_category_taxonomy', 0 );
+
+
+	
+	function getProdTax($id) {
+		
+
+		global $wpdb;
+		$rows = $wpdb->get_results( 
+			"
+				SELECT name, slug, parent, wp_terms.term_id, taxonomy, count
+				FROM wp_terms
+				INNER JOIN wp_term_taxonomy ON wp_terms.term_id = wp_term_taxonomy.term_id
+				WHERE (parent = {$id}) AND (taxonomy = 'category')
+				ORDER BY name
+			"
+		);
+			
+		return $rows;
+		
+	}
+
+
+
+	function generateProdTaxBox($name, $rows) {
+		
+		
+		global $postIDtaxArray;
+		$count = 0;
+
+		echo '<div class="placeholder">';
+		
+		echo '<div class="format" id="priority_'.$name.'">';
+	
+		
+		foreach ($rows as $item) 
+		{
+				
+			echo '<input type="checkbox" class="priorityOne" name="'.$item->name.'" cat="'.$item->term_id.'" id="check'.$item->term_id.'" ';
+			
+			if (in_array($item->term_id, $postIDtaxArray)) {
+		
+				echo "checked='checked'";
+				$count++;
+				
+			} else {
+	
+				//echo "checked='false'";
+				
+			};		
+			
+			echo '/><label for="check'.$item->term_id.'">'.$item->name.' ('.$item->count.')</label>';
+			
+			
+			
+			
+		}
+		
+		echo '</div>';
+	
+		echo '<div class="prioritycount"><strong>'.$count.'</strong> SELECTED</div>';
+	
+	
+		echo '<div class="priority" id="priority_'.$name.'_slider">';
+		
+	
+		echo '</div>';
+	
+		
+		echo '<input type="hidden" class="hiddenPriority" id="priority_'.$name.'_hidden" name="priority_'.$name.'_hidden" />';
+		
+		
+		echo '</div>';
+		
+		
+		
+	}
+
+
+	function generateProdMeta($id, $field) {
+		
+		$description = get_post_meta($id, $field, true);
+	
+		echo '<div class="productEditor">';
+		wp_editor($description, $field);
+		echo '</div>';	
+		
+	}
+
+
+//add_action('add_meta_boxes', 'mb_products_add_metaboxes');
+
+/* CUSTOM META BOXES - Products Details begins */
+function mb_products_add_metaboxes()
+{
+	
+	add_meta_box('mb_product_description', 'Description', 'mb_product_description', 'sn-product', 'normal', 'default');	
+    add_meta_box('mb_product_ingredients', 'Ingredients', 'mb_product_ingredients', 'sn-product', 'normal', 'default');
+	add_meta_box('mb_product_healthconcerns', 'Health Concerns', 'mb_product_healthconcerns', 'sn-product', 'normal', 'default');
+	add_meta_box('mb_product_image', 'Image', 'mb_product_image', 'sn-product', 'normal', 'default');
+//	add_meta_box('mb_product_maincategories', 'Main Categories', 'mb_product_maincategories', 'post', 'normal', 'default');
+	add_meta_box('mb_product_overridepriority', 'Override Priority (Temporary)', 'mb_product_overridepriority', 'sn-product', 'normal', 'default');
+
+    wp_enqueue_script('global-products', get_stylesheet_directory_uri().'/assets/js/global_products.js', array('jquery'), '', TRUE);
+    wp_enqueue_script('global-products-tinysort', get_stylesheet_directory_uri().'/assets/js/jquery.tinysort.min.js', array('jquery'), '', TRUE);
+    wp_enqueue_script('jquery-ui', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js', array('jquery'), '', TRUE);
+
+    wp_enqueue_style('jquery-ui-css', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/cupertino/jquery-ui.css');
+    wp_enqueue_style('global-products-css', get_stylesheet_directory_uri().'/assets/css/products.css');
+
+
+}
+
+
+function mb_product_maincategories($post)
+{
+
+    $description = get_post_meta($post->ID, '_wp_editor_product_maincategories', false);
+
+
+	echo '<div class="productEditor">';
+	echo '<select id="selectList">';
+
+	echo '</select>';
+	echo '</div>';
+	
+}
+
+function mb_product_overridepriority($post)
+{
+
+    $overridepriority = get_post_meta($post->ID, '_wp_editor_product_overridepriority', true);
+	echo '<input type="text" class="overridePriority" id="overridePriority_text" name="_wp_editor_product_overridepriority" value="'.$overridepriority.'" />';
+	
+}
+
+
+
+
+function mb_product_ingredients($post)
+{
+    // Use nonce for verification
+    wp_nonce_field(plugin_basename(__FILE__), 'productsmeta_noncename1');
+	generateProdMeta($post->ID, "_wp_editor_product_ingredients");
+	$rows = getProdTax(10);
+	generateProdTaxBox("ingredients", $rows);
+	
+}
+function mb_product_healthconcerns($post)
+{
+
+    wp_nonce_field(plugin_basename(__FILE__), 'productsmeta_noncename2');
+	generateProdMeta($post->ID, "_wp_editor_product_health");
+	$rows = getProdTax(3);
+	generateProdTaxBox("health", $rows);
+
+
+}
+
+function mb_product_description($post)
+{
+    // Use nonce for verification
+    wp_nonce_field(plugin_basename(__FILE__), 'productsmeta_noncename3');
+	generateProdMeta($post->ID, "_wp_editor_product_description");
+	$rows = getProdTax(104);
+	generateProdTaxBox("category", $rows);
+	
+	
+
+}
+
+
+function mb_product_image() { 
+
+global $post;
+
+// adjust values here
+$id = "img1"; // this will be the name of form field. Image url(s) will be submitted in $_POST using this key. So if $id == “img1” then $_POST["img1"] will have all the image urls
+$svalue = ""; // this will be initial value of the above form field. Image urls.
+$multiple = false; // allow multiple files upload 
+$width = null; // If you want to automatically resize all uploaded images then provide width here (in pixels)
+$height = null; // If you want to automatically resize all uploaded images then provide height here (in pixels)
+
+?>
+
+<input type="hidden" name="<?php echo $id; ?>" id="<?php echo $id; ?>" value="<?php echo get_post_meta($post->ID, 'sn_product_image', true); ?>" />
+<div class="plupload-upload-uic hide-if-no-js <?php if ($multiple): ?>plupload-upload-uic-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-upload-ui">
+    <input id="<?php echo $id; ?>plupload-browse-button" type="button" value="<?php esc_attr_e('Select A File'); ?>" class="button" />
+    <span class="ajaxnonceplu" id="ajaxnonceplu<?php echo wp_create_nonce($id . 'pluploadan'); ?>"></span>
+    <?php if ($width && $height): ?>
+            <span class="plupload-resize"></span><span class="plupload-width" id="plupload-width<?php echo $width; ?>"></span>
+            <span class="plupload-height" id="plupload-height<?php echo $height; ?>"></span>
+    <?php endif; ?>
+    <div class="filelist"></div>
+</div>
+<div class="plupload-thumbs <?php if ($multiple): ?>plupload-thumbs-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-thumbs">
+</div>
+<div class="clear"></div>
+
+
+<?
+	
+}
+
+
+
+
+// Save the Metabox Data
+function mb_products_save_meta($post_id)
+{
+	
+if ($_POST['post_type'] == "sn-product") {	
+	
+
+	if (wp_is_post_revision($post_id)) {
+
+		$revisionPostID = wp_is_post_revision($post_id);
+
+	} else if(!wp_is_post_revision($post_id)) {
+		
+		$revisionPostID = $post_id;	
+		
+	};
+
+    if (!wp_verify_nonce($_POST['productsmeta_noncename1'], plugin_basename(__FILE__))) {
+        return false;
+    }
+
+    if (!current_user_can('edit_post', $revisionPostID))
+        return false;
+	
+	update_post_meta($revisionPostID, '_wp_editor_product_description', $_POST['_wp_editor_product_description']);	
+	update_post_meta($revisionPostID, '_wp_editor_product_health', $_POST['_wp_editor_product_health']);
+	update_post_meta($revisionPostID, '_wp_editor_product_ingredients', $_POST['_wp_editor_product_ingredients']);
+	update_post_meta($revisionPostID, '_wp_editor_product_overridepriority', $_POST['_wp_editor_product_overridepriority']);
+
+	global $wpdb;
+
+	$rows = $wpdb->get_results( 
+		"
+			SELECT meta_key, meta_value
+			FROM wp_postmeta
+			WHERE post_id = $revisionPostID
+		"
+		
+	);
+
+	foreach ($rows as $item) 
+	{
+	
+		if (is_numeric($item->meta_key)){
+			
+			delete_post_meta($revisionPostID, $item->meta_key);		
+			
+		};
+		
+	}
+	
+	wp_set_object_terms($revisionPostID, NULL, 'category');
+
+	$priorityCatArray = array();
+
+	$priorityType_hidden = explode(",", $_POST['priority_category_hidden']);	
+	foreach ($priorityType_hidden as $priorityItem) {
+		$priorityItem = explode(":", $priorityItem);
+		update_post_meta($revisionPostID, $priorityItem[0], $priorityItem[1]);
+		array_push($priorityCatArray, intval($priorityItem[0]));
+	};
+
+	$priorityHealth_hidden = explode(",", $_POST['priority_health_hidden']);	
+	foreach ($priorityHealth_hidden as $priorityItem) {
+		$priorityItem = explode(":", $priorityItem);
+		update_post_meta($revisionPostID, $priorityItem[0], $priorityItem[1]);		
+		array_push($priorityCatArray, intval($priorityItem[0]));
+	};
+
+	$priorityIngredients_hidden = explode(",", $_POST['priority_ingredients_hidden']);	
+	foreach ($priorityIngredients_hidden as $priorityItem) {
+		$priorityItem = explode(":", $priorityItem);
+		update_post_meta($revisionPostID, $priorityItem[0], $priorityItem[1]);		
+		array_push($priorityCatArray, intval($priorityItem[0]));
+	};
+
+	$priorityCatArray = array_filter($priorityCatArray);
+	wp_set_object_terms($revisionPostID, $priorityCatArray, 'category');
+
+
+	update_post_meta($revisionPostID, 'sn_product_image', trim($_POST['img1']));
+
+	$imageArray = explode(",", trim($_POST['img1']));
+	$imageArray2 = array();
+		
+	foreach ($imageArray as $item) {
+	
+		$output = parse_url($item);
+		parse_str($output['query'], $output2);
+		
+		array_push($imageArray2, $output2['id']);
+		
+	}
+	
+	$attachmentIds = implode(",", $imageArray2);
+	update_post_meta($revisionPostID, 'sn_product_image2', $attachmentIds);
+
+
+}
+
+
+}
+
+
+?>

@@ -1,0 +1,220 @@
+<?php
+/*
+ Template Name: Support
+*/
+?>
+<?php get_header();?>
+
+<script type="text/javascript">
+
+jQuery(document).ready(function () {
+
+
+	$("#supportBtn1").click(function(){
+		
+		$(this).slideUp();
+		$("#support_second").slideDown();		
+		
+	});
+
+	$("#supportBtn2").click(function(){
+
+		$(this).slideUp();		
+		$("#support_third").slideDown();		
+		
+	});
+
+
+    $('#questionform').keypress(function (e) {
+        if (e.which == 13) {
+            console.log('Handler for SEARCH enter key called.');
+			loadSupport();
+//            alert("Hello");
+        }
+    });
+	
+    $('#sendemail').click(function (e) {
+
+        $.ajax({
+            url: "<?= get_stylesheet_directory_uri() . '/assets/ajax/' ?>support_sendemail_ajax.php",
+            type: "POST",
+            cache: true,
+            data: {
+
+                'question': $("#form_question").val(),
+                'selection': $("#form_selection").val(),
+                'name': $("#form_name").val(),
+                'email': $("#form_email").val()
+
+
+            },
+            dataType: "html",
+            success: function (data, status, xhr) {
+
+                alert("Email sent successfully.");
+
+
+
+            },
+            complete: function (xhr, status) {
+
+
+
+            }
+
+        })
+
+
+
+    });
+	
+
+function loadSupport() {
+
+		var search_q = $('#questionform').val();
+
+        $.ajax({
+            url: "<?= get_stylesheet_directory_uri() . '/assets/ajax/' ?>
+			support_page_ajax.php",
+            type: "POST",
+            cache: true,
+            data: {
+
+                'search_q': search_q
+
+            },
+            dataType: "html",
+            success: function (data, status, xhr) {
+
+                $("#ajax").html(data);
+
+
+
+            },
+            complete: function (xhr, status) {
+
+
+
+            }
+
+        })
+	
+	
+	
+	
+}
+
+
+});
+
+</script>
+<section class="content-static-pages clearfix">
+	<aside>
+		<div id="submenu" class="subNav subNavAccordion">
+			<ul>
+				<?php
+				if($post->post_parent)
+				$children = wp_list_pages("title_li=&child_of=".$post->post_parent."&echo=0");
+				else
+				$children = wp_list_pages("title_li=&child_of=".$post->ID."&echo=0");
+				if ($children) {
+				?>
+
+				<?php echo $children; ?>
+
+				<?php } ?>
+			</ul>
+		</div><!-- close menu -->
+	</aside>
+	<article class="contentstwrapdiv contentsupport">
+		<div class="latest-news-views">
+			<div class="contentdiv">
+				<h1>KEEP UP-TO-DATE WITH THE LATEST NEWS & VIEWS</h1>
+				<ol>
+	
+<?
+
+$args = array(
+	
+	'post_type' => 'sn-support',
+	'posts_per_page' => "5",
+	'order' => 'DESC',
+	'orderby' => 'meta_value_num',
+	'meta_key' => 'visitors'
+
+);
+
+$articleQuery = new WP_Query($args);
+
+foreach ($articleQuery->posts as $post) {
+
+//var_dump($post);
+
+?>    
+
+    				<li>
+						<a href="<?= get_permalink($post->ID) ?>"><?= $post->post_title ?></a>
+					</li>
+
+
+<? } ?>
+    
+				</ol>
+				<div class="clearfix">
+					<a class="button1 right" href="#" id="supportBtn1">I didn’t find my answer</a>
+				</div>
+			</div>
+		</div>
+		<div class="latest-news-views askquestion" id="support_second" style="display:none">
+			<div class="supportSectionHeader">
+				<input class="supportaskyourquestionshere" id="questionform" type="text" placeholder="ask your questions here">
+			</div>
+			<div class="contentdiv">
+				<ol id="ajax">
+                
+                	Placeholder.
+                    <!--
+					<li>
+						Non-medicinal ingredients and additives lorem ipsum
+					</li>
+					<li>
+						Dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
+					</li>
+					<li>
+						Labore et dolore magna aliqua.
+					</li>
+					<li>
+						Enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+					</li>
+					<li>
+						Dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor inci
+					</li>-->
+				</ol>
+				<div class="clearfix">
+					<a class="button1 right" href="#" id="supportBtn2">I didn’t find my answer</a>
+				</div>				
+			</div>
+		</div>
+		<div class="latest-news-views askquestion" id="support_third" style="display:none">
+			<div class="supportSectionHeader">
+				<input class="supportaskyourquestionshere" type="text" placeholder="ask our experts here" id="form_question">
+			</div>
+			<div class="contentdiv clearfix">
+				<div class="left">
+					<from class="formSupport">
+					<select id="form_selection">><option>Select One</option></select>
+					<input type="text" placeholder="your name" id="form_name">
+					<input type="text" placeholder="your email" id="form_email">
+					</from>
+				</div>
+				<div class="right">
+					<a class="button1" href="#" id="sendemail">Send Email</a>
+				</div>					
+			</div>
+		</div>
+	</article>
+    
+    
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer(); ?>

@@ -1,0 +1,159 @@
+<?php get_header();?>
+	<?php query_posts('post_type=sn-products'); ?>
+	<aside>
+		&nbsp;
+	</aside>
+	<article class="contentstwrapdiv content2 left clearfix">
+		<section class="productDetailsWrap clearfix">
+			<div class="productDetails">
+				<h3>Natural HRT® Nightime</h3>
+				<div class="productDetailsDescription">
+					<p>
+						Menopause, it's only natural.
+					</p>
+					<p>
+						HRT – its’ an acronym that’s commonly known for ‘Hormone Replacement Therapy’. You may know that this type of treatment can come with some unsettling risks. The good news is that if you are beginning to experience some of the symptoms associated with menopause, there is another option. Swiss Natural HRT®, where HRT stands for ‘Herbal Relief Therapy’. We think it’s pretty clever.
+					</p>
+				</div>
+				<div class="productDetailsCopy">
+					<p>
+						Natural HRT® Nightime naturally sourced and clinically proven ingredients:
+					</p>
+					<ul>
+						<li>
+							Black Cohosh
+						</li>
+						<li>
+							Lemon Balm
+						</li>
+						<li>
+							Passion Flower
+						</li>
+					</ul>
+					<p>
+						Combine this with our Regular or Extra Strength product for added relief from:
+					</p>
+					<ul>
+						<li>
+							hot flashes
+						</li>
+						<li>
+							night sweats, sleep disturbances
+						</li>
+						<li>
+							tension
+						</li>
+						<li>
+							mood swings, irritability, anxiety
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="productDetailsRight">
+				<div class="productDetailsFeaturedImg centeredImage">
+					<img src="images/fpo-product-details.gif" alt="" />
+				</div>
+				<div class="productDetailsCatWrap clearfix">
+					<h3>Categories</h3>
+					<div class="productDetailsCat">
+						<ul>
+							<li class="cat-1">
+								Women
+							</li>
+							<li class="cat-2">
+								Cognitive Health
+							</li>
+							<li class="cat-3">
+								Weight Management
+							</li>
+						</ul>
+					</div>
+					<div class="productDetailsGoback">
+						<a href="#">Go back to
+						<br />
+						Womens</a>
+					</div>
+				</div>
+			</div>
+		</section>
+	</article>
+	<section class="accordionWrapper accordionProductDetails">
+		<article class="accordion noMarginBottom accordionIngredients">
+			<h6 id="ingredients"><a href="javascript:void(0);">Ingredients</a></h6>
+			<div>
+				<div class="contentwrapdiv clearfix">
+					<div class="accordionIngredientsTbl">
+						<table>
+							<tbody>
+								<tr>
+									<th>Ingredient Name</th>
+									<th>Label Name</th>
+									<th>Herbal Claim Equivalent</th>
+								</tr>
+								<tr>
+									<td>Protease (Aspergillus oryza )</td>
+									<td>14850 HUT</td>
+									<td>Guanna</td>
+								</tr>
+								<tr>
+									<td>Protease (Aspergillus oryza )</td>
+									<td>14850 HUT</td>
+									<td>Guanna</td>
+								</tr>
+								<tr>
+									<td>Protease (Aspergillus oryza )</td>
+									<td>14850 HUT</td>
+									<td>Guanna</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="accordionIngredientsSummary">
+						<p>
+							Non-medicinal ingredients and additives lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris .
+						</p>
+					</div>
+				</div>
+			</div>
+		</article>
+		<article class="accordion noMarginBottom accordionInfo">
+			<h6 id="additional-info"><a href="javascript:void(0);">Additional Info</a></h6>
+			<div>
+				<div class="contentwrapdiv">
+					<div class="contentdiv">
+						<p>
+							Maecenas pellentesque erat vitae nunc posuere sed aliquet lacus ultricies. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Duis sit amet mi arcu. Nulla viverra tortor ut lacus dignissim nec faucibus lectus condimentum. Curabitur blandit leo a sem tempor ultrices. Pellentesque accumsan, est non vehicula vulputate, augue quam placerat sem, et mollis lectus felis lobortis magna. Quisque sollicitudin mattis ante, eget porta massa hendrerit ac.
+						</p>
+					</div>
+				</div>
+			</div>
+		</article>
+		<article class="accordion accordionRelatedProducts">
+			<h6 id="related-products"><a href="javascript:void(0);">Related Products</a></h6>
+			<div>
+				<div class="contentwrapdiv">
+					<div class="listProducts clearfix">
+						<a href="#">
+							<img src="images/fpo-product-details.gif" alt="" />
+							Product Name Lorem Ipsum Dolor Sit Amet
+						</a>
+						<a href="#">
+							<img src="images/fpo-product-details.gif" alt="" />
+							Product Name Lorem Ipsum Dolor Sit Amet
+						</a>
+						<a href="#">
+							<img src="images/fpo-product-details.gif" alt="" />
+							Product Name Lorem Ipsum Dolor Sit Amet
+						</a>
+						<a href="#">
+							<img src="images/fpo-product-details.gif" alt="" />
+							Product Name Lorem Ipsum Dolor Sit Amet
+						</a>
+					</div>
+				</div>
+			</div>
+		</article>
+	</section>
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer();?>

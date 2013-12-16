@@ -1,0 +1,64 @@
+<?php
+/*
+ Template Name: NPN
+ */
+?>
+<?php get_header();?>
+<section class="content-static-pages clearfix">
+	<aside>&nbsp;</aside>
+	<article class="media-list left">
+			<div class="media-intro">
+			<?php if (have_posts()) : while (have_posts()) : the_post();?>		
+				<h1><?php the_title();?></h1>
+				<?php the_content();?>
+			<?php endwhile; endif;?>
+			</div>
+			<?php
+			$args = array(
+				'post_type' => 'sn-product',
+				'posts_per_page' => "-1",
+				'order' => 'ASC',
+				'orderby' => 'meta_value_num',
+				'meta_key' => 'product_npn'
+			);			
+			$productQuery = new WP_Query($args);
+			$productArray = array();
+			foreach ($productQuery->posts as $product) {
+			?>				
+			<section class="media-list-wrap">
+				<div class="media-list-container">
+					<div class="entry-meta-media clearfix">
+						<div class="left">
+							<h3><?= $product->post_title ?></h3>
+						</div>
+						<div class="right">
+							<!--<h3><php the_date(); ?></h3>-->
+						</div>
+					</div>
+					<div class="media-list-content clearfix">
+						<div class="media-list-featured">
+							<img src="http://lorempixel.com/170/170/food/<?= rand(1, 10) ?>" width="138" height="97" alt=""/>						
+						</div>
+						<div class="media-list-copy right clearfix">
+							<?= get_post_meta($product->ID, 'product_npn', true); ?>
+							<a class="<?= $catString ?>" href="<?= get_permalink($product->ID) ?>">Read more</a>								
+						</div>
+					</div>
+				</div>
+			</section>
+		<?php }; //end of for loop ?>	
+			<!--
+			<div class="pagination clearfix">
+				<a class="nextpage" href="#">NEXT PAGE ></a>  
+				<ul>
+					<li><a href="#">1</a></li>
+					<li><a href="#">2</a></li>
+					<li><a href="#">3</a></li>
+					<li><a href="#">4</a></li>															
+				</ul>
+			</div>		
+			-->
+	</article>
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer();?>

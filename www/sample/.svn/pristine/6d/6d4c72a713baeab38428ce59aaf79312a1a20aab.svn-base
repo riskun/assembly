@@ -1,0 +1,243 @@
+<?php
+/*
+ Template Name: Support
+*/
+?>
+<?php get_header();?>
+
+<script type="text/javascript">
+
+function IsEmail(email) {
+  var regex = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+  return regex.test(email);
+}
+
+jQuery(document).ready(function () {
+
+
+	$("#supportBtn1").click(function(){
+		
+		$(this).slideUp();
+		$("#support_second").slideDown();		
+		
+	});
+
+	$("#supportBtn2").click(function(){
+
+		$(this).slideUp();		
+		var originalQ = $("#questionform").val();
+		$("#form_question").val(originalQ);
+
+		$("#support_second").slideUp();		
+		$("#support_third").slideDown();		
+		
+	});
+
+
+    $('#questionform').keypress(function (e) {
+        if (e.which == 13) {
+            console.log('Handler for SEARCH enter key called.');
+			loadSupport();
+//            alert("Hello");
+        }
+    });
+	
+    $('#sendemail').click(function (e) {
+
+
+		if (IsEmail($("#form_email").val()) == false) {
+			
+			alert("Please check your email.");
+			return false;	
+			
+		} else if ($("#form_name").val() == "") {
+			
+			alert("Please check your name.");
+			return false;	
+			
+		} else if ($("#form_selection").val() == "") {
+			
+			alert("Please make your selection.");
+			return false;	
+			
+		}
+
+
+        $.ajax({
+            url: "<?= get_stylesheet_directory_uri() . '/assets/ajax/' ?>support_sendemail_ajax.php",
+            type: "POST",
+            cache: true,
+            data: {
+
+                'question': $("#form_question").val(),
+                'selection': $("#form_selection").val(),
+                'name': $("#form_name").val(),
+                'email': $("#form_email").val()
+
+
+            },
+            dataType: "html",
+            success: function (data, status, xhr) {
+
+                alert("Email sent successfully.");
+
+
+
+            },
+            complete: function (xhr, status) {
+
+
+
+            }
+
+        })
+
+
+
+    });
+	
+
+function loadSupport() {
+
+		var search_q = $('#questionform').val();
+
+
+
+
+        $.ajax({
+            url: "<?= get_stylesheet_directory_uri() . '/assets/ajax/' ?>
+			support_page_ajax.php",
+            type: "POST",
+            cache: true,
+            data: {
+
+                'search_q': search_q
+
+            },
+            dataType: "html",
+            success: function (data, status, xhr) {
+
+                $("#ajax").html(data);
+
+
+
+            },
+            complete: function (xhr, status) {
+
+
+
+            }
+
+        })
+	
+	
+	
+	
+}
+
+
+});
+
+</script>
+<section class="content-static-pages clearfix">
+	<aside>
+		<div id="submenu" class="subNav subNavAccordion">
+			<ul>
+				<?php
+				if($post->post_parent)
+				$children = wp_list_pages("title_li=&child_of=".$post->post_parent."&echo=0");
+				else
+				$children = wp_list_pages("title_li=&child_of=".$post->ID."&echo=0");
+				if ($children) {
+				?>
+
+				<?php echo $children; ?>
+
+				<?php } ?>
+			</ul>
+		</div><!-- close menu -->
+	</aside>
+	<article class="contentstwrapdiv contentsupport">
+		<div class="latest-news-views">
+			<div class="contentdiv">
+				<h1>KEEP UP-TO-DATE WITH THE LATEST NEWS & VIEWS</h1>
+				<ol>
+	
+<?
+
+$args = array(
+	
+	'post_type' => 'sn-support',
+	'posts_per_page' => "5",
+	'order' => 'DESC',
+	'orderby' => 'meta_value_num',
+	'meta_key' => 'visitors'
+
+);
+
+$articleQuery = new WP_Query($args);
+
+foreach ($articleQuery->posts as $post) {
+
+//var_dump($post);
+
+?>    
+
+    				<li>
+						<a href="<?= get_permalink($post->ID) ?>"><?= $post->post_title ?></a>
+					</li>
+
+
+<? } ?>
+    
+				</ol>
+				<div class="clearfix">
+					<a class="button1 right" href="#" id="supportBtn1">I didn’t find my answer</a>
+				</div>
+			</div>
+		</div>
+		<div class="latest-news-views askquestion" id="support_second" style="display:none">
+			<div class="supportSectionHeader">
+				<input class="supportaskyourquestionshere" id="questionform" type="text" placeholder="ask your questions here"> <input type="button" class="arrowSubmit">
+			</div>
+			<div class="contentdiv">
+				<ol id="ajax">
+                	
+				</ol>
+				<div class="clearfix">
+					<a class="button1 right" href="#" id="supportBtn2">I didn’t find my answer</a>
+				</div>				
+			</div>
+		</div>
+		<div class="latest-news-views askquestion" id="support_third" style="display:none">
+			<div class="supportSectionHeader">
+				<input class="supportaskyourquestionshere" type="text" placeholder="ask our experts here" id="form_question"> <input type="button" class="arrowSubmit">
+			</div>
+			<div class="contentdiv clearfix">
+				<div class="left">
+					<from class="formSupport">
+					<select id="form_selection">
+
+                    <option value="">Select One</option>
+                    <option value="" disabled="disabled">----------</option>
+                    <option value="volvo">Volvo XC90</option>
+                    <option value="saab">Saab 95</option>
+                    <option value="mercedes">Mercedes SLK</option>
+                    <option value="audi">Audi TT</option>                    
+                    
+                    </select>
+					<input type="text" placeholder="your name" id="form_name">
+					<input type="text" placeholder="your email" id="form_email">
+					</from>
+				</div>
+				<div class="left formSupportRight">
+					<a class="button1 formSupportEmail" href="#" id="sendemail">Send Email</a>
+				</div>					
+			</div>
+		</div>
+	</article>
+    
+    
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer(); ?>

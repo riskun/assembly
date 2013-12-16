@@ -1,0 +1,73 @@
+<?php
+// Custom Post Type Registration (Press Releases)
+add_action('init', 'create_press');
+	function create_press() {
+	$feature_args = array(
+		'labels' => array(
+		'name' => __( 'Press Releases' ),
+		'singular_name' => __( 'Press Release' ),
+		'add_new' => __( 'Add a new press release' ),
+		'add_new_item' => __( 'Add a press release' ),
+		'edit_item' => __( 'Edit press release' ),
+		'new_item' => __( 'Add a new press release' ),
+		'view_item' => __( 'View Press Release' ),
+		'search_items' => __( 'Search Press Releases' ),
+		'not_found' => __( 'No press releases were found' ),
+		'not_found_in_trash' => __( 'No press releases were found in trash' )
+	 ),
+		'public' => true,
+		'show_ui' => true,
+		'capability_type' => 'post',
+		'hierarchical' => true,
+		'rewrite' => true,
+		'menu_position' => 20,
+		'menu_icon' => get_bloginfo('stylesheet_directory').'/assets/images/admin/icon_press.png',	    	       
+		'supports' => array('title','custom-fields')
+	);
+	register_post_type('sn-press',$feature_args);
+}
+// Show Meta-Box
+add_action( 'admin_init', 'sn_press_create' );
+function sn_press_create() {
+	add_meta_box('sn_press_images', 'Press Images', 'sn_press_images', 'sn-press', 'normal', 'default');
+}
+function sn_press_images(){ 
+global $post;
+// adjust values here
+$id = "img2"; // this will be the name of form field. Image url(s) will be submitted in $_POST using this key. So if $id == “img1” then $_POST["img1"] will have all the image urls
+$svalue = ""; // this will be initial value of the above form field. Image urls.
+$multiple = false; // allow multiple files upload 
+$width = null; // If you want to automatically resize all uploaded images then provide width here (in pixels)
+$height = null; // If you want to automatically resize all uploaded images then provide height here (in pixels)
+?>
+<input type="hidden" name="<?php echo $id; ?>" id="<?php echo $id; ?>" value="<?php echo get_post_meta($post->ID, 'sn_press_images', true); ?>" />
+<div class="plupload-upload-uic hide-if-no-js <?php if ($multiple): ?>plupload-upload-uic-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-upload-ui">
+    <input id="<?php echo $id; ?>plupload-browse-button" type="button" value="<?php esc_attr_e('Select A File'); ?>" class="button" />
+    <span class="ajaxnonceplu" id="ajaxnonceplu<?php echo wp_create_nonce($id . 'pluploadan'); ?>"></span>
+    <?php if ($width && $height): ?>
+            <span class="plupload-resize"></span><span class="plupload-width" id="plupload-width<?php echo $width; ?>"></span>
+            <span class="plupload-height" id="plupload-height<?php echo $height; ?>"></span>
+    <?php endif; ?>
+    <div class="filelist"></div>
+</div>
+<div class="plupload-thumbs <?php if ($multiple): ?>plupload-thumbs-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-thumbs">
+</div>
+<div class="clear"></div>
+<?
+};
+// Save Meta-Box
+add_action ('save_post', 'save_sn_press');
+function save_sn_press(){
+    global $post;
+	update_post_meta($post->ID, 'sn_press_images', trim($_POST['img1']));
+	$imageArray = explode(",", trim($_POST['img1']));
+	$imageArray2 = array();
+	foreach ($imageArray as $item) {
+		$output = parse_url($item);
+		parse_str($output['query'], $output2);
+		array_push($imageArray2, $output2['id']);
+	}
+	$attachmentIds = implode(",", $imageArray2);
+	update_post_meta($post->ID, 'sn_press_images2', $attachmentIds);
+}
+	?>

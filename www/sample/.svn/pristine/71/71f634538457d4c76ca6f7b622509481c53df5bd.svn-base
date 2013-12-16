@@ -1,0 +1,18 @@
+jQuery(document).ready(function($)
+{	
+	$('.sndate').datepicker({
+		dateFormat: 'D, M d, yy',
+		showOn: 'button',
+		buttonImage: '../wp-content/themes/swiss-natural/assets/images/admin/icon-datepicker.png',
+		buttonImageOnly: true,
+		numberOfMonths: 3
+	});
+	$('.sntime').timepicker({
+		showOn: 'button',
+		button: '#timepicker_button',
+	});
+	$('.sntimee').timepicker({
+		showOn: 'button',
+		button: '#timepicker_buttone',	
+	});
+});

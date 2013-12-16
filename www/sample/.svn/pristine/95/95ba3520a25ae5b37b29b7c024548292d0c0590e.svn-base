@@ -1,0 +1,135 @@
+<?php
+/*
+ Template Name: Products Intro
+*/
+?>
+<?php get_header();?>
+	<?php query_posts('post_type=sn-products'); ?>
+	<section class="content2 content-products clearfix">
+		<aside>
+			<h1>Select one of our product categories to learn more
+			<br />
+			about its benefits.</h1>
+			<div class="hl1"></div>
+			<div class="skipModule clearfix">
+				<input type="checkbox">
+				<p>
+					Take me straight to Products. Don't show me this page again.
+				</p>
+			</div>
+		</aside>
+        <? wp_enqueue_script('products-introduction', get_stylesheet_directory_uri().'/assets/js/products_introduction.js', array('jquery'), '', TRUE); ?>
+		<section class="list-products-wrap list-products-bg">
+			<ul>
+            	<?
+				
+				$args = array(
+					'type'                     => 'post',
+					'parent'                   => '366',
+					'orderby'                  => 'name',
+					'order'                    => 'ASC');
+				$list_products = get_categories($args);
+				
+//				var_dump($list_products);
+				
+				foreach ($list_products as $item) {	
+				
+					$description = $item->description;
+					$description_array = explode("\r\n\r\n", $description);
+					//var_dump($description_array);
+				
+				?>
+                 
+				<li>
+					<a href="#" id="<?= $item->cat_ID ?>" col="<?= $description_array[0] ?>" rel="<?= $description_array[1] ?>" rel2="<?= $description_array[2] ?>"><?= ucwords($item->name) ?></a>
+				</li>
+
+				<? 
+				
+				}
+				
+				?>
+
+<!--
+
+				<li>
+					<a href="#">Antioxidants</a>
+				</li>
+				<li>
+					<a href="#">Bone Care</a>
+				</li>
+				<li>
+					<a href="#">Children</a>
+				</li>
+				<li>
+					<a href="#">Cognitive Health</a>
+				</li>
+				<li>
+					<a href="#">Digestion</a>
+				</li>
+				<li>
+					<a href="#">Energy</a>
+				</li>
+				<li>
+					<a href="#">Eye/Vision</a>
+				</li>
+				<li>
+					<a href="#">Heart Health</a>
+				</li>
+				<li>
+					<a href="#">Immune</a>
+				</li>
+				<li>
+					<a href="#">Joint</a>
+				</li>
+				<li>
+					<a href="#">Mens</a>
+				</li>
+				<li>
+					<a href="#">Minerals</a>
+				</li>
+				<li>
+					<a href="#">Multivitamins</a>
+				</li>
+				<li>
+					<a href="#">Nutrition</a>
+				</li>
+				<li>
+					<a href="#">Probiotic</a>
+				</li>
+				<li>
+					<a href="#">Sleep</a>
+				</li>
+				<li>
+					<a href="#">Vitamins</a>
+				</li>
+				<li>
+					<a href="#">Womens</a>
+				</li>
+				<li>
+					<a href="#">Weight Management</a>
+				</li>
+                
+-->
+                
+			</ul>
+		</section>
+		<article>
+			<h1>Womens</h1>
+			<h2> Integer nulla lectus, porta sed cursus at, egestas sit amet mi. Nulla vitae turpis vel quam imperdiet laoreet a sit amet purus. Quisque elementum, urna ac fermentum aliquam, est mi vehicula ligula, a interdum ipsum libero. </h2>
+			<div class="summary clearfix">
+				<div class="summaryLeft">
+					<p id="summarySecondary">
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque posuere tellus et mauris scelerisque condimentum. Vivamus vel leo vitae mi suscipit posuere. Curabitur turpis libero.  Nunc sed mi quis magna tincidunt porta.
+					</p>
+					<p>
+						<a id="seeProd" href="../products/#">See these products ></a>
+					</p>
+				</div>
+				<div class="summaryRight">
+					<a href="#" class="stepNext"></a>
+				</div>
+			</div>
+		</article>
+	</section>
+<?php get_footer();?>

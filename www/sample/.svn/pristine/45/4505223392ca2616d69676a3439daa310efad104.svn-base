@@ -1,0 +1,96 @@
+<?php
+/*
+ Template Name: Events
+*/
+?>
+<?php get_header();?>
+<section class="content-static-pages clearfix">
+	<aside></aside>
+	<article class="contentstwrapdiv">
+		<div class="contentdiv">
+			<?php if (have_posts()) : while (have_posts()) : the_post();?>		
+			<h1><?php the_title();?></h1>
+			<?php the_content(); 
+			endwhile; endif; ?>			
+		</div>
+		<?php query_posts( array( 
+			 'post_type' => 'sn-banners',
+			 'posts_per_page' => 3, 
+			 'order' => 'DES') 
+		  ); ?>
+		<div class="bannersWrap clearfix">
+			<?php while ( have_posts() ) : the_post(); 
+			$bannerimg = get_post_meta($post->ID, 'sn_banners_image', true);
+			$content = get_the_content();
+			$content = strip_tags($content);
+			$title = get_the_title();
+			$title = strip_tags($title);
+			?>
+			<div class="bannersBox">
+				<div class="bannersContent"><div class="bannersContentBox">
+				<?php 
+				echo '<div class="bannerstitle">';
+				echo substr($title, 0, 29);
+				echo '</div><div class="bannersCopy">';
+				echo substr($content, 0, 83);
+				echo '</div></div></div><img src="'.$bannerimg.'" alt="" width="239" height="239" />';
+				?>
+			</div>
+			<?php endwhile; ?>
+		</div>
+		<?php 
+			query_posts( array( 
+			 'post_type' => 'sn-events',
+			 'orderby' => 'date', 
+			 'order' => 'DES') 
+		  ); 
+		// - declare fresh day -
+		$daycheck = null;?>
+		<h2>Upcoming Events</h2>
+		<table class="table-events">
+			<tbody>
+				<tr>
+					<th>Name</th>
+					<th>DATE</th>
+					<th>LOCATION</th>
+					<th>DETAILS</th>
+				</tr>
+			</tbody>
+		</table>
+		<h2>Past Events</h2>
+		<table class="table-events">
+			<tbody>
+				<tr>
+					<th>Name</th>
+					<th>DATE</th>
+					<th>LOCATION</th>
+					<th>DETAILS</th>
+				</tr>
+				<?php
+				$posttime = strtotime($post->post_date);
+				$currtime = time();
+				$today = date('M d',$currtime);
+				$postday = date('M d',$posttime);
+				if($ed<$today) : 
+				while (have_posts()) : the_post();
+				$sd = get_post_meta($post->ID, 'sn_events_startdate', true);
+				$loc = get_post_meta($post->ID, 'sn_events_location', true);
+				?>
+				<tr>
+					<td><?php the_title();?></td>
+					<td><?php $longdate = date("l, F j, Y", $sd);
+						if ($daycheck == null) { echo $longdate; }
+						if ($daycheck != $longdate && $daycheck != null) { echo $longdate; }					
+					?></td>
+					<td><?php echo $loc ?></td>
+					<td><a href="<?php the_permalink(); ?>">read more</a></td>
+				</tr>
+				<?php endwhile; endif;  // end of the loop.?>		
+			</tbody>
+		</table>
+		
+
+	</article>
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer();?>

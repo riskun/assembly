@@ -1,0 +1,113 @@
+.prioritizer
+{
+	display:inline-block;
+	overflow:hidden;
+	width:20%;	
+}
+
+.format .ui-button
+{
+	padding:5px !important;
+	display:block !important;
+	margin:3px;
+	width:220px;
+	
+}
+
+
+.format
+{
+	height:200px;
+	overflow-y:auto;
+	overflow-x:hidden;
+	margin-right:0 !important;
+}
+
+.prioritycount
+{
+	background-color:#00BCF2;
+	color:#fff;
+	padding:10px;
+	margin-top:5px;
+	font-size:18px;
+	text-align:center;
+	border-radius:0px;
+}
+
+.priority
+{
+/*	overflow-y:auto;
+	max-height:200px;*/
+	width:251px;
+}
+
+.priority_item
+{
+/*	width:200px;*/
+	padding:15px !important;
+	margin-top:5px;
+	border:1px solid #999;
+	background-color:#fff !important;
+	position:relative;
+}
+
+.priority_remove
+{
+	position:absolute;
+	top:0;
+	right:0;
+	padding:4px;
+	background-color:#00BCF2;
+	color:#fff;
+	cursor:pointer;
+	font-size:10px;	
+}
+
+.priority_item h2
+{
+	margin: 0px 0px 10px 0px !important;
+	font-size:14px !important;
+	line-height:1.2;	
+}
+
+.ui-state-active
+{
+	background-color:#00BCF2 !important;
+}
+
+.productEditor
+{
+	display:;
+	width:75%;
+	float:left;
+	overflow:hidden;
+}
+
+.placeholder
+{
+	width:251px;
+	float:right;
+	overflow:hidden;
+	background-color:;	
+}
+
+.inside
+{
+	overflow:hidden;
+	opacity:0;
+}
+
+#postdivrich
+{
+	display:;	
+}
+
+.switch-tmce
+{
+	display:none;	
+}
+
+.wp-editor-tools
+{
+	display:none;		
+}

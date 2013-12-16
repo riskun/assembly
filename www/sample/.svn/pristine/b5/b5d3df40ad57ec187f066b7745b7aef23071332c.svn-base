@@ -1,0 +1,320 @@
+jQuery(document).ready(function () {
+
+
+	jQuery(".inside").fadeTo("slow", 1);
+
+    resizeEditor = function (currentFormat_name) {
+
+        var currentHeight = jQuery("#" + currentFormat_name + "_slider").height() + 200;
+		jQuery("#" + currentFormat_name).parent().parent().find("iframe").height(currentHeight);		
+
+    }
+
+    valueParser = function (data) {
+
+        var status = "Undefined";
+
+        switch (parseInt(data)) {
+
+        case 0:
+            data = 20;
+        case 25:
+            data = 40;
+        case 50:
+            data = 60;
+        case 75:
+            data = 80;
+        case 20:
+            status = "LOW";
+            break;
+        case 40:
+            status = "LOW-MID";
+            break;
+        case 60:
+            status = "MID";
+            break;
+        case 80:
+            status = "MID-HIGH";
+            break;
+        case 100:
+            status = "HIGH";
+            break;
+
+        }
+
+        return status;
+
+    };
+
+    sliderGenerator = function (type, changeditem, data) {
+
+
+        switch (parseInt(data)) {
+
+        case 0:
+            data = 20;
+
+        };
+
+        var status = valueParser(data);
+
+        console.log(data + ": " + status);
+
+        jQuery("#" + type + "_slider").append('<div class="priority_item" id="priority' + changeditem.attr("cat") + '" name="' + changeditem.attr("name") + '"><div class="priority_remove" cat="' + changeditem.attr("cat") + '">X</div><h2>' + changeditem.attr("name") + ': <strong>' + status + '</strong></h2><div class="slider" id="slider' + changeditem.attr("cat") + '" cat="' + changeditem.attr("cat") + '" default="' + data + '"></div></div>');
+
+
+    }
+
+    sliderEnabler = function (catid, data) {
+
+
+
+        var defaultValue = parseInt(data);
+
+        jQuery("#slider" + catid).slider({
+            value: defaultValue,
+            min: 20,
+            max: 100,
+            step: 20,
+            slide: function (event, ui) {
+
+                jQuery(this).attr("default", ui.value);
+
+                var status = valueParser(ui.value);
+                jQuery("#priority" + catid).find("h2 strong").html(status);
+
+
+            }
+
+        });
+
+
+
+
+    }
+
+
+    jQuery(".format").each(function () {
+
+        var currentFormat = jQuery(this);
+        var currentFormat_name = jQuery(this).attr("id");
+
+
+
+
+
+        currentFormat.buttonset();
+
+
+        var currentCount = currentFormat.find("input:checkbox:checked").length;
+        var activeArray = currentFormat.find("input:checkbox:checked")
+
+
+        jQuery.each(activeArray, function (index, value) {
+
+
+            var changedItem = jQuery(value);
+
+            jQuery.ajax({
+                url: "../wp-content/themes/swiss-natural/assets/ajax/products_ajax.php",
+                type: "GET",
+                data: {
+                    "post": jQuery("#post_ID").val(),
+                    "cat": changedItem.attr("cat")
+                },
+                dataType: "text",
+                success: function (data, status, xhr) {
+
+
+                    sliderGenerator(currentFormat_name, changedItem, data);
+
+                    jQuery("#" + currentFormat_name + "_slider>div.priority_item").tsort({
+                        attr: 'name'
+                    });
+
+                    jQuery(".priority_remove").click(function () {
+
+                        jQuery("input#check" + jQuery(this).attr("cat")).removeAttr("checked").button("refresh");
+                        jQuery("div#priority" + jQuery(this).attr("cat")).remove();
+
+                        var currentCount = currentFormat.find("input:checkbox:checked").length;
+                        currentFormat.next(".prioritycount").find("strong").html(currentCount);
+
+
+                        resizeEditor(currentFormat_name);
+
+
+                    });
+
+
+                    sliderEnabler(changedItem.attr("cat"), data);
+                    resizeEditor(currentFormat_name);
+
+
+                }
+            });
+
+
+
+
+        });
+
+
+        //			console.log(jQuery("#"+currentFormat_name).find("input:checkbox:checked").serialize());
+
+
+        currentFormat.find("input:checkbox").bind("change", function () {
+
+
+            var activeArray = currentFormat.find("input:checkbox:checked")
+
+            var currentCount = currentFormat.find("input:checkbox:checked").length;
+			
+			if (currentCount > 5) {
+			
+				alert("You cannot add more than five items per section.");	
+				jQuery(this).removeAttr("checked");
+					
+			}
+			
+            currentFormat.next(".prioritycount").find("strong").html(currentCount);
+
+            //jQuery("#"+currentFormat_name+"_slider").html("");
+
+            //console.log(jQuery(this));
+
+            var changedItem = jQuery(this);
+
+            //alert(changedItem.prop("checked"));
+
+
+            if (changedItem.prop("checked") == true) {
+
+
+                jQuery.ajax({
+      		          url: "../wp-content/themes/swiss-natural/assets/ajax/products_ajax.php",
+                    type: "GET",
+                    data: {
+                        "post": jQuery("#post_ID").val(),
+                        "cat": changedItem.attr("cat")
+                    },
+                    dataType: "text",
+                    success: function (data, status, xhr) {
+
+
+                        sliderGenerator(currentFormat_name, changedItem, data);
+
+
+                        jQuery("#" + currentFormat_name + "_slider>div.priority_item").tsort({
+                            attr: 'name'
+                        });
+
+
+                        jQuery(".priority_remove").click(function () {
+
+                            jQuery("input#check" + jQuery(this).attr("cat")).removeAttr("checked").button("refresh");
+                            jQuery("div#priority" + jQuery(this).attr("cat")).remove();
+
+
+                            var currentCount = currentFormat.find("input:checkbox:checked").length;
+                            currentFormat.next(".prioritycount").find("strong").html(currentCount);
+
+                            resizeEditor(currentFormat_name);
+
+
+                        });
+
+
+                        sliderEnabler(changedItem.attr("cat"), data);
+                        resizeEditor(currentFormat_name);
+
+
+                    }
+                });
+
+
+
+            } else if (changedItem.prop("checked") == false) {
+
+
+
+                jQuery("input#check" + changedItem.attr("cat")).removeAttr("checked").button("refresh");
+                jQuery("div#priority" + changedItem.attr("cat")).remove();
+
+                var currentCount = currentFormat.find("input:checkbox:checked").length;
+                currentFormat.next(".prioritycount").find("strong").html(currentCount);
+
+
+                resizeEditor(currentFormat_name);
+
+
+
+            }
+
+
+
+        });
+
+
+        /*	
+			currentFormat.find("label.ui-button").click(function(){
+				
+				
+			var currentCount = currentFormat.find("label[aria-pressed='true']").size();				
+				
+				console.log(currentCount);
+				currentFormat.next(".prioritycount").find("strong").html(currentCount);
+				
+			});
+
+			*/
+    });
+
+
+    var newEditorWidth = jQuery('#mb_product_ingredients .inside').width() - jQuery('.placeholder').width() - 10;
+    jQuery('.productEditor').width(newEditorWidth);
+
+
+
+    jQuery("#post").submit(function () {
+
+        jQuery(".priority").each(function () {
+
+
+            var currentArray = [];
+
+            jQuery(this).children(".priority_item").each(function () {
+
+                currentArray.push(jQuery(this).find(".slider").attr("cat") + ":" + jQuery(this).find(".slider").attr("default"));
+
+            });
+
+
+
+            var currentArrayStr = currentArray.join(",")
+            console.log("ARRAY: " + currentArrayStr);
+            jQuery(this).parent().find(".hiddenPriority").val(currentArrayStr);
+            console.log("ARRAYSTRING: " + jQuery(this).parent().find(".hiddenPriority").val());
+
+            console.log("----");
+
+        });
+
+
+    });
+
+
+});
+
+
+
+
+
+jQuery(window).resize(function () {
+
+    var newEditorWidth = jQuery('#mb_product_ingredients .inside').width() - jQuery('.placeholder').width() - 10;
+    jQuery('.productEditor').width(newEditorWidth);
+
+    //console.log(jQuery('.productEditor').width());  
+
+});

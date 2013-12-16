@@ -1,0 +1,189 @@
+<?php
+/*
+ Template Name: Products
+*/
+?>
+<?php get_header();?>
+	<?php query_posts('post_type=sn-products'); ?>
+	<section class="content2 content-products content-products-results clearfix">
+	<aside>
+		<h1>Narrow your results by using our helpful filters. </h1>
+		<div class="hl2"></div>
+		<div class="search">
+			<input type="text" value="Search Within">
+		</div>
+		<div class="hl2"></div>		
+		<div class="fitlers">
+		<fieldset id="featuredNewest"  style="opacity:0.25;" disabled="disabled">
+			<label for="featuredCheckbox">
+				<input type="checkbox" id="featuredCheckbox" value="featuredCheckbox">
+				<span>Featured Products</span></label>
+			<div class="hl2"></div>						
+			<label for="newestCheckbox">
+				<input type="checkbox" id="newestCheckbox" value="newestCheckbox">
+				<span>Newest Products</span></label>
+		<div class="hl2"></div>						
+		</fieldset>
+		<ul id="nav_left">
+			<li id="menuHealth">
+				<a href="#">Health Concerns</a>
+			</li>
+			<li id="menuType" class="navHighlight">
+				<a href="#">Product Categories</a>
+			</li>
+		</ul>
+		</div>
+		<div class="skipModule clearfix">
+			<input type="checkbox">
+			<p>
+				Take me straight to Products. Don’t show me this page again.
+			</p>
+		</div>
+	</aside>
+	<section class="list-products-wrap">
+		<ul>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox1" />
+				Anti-Aging</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox2" />
+				Antioxidants</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox3" />
+				Bone Care</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox4" />
+				Children</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox5" />
+				Cognitive Health</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox6" />
+				Digestion</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox7" />
+				Energy</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox8" />
+				Eye/Vision</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox9" />
+				Heart Health</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox10" />
+				Immune</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox11" />
+				Joint</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox12" />
+				Mens</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox13" />
+				Minerals</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox14" />
+				Multivitamins</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox15" />
+				Nutrition</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox16" />
+				Probiotic</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox17" />
+				Sleep</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox18" />
+				Vitamins</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox19" />
+				Womens</span>
+			</li>
+			<li>
+				<span>
+				<input type="checkbox" id="regularCheckbox20" />
+				Weight Management</span>
+			</li>
+		</ul>
+	</section>
+	<article>
+			<div class="listProducts clearfix">
+				<a href="product-details.php">
+					<img src="images/fpo-product-details.gif" alt="" />
+					Product Name Lorem Ipsum Dolor Sit Amet
+				</a>
+				<a href="product-details.php">
+					<img src="images/fpo-product-details.gif" alt="" />
+					Product Name Lorem Ipsum Dolor Sit Amet
+				</a>
+				<a href="product-details.php">
+					<img src="images/fpo-product-details.gif" alt="" />
+					Product Name Lorem Ipsum Dolor Sit Amet
+				</a>
+				<a href="product-details.php">
+					<img src="images/fpo-product-details.gif" alt="" />
+					Product Name Lorem Ipsum Dolor Sit Amet
+				</a>
+				<a href="product-details.php">
+					<img src="images/fpo-product-details.gif" alt="" />
+					Product Name Lorem Ipsum Dolor Sit Amet
+				</a>
+				<a href="product-details.php">
+					<img src="images/fpo-product-details.gif" alt="" />
+					Product Name Lorem Ipsum Dolor Sit Amet
+				</a>
+				<a href="product-details.php">
+					<img src="images/fpo-product-details.gif" alt="" />
+					Product Name Lorem Ipsum Dolor Sit Amet
+				</a>
+				<a href="product-details.php">
+					<img src="images/fpo-product-details.gif" alt="" />
+					Product Name Lorem Ipsum Dolor Sit Amet
+				</a>
+				<a href="product-details.php">
+					<img src="images/fpo-product-details.gif" alt="" />
+					Product Name Lorem Ipsum Dolor Sit Amet
+				</a>												
+			</div>		
+	</article>
+	<div class="list-products-bg"></div>
+</section>
+<?php get_footer();?>

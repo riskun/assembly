@@ -1,0 +1,42 @@
+<?php
+/**
+ * The template for displaying all pages.
+ *
+ * This is the template that displays all pages by default.
+ * Please note that this is the WordPress construct of pages
+ * and that other 'pages' on your WordPress site will use a
+ * different template.
+ *
+ * @package Swiss Natural
+ * @since Swiss Natural 1.0
+ */
+
+get_header();
+?>
+<section class="content-static-pages clearfix">
+	<aside>
+		<div id="submenu" class="subNav subNavAccordion">
+			<ul>
+				<?php
+				if($post->post_parent)
+				$children = wp_list_pages("title_li=&child_of=".$post->post_parent."&echo=0");
+				else
+				$children = wp_list_pages("title_li=&child_of=".$post->ID."&echo=0");
+				if ($children) {
+				?>
+
+				<?php echo $children; ?>
+
+				<?php } ?>
+			</ul>
+		</div><!-- close menu -->
+	</aside>
+	<article class="contentstwrapdiv">
+			<?php while ( have_posts() ) : the_post();
+			?>
+			<?php get_template_part('content', 'page'); ?>
+			<?php endwhile; // end of the loop. ?>
+	</article>
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer(); ?>

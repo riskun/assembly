@@ -1,0 +1,49 @@
+<?php
+/*
+ Template Name: Events
+*/
+?>
+<?php get_header();?>
+<section class="content-static-pages clearfix">
+	<aside></aside>
+	<article class="contentstwrapdiv">
+		<div class="contentdiv">
+			<?php if (have_posts()) : while (have_posts()) : the_post();?>		
+			<h1><?php the_title();?></h1>
+			<?php the_content(); 
+			endwhile; endif; ?>			
+		</div>
+		<h2>Events in your community</h2>
+		<?php query_posts('post_type=sn-events');
+		// - declare fresh day -
+		$daycheck = null;
+		?>
+		<?php while ( have_posts() ) : the_post();
+			$sd = get_post_meta($post->ID, 'sn_events_startdate', true);
+			$ed = get_post_meta($post->ID, 'sn_events_enddate', true);
+			$loc = get_post_meta($post->ID, 'sn_events_location', true);
+		?>		
+		<table class="table-events">
+			<tbody>
+				<tr>
+					<th>Name</th>
+					<th>DATE</th>
+					<th>LOCATION</th>
+					<th>DETAILS</th>
+				</tr>
+				<tr>
+					<td><?php the_title();?></td>
+					<td><?php $longdate = date("l, F j, Y", $sd);
+						if ($daycheck == null) { echo $longdate; }
+						if ($daycheck != $longdate && $daycheck != null) { echo $longdate; }					
+					?></td>
+					<td><?php echo $loc ?></td>
+					<td><a href="<?php the_permalink(); ?>">read more</a></td>
+				</tr>
+			</tbody>
+		</table>
+		<?php endwhile; // end of the loop.?>		
+	</article>
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer();?>

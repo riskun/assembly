@@ -1,0 +1,13 @@
+<?php
+$to      = 'chris@idearevolution.ca';
+$subject = "Swiss Natural Question from ".$_POST['name'];
+$message = $_POST['question'];
+$from = $_POST["email"];
+
+
+$headers = 'From: '.$from."\r\n" .
+    'Reply-To: '.$from."\r\n" .
+    'X-Mailer: PHP/' . phpversion();
+
+mail($to, $subject, $message, $headers);
+?> 

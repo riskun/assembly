@@ -1,0 +1,58 @@
+<?php
+/**
+ * The Header for our theme.
+ *
+ * Displays all of the <head> section and everything up till <div id="main">
+ *
+ * @package Swiss Natural
+ * @since Swiss Natural 1.0
+ */
+?><!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+<meta charset="<?php bloginfo( 'charset' ); ?>" />
+<meta name="viewport" content="width=device-width" />
+<title><?php
+	/*
+	 * Print the <title> tag based on what is being viewed.
+	 */
+	global $page, $paged;
+	wp_title( '|', true, 'right' );
+	// Add the blog name.
+	bloginfo( 'name' );
+	// Add the blog description for the home/front page.
+	$site_description = get_bloginfo( 'description', 'display' );
+	if ( $site_description && ( is_home() || is_front_page() ) )
+		echo " | $site_description";
+
+	// Add a page number if necessary:
+	if ( $paged >= 2 || $page >= 2 )
+		echo ' | ' . sprintf( __( 'Page %s', 'swiss_natural' ), max( $paged, $page ) );
+
+	?></title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
+<link rel="stylesheet" type="text/css" href="<?php echo get_template_directory_uri(); ?>/assets/css/royalslider.css">	
+<link rel="stylesheet" type="text/css" href="<?php echo get_template_directory_uri(); ?>/assets/css/rs-minimal-white.css">
+<link rel="stylesheet" type="text/css" href="<?php echo get_template_directory_uri(); ?>/assets/css/rs-default.css">	
+<?php wp_head(); ?>
+</head>
+<body <?php body_class(); ?>>
+	<div id="wrapper">
+		<div class="shadow">
+			<a href="#" id="language">FR</a>
+			<header id="masthead" class="site-header grid1" role="banner">				
+				<div class="wrapLogoNav fontsize1">
+					<div class="clearfix">
+						<a id="logo" href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"></a>
+						<nav role="navigation" class="site-navigation main-navigation">
+							<div class="clearfix">
+							<?php wp_nav_menu( array( 'theme_location' => 'primary' ) ); ?>
+							</div>
+						</nav><!-- .site-navigation .main-navigation -->
+						<div class="search">
+							<input type="text" placeholder="Product Search">
+						</div>
+					</div>
+				</div>
+			</header><!-- #masthead .site-header -->

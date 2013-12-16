@@ -1,0 +1,13 @@
+<? 	require('../../../../../wp-load.php');
+
+$glossaryId = $_POST['glossaryId'];
+
+$content_post = get_post($glossaryId);
+$content = $content_post->post_content;
+$content = apply_filters('the_content', $content);
+$content = str_replace(']]>', ']]>', $content);
+
+echo $content;
+
+
+?>

@@ -1,0 +1,559 @@
+<?php
+/*
+ Template Name: Products
+*/
+?>
+<?php get_header();?>
+<?php query_posts('post_type=sn-products'); ?>
+
+<section class="content2 content-products content-products-results clearfix">
+  <aside>
+    <h1>Narrow your results by using our helpful filters. </h1>
+    <div class="hl2"></div>
+    <div class="search">
+      <input type="text" placeholder="Search Within" id="search">
+    </div>
+    <div class="hl2"></div>
+    <div class="fitlers">
+<!--      <fieldset id="featuredNewest"  style="opacity:0.25;" disabled="disabled">
+        <label for="featuredCheckbox">
+          <input type="checkbox" id="featuredCheckbox" value="featuredCheckbox">
+          <span>Featured Products</span></label>
+        <div class="hl2"></div>
+        <label for="newestCheckbox">
+          <input type="checkbox" id="newestCheckbox" value="newestCheckbox">
+          <span>Newest Products</span></label>
+        <div class="hl2"></div>
+      </fieldset> -->
+      <ul id="nav_left">
+        <li id="menuHealth"> <a href="#">Health Concerns</a> </li>
+        <li id="menuType" class="navHighlight"> <a href="#">Product Categories</a> </li>
+      </ul>
+    </div>
+    <div class="skipModule clearfix">
+      <input type="checkbox">
+      <p> Take me straight to Products. Don’t show me this page again. </p>
+    </div>
+  </aside>
+  
+<?
+
+				$args_array = array(
+					'type'                     => 'post',
+					'orderby'                  => 'name',
+					'order'                    => 'ASC');
+				$totalCats = get_terms('category', $args_array);
+
+//	var_dump($totalCats);
+
+?> 
+  
+  <section class="list-products-wrap" id="list-products-health">
+    <fieldset id="health">
+      <ul>
+        <?
+				
+/*				$args_health = array(
+					'type'                     => 'post',
+					'orderby'                  => 'name',
+					'order'                    => 'ASC');
+				$list_health = get_terms('category', $args_health);
+				
+				var_dump($list_health);
+	*/			
+				
+//				var_dump($list_health);
+				
+				foreach ($totalCats as $item) {	
+				
+					if ($item->parent == "367") { // IF HEALTH
+				
+					$description = $item->description;
+					$description_array = explode("\r\n\r\n", $description);
+				
+				?>
+        <li> <span>
+          <input type="checkbox" id="regularCheckbox<?= $item->term_id ?>"  value="<?= $item->term_id ?>" count="<?= $item->count ?>" />
+          <label for="regularCheckbox<?= $item->term_id ?>" style="display:inline-block; margin-bottom:0;">
+            <?= ucwords($item->name) ?> (<?= $item->count ?>)
+          </label>
+          </span> </li>
+        <? 
+				
+					}
+				
+				}
+				
+				?>
+      </ul>
+    </fieldset>
+  </section>
+  <section class="list-products-wrap" id="list-products-type">
+    <fieldset id="type">
+      <ul>
+        <?
+/*				
+				$args = array(
+					'type'                     => 'post',
+					'parent'                   => '366',
+					'orderby'                  => 'name',
+					'order'                    => 'ASC');
+				$list_products = get_categories($args);
+*/							
+				foreach ($totalCats as $item) {	
+
+					if ($item->parent == "366") { // IF HEALTH
+				
+					$description = $item->description;
+					$description_array = explode("\r\n\r\n", $description);
+				
+				?>
+        <li> <span>
+          <input type="checkbox" id="regularCheckbox<?= $item->term_id ?>"  value="<?= $item->term_id ?>" count="<?= $item->count ?>" />
+          <label for="regularCheckbox<?= $item->term_id ?>" style="display:inline-block; margin-bottom:0;">
+            <?= ucwords($item->name) ?> (<?= $item->count ?>)
+          </label>
+          </span> </li>
+        <? 
+		
+					}
+				
+				}
+				
+				?>
+      </ul>
+    </fieldset>
+  </section>
+  <article>
+  
+  
+  <div id="list_header"> Showing items <strong id="currentOffset">X-Y</strong> of <strong id="totalCount">##</strong>
+            <label for="sort" style="opacity:0.25;">Sort by</label>
+            <select id="sort" disabled="disabled" style="opacity:0.25;">
+              <option value="popularity">Popularity</option>
+              <option value="date">Date added</option>
+            </select>
+    
+            <label for="ppp">Items per page</label>
+            <select id="ppp">
+              <option value="9">9</option>
+              <option value="15">15</option>
+              <option value="30">30</option>
+              <option value="-1">ALL</option>
+            </select>
+
+		<fieldset id="pager_container" class="">
+    
+            <label for="pager">Page</label>
+            <input id="pager" type="number" min="1" max="1" step="1" value="1"> of <span id="totalPageCount">##</span>
+            
+		</fieldset>            
+    
+    
+          </div>
+  
+    <div class="listProducts clearfix">
+<!--    <a href="product-details.php"> <img src="images/fpo-product-details.gif" alt="" /> Product Name Lorem Ipsum Dolor Sit Amet </a> <a href="product-details.php"> <img src="images/fpo-product-details.gif" alt="" /> Product Name Lorem Ipsum Dolor Sit Amet </a> <a href="product-details.php"> <img src="images/fpo-product-details.gif" alt="" /> Product Name Lorem Ipsum Dolor Sit Amet </a> <a href="product-details.php"> <img src="images/fpo-product-details.gif" alt="" /> Product Name Lorem Ipsum Dolor Sit Amet </a> <a href="product-details.php"> <img src="images/fpo-product-details.gif" alt="" /> Product Name Lorem Ipsum Dolor Sit Amet </a> <a href="product-details.php"> <img src="images/fpo-product-details.gif" alt="" /> Product Name Lorem Ipsum Dolor Sit Amet </a> <a href="product-details.php"> <img src="images/fpo-product-details.gif" alt="" /> Product Name Lorem Ipsum Dolor Sit Amet </a> <a href="product-details.php"> <img src="images/fpo-product-details.gif" alt="" /> Product Name Lorem Ipsum Dolor Sit Amet </a> <a href="product-details.php"> <img src="images/fpo-product-details.gif" alt="" /> Product Name Lorem Ipsum Dolor Sit Amet </a>  -->
+    </div>
+  </article>
+  <div class="list-products-bg"></div>
+</section>
+<script type="text/javascript">
+
+
+
+jQuery(document).ready(function () {
+
+
+
+    loadProducts = function () {
+
+//		alert("Load Product activated");
+
+        var categories = [];
+        var categories_name = [];
+
+        jQuery('fieldset#health input:checkbox:checked').each(function () {
+            categories.push(parseInt(jQuery(this).val()));
+            categories_name.push(jQuery(this).parent("label").text());
+
+
+        });
+
+        jQuery('fieldset#type input:checkbox:checked').each(function () {
+            categories.push(parseInt(jQuery(this).val()));
+            categories_name.push(jQuery(this).parent("label").text());
+        });
+
+
+        jQuery("#currentType h4").html(categories.length + " selected");
+        jQuery("#currentType p").html("");
+
+
+			if (categories.length == 0) {
+	
+	            jQuery("#currentType p").html("Displaying all");		
+	
+			} else if (categories.length == 1) {
+	
+	            jQuery("#currentType p").append(categories_name[0] + "<br/>");
+	
+			} else if (categories.length > 1) {
+	
+				jQuery("#currentType p").html("Multiple selected<br/>");			
+				
+			}
+
+
+        console.log(categories);
+
+        var page = jQuery("#pager").val();
+        var sortby = jQuery("#sort").val();
+        var ppp = jQuery("#ppp").val();
+        var search_q = jQuery("#search").val();
+
+        //alert(search_q);
+
+        jQuery("#ajax").html("<div style='text-align:center'>LOADING</div>");
+
+
+        jQuery.ajax({
+            url: "<?= get_stylesheet_directory_uri().'/assets/ajax/' ?>products_page_ajax.php",
+            type: "POST",
+            cache: true,
+            data: {
+
+                "sort": sortby,
+                "ppp": ppp,
+                "page": page,
+                //			"featurednewest": "4",
+                "categories": categories,
+                'search_q': search_q
+
+            },
+            dataType: "html",
+            success: function (data, status, xhr) {
+
+
+                jQuery(".listProducts").hide();
+                jQuery(".listProducts").html(data);
+                jQuery(".listProducts").fadeIn("slow");
+				
+                var postCount = jQuery(data).filter("#count").html()
+                jQuery("#currentType h2").html(postCount + " items");
+
+                if (ppp == "-1") {
+
+                    var totalPages = 1;
+
+                } else {
+
+                    var totalPages = Math.ceil(postCount / ppp);
+
+                };
+
+
+                jQuery("#totalCount").html(postCount);
+
+                if (postCount == 0 || totalPages == 1) {
+
+                    jQuery("#pager_container").attr("disabled", "disabled");
+                    jQuery("#pager_container").addClass("formDisabled");
+
+
+                } else {
+
+                    jQuery("#pager_container").removeAttr("disabled");
+                    jQuery("#pager_container").removeClass("formDisabled");
+
+
+                }
+
+
+
+
+
+
+
+                jQuery("#totalPageCount").html(totalPages);
+                jQuery("#pager").attr("max", totalPages);
+
+                var offset = (page - 1) * ppp + 1;
+                var offsetMax = offset + parseInt(ppp) - 1;
+
+                if (offsetMax > postCount) {
+
+                    offsetMax = postCount;
+
+                } else if (offsetMax == "-1") {
+
+                    offsetMax = postCount;
+
+                }
+
+
+                jQuery("#currentOffset").html(offset + "-" + offsetMax);
+
+
+                //alert();
+
+
+            },
+            complete: function (xhr, status) {
+
+                //			alert(status)	
+
+                jQuery(".item").hover(function () {
+
+                    var catArray = jQuery(this).attr("cats").split(",");
+
+                    jQuery.each(catArray, function (key, value) {
+
+                        jQuery("input[value='" + value + "']").parent("label").addClass("cathover");
+
+                    });
+
+
+                    jQuery(this).fadeTo("fast", 0.5);
+
+                }, function () {
+
+                    var catArray = jQuery(this).attr("cats").split(",");
+
+                    jQuery.each(catArray, function (key, value) {
+
+                        jQuery("input[value='" + value + "']").parent("label").removeClass("cathover");
+
+                    });
+
+
+                    jQuery(this).fadeTo("fast", 1);
+
+
+                });
+
+
+
+
+
+            }
+
+        })
+
+
+    };
+
+
+
+    loadProducts();
+
+	//WHEN HOVERING TO SWITCH TWO SECTIONS: PRODUCT TYPE AND HEALTH CONCERNS
+/*    jQuery("#nav_left li").hover(function () {
+
+        var navID = jQuery(this).attr("id");
+
+        switch (navID) {
+
+        case "menuHealth":
+            jQuery("#health").siblings("fieldset").hide();
+            jQuery("#health").show();
+            jQuery(this).addClass("navHighlight");
+            jQuery(this).siblings("li").removeClass("navHighlight");
+
+            break;
+        case "menuType":
+            jQuery("#type").show();
+            jQuery("#type").siblings("fieldset").hide();
+            jQuery(this).addClass("navHighlight");
+            jQuery(this).siblings("li").removeClass("navHighlight");
+            break;
+
+        };
+
+
+
+    }); */
+	
+	
+	jQuery("#menuHealth").click(function(){
+		
+		jQuery("#list-products-health").show();
+		jQuery("#list-products-type").hide();
+		
+	});
+	
+	jQuery("#menuType").click(function(){
+		
+		jQuery("#list-products-health").hide();
+		jQuery("#list-products-type").show();
+		
+	});
+	
+
+	jQuery("#menuType").click();
+
+	//WHEN SORT BY CHANGES
+    jQuery('#sort').change(function () {
+        console.log('Handler for SORT BY change called.');
+        loadProducts();
+    });
+
+	//WHEN SWITCHING POSTS PER PAGE
+    jQuery('#ppp').change(function () {
+        console.log('Handler for ITEMS PER PAGE change called.');
+        jQuery('#pager').val(1);
+        loadProducts();
+
+    });
+
+	//WHEN SWITCHING PAGES
+    jQuery('#pager').change(function () {
+        console.log('Handler for PAGE change called.');
+        loadProducts();
+    });
+
+
+
+	//WHEN CHOOSING PRODUCT TYPE(S)
+    jQuery('#type').change(function () {
+
+        if (jQuery("#search").val() == "") {
+
+            console.log("Search empty");
+
+        };
+
+
+        console.log('Handler for TYPE change called.');
+        jQuery('#pager').val(1);
+        loadProducts();
+    });
+
+	//WHEN CHOOSING HEALTH CONCERN(S)
+    jQuery('#health').change(function () {
+
+        if (jQuery("#search").val() == "") {
+
+            console.log("Search empty");
+
+        };
+
+        console.log('Handler for HEALTH change called.');
+        jQuery('#pager').val(1);
+        loadProducts();
+
+    });
+
+
+	//WHEN CHOOSING PRODUCT TYPE(S) OR HEALTH CONCERN(S)
+    jQuery('fieldset#health input, fieldset#type input').change(function () {
+
+        if (jQuery("#search").val() == "") {
+
+            jQuery('fieldset input').not(this).each(function (idx, el) {
+//                el.checked = false;
+            });
+
+        }
+
+    });
+
+
+
+    jQuery('#featuredNewest').change(function () {
+        console.log('Handler for FEATURE / NEWEST change called.');
+        jQuery('#pager').val(1);
+        loadProducts();
+    });
+
+    jQuery('#search').live('change', function () {
+
+        /*
+	console.log('Handler for SEARCH change called.');
+	   
+	   if (jQuery(this).val() == "") {
+	   
+		  console.log('Handler for SEARCH clear called.');
+
+	    jQuery('input').removeAttr("checked");
+
+		  jQuery('#pager').val(1);
+		  loadProducts();
+  	   };
+*/
+
+    });
+
+
+    jQuery('#search').each(function () {
+        // Save current value of element
+        jQuery(this).data('oldVal', jQuery(this).val());
+
+        // Look for changes in the value
+        jQuery(this).bind("propertychange keyup input paste", function (event) {
+            // If value has changed...
+            if (jQuery(this).data('oldVal') != jQuery(this).val()) {
+                // Updated stored value
+                jQuery(this).data('oldVal', jQuery(this).val());
+
+                // Do action   
+                console.log(jQuery(this).val());
+
+                if (jQuery(this).val() == "") {
+
+
+                    jQuery('input').removeAttr("checked");
+                    console.log('Handler for SEARCH clear called.');
+                    jQuery('#pager').val(1);
+                    loadProducts();
+
+
+
+                }
+
+
+            }
+        });
+    });
+
+
+    jQuery('#search').keypress(function (e) {
+        if (e.which == 13) {
+            console.log('Handler for SEARCH enter key called.');
+            jQuery('#pager').val(1);
+            loadProducts();
+        }
+    });
+
+
+    jQuery('#search_btn').click(function () {
+        console.log('Handler for SEARCH click called.');
+        jQuery('#pager').val(1);
+        loadProducts();
+    });
+
+
+
+    jQuery('#clear_btn').click(function () {
+
+		jQuery('#search').val("");
+         jQuery('fieldset input').not(this).each(function (idx, el) {
+			el.checked = false;
+        });
+
+        console.log('Handler for CLEAR click called.');
+        jQuery('#pager').val(1);
+        loadProducts();
+    });
+
+
+});
+
+jQuery(window).load(function(){
+	
+	
+	
+});
+
+</script>
+<?php get_footer();?>

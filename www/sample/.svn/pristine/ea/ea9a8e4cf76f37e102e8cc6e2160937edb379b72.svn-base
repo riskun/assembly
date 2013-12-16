@@ -1,0 +1,33 @@
+<?
+
+	require('../../../../../wp-blog-header.php');
+
+	$postID = $_GET['post'];
+	$catID = $_GET['cat'];
+	
+
+	global $wpdb;
+	$value = $wpdb->get_var( 
+		"
+			SELECT meta_value
+			FROM  wp_postmeta
+			WHERE  post_id = $postID
+			AND meta_key = $catID
+		"
+	);
+
+
+	if ($value == "") {
+		
+	echo 0;		
+		
+	} else {
+		
+	echo $value;
+		
+	};
+
+
+
+
+?>

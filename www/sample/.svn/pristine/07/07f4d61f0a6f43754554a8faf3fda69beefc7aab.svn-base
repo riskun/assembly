@@ -1,0 +1,21 @@
+jQuery(window).load(function(){
+	
+	jQuery(document).ajaxComplete(function(e, r, o){
+				
+			console.log(jQuery(".imgedit-wrap"));
+			jQuery('input[id^=imgedit-crop-width]').val("1280");
+			jQuery('input[id^=imgedit-crop-height]').val("720");
+
+			var widthRatio = jQuery('input[id^=imgedit-crop-width]').attr("onkeyup");
+			var heightRatio = jQuery('input[id^=imgedit-crop-height]').attr("onkeyup");
+
+			jQuery('input[id^=imgedit-crop-width]')[widthRatio];
+			jQuery('input[id^=imgedit-crop-height]')[heightRatio];
+
+			jQuery("input[id^=imgedit-crop-height], input[id^=imgedit-crop-width]").attr("disabled", "disabled");
+								
+		
+		
+	});
+	
+});

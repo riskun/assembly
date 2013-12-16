@@ -1,0 +1,210 @@
+<?php
+/*
+ Template Name: Glossary
+*/
+?>
+
+<?php get_header();?>
+<section class="content-static-pages clearfix">
+	<aside>
+		<div id="submenu" class="subNav subNavAccordion">
+			<ul>
+<?php
+if($post->post_parent)
+$children = wp_list_pages("title_li=&child_of=".$post->post_parent."&echo=0");
+else
+$children = wp_list_pages("title_li=&child_of=".$post->ID."&echo=0");
+if ($children) { ?>
+
+    <?php echo $children; ?> 
+
+<?php } ?> 				
+			</ul>
+		</div><!-- close menu -->
+	</aside>
+	<article class="contentstwrapdiv">
+		<div class="contentdiv">
+			<?php if (have_posts()) : while (have_posts()) : the_post();?>		
+			<h1><?php the_title();?></h1>
+			<?php the_content(); 
+			endwhile; endif; ?>
+		</div>
+		<div id="tabs">
+
+				<?php
+					$af_chars = array('A','B','C','D','E','F');
+					$gl_chars = array('G','H','I','J','K','L');
+					$mp_chars = array('M','N','O','P');					
+					$qt_chars = array('Q','R','S','T');
+					$uz_chars = array('U','V','W','X','Y','Z');
+					
+					
+					
+					
+					foreach ($af_chars as $key=>$value) { $af_chars[$key] = "OR post_title LIKE '".$value."%'"; };
+					foreach ($gl_chars as $key=>$value) { $gl_chars[$key] = "OR post_title LIKE '".$value."%'"; };
+					foreach ($mp_chars as $key=>$value) { $mp_chars[$key] = "OR post_title LIKE '".$value."%'"; };
+					foreach ($qt_chars as $key=>$value) { $qt_chars[$key] = "OR post_title LIKE '".$value."%'"; };
+					foreach ($uz_chars as $key=>$value) { $uz_chars[$key] = "OR post_title LIKE '".$value."%'"; };
+
+					
+					$af_chars = implode(" ", $af_chars);
+					$gl_chars = implode(" ", $gl_chars);
+					$mp_chars = implode(" ", $mp_chars);
+					$qt_chars = implode(" ", $qt_chars);
+					$uz_chars = implode(" ", $uz_chars);
+			
+					$postids_af = $wpdb->get_results(
+					"SELECT      *
+					FROM        $wpdb->posts
+					WHERE       post_type = 'sn-glossary' AND (".substr($af_chars, 2).")
+					AND post_status = 'publish'");	
+
+					$postids_gl = $wpdb->get_results(
+					"SELECT      *
+					FROM        $wpdb->posts
+					WHERE       post_type = 'sn-glossary' AND (".substr($gl_chars, 2).")
+					AND post_status = 'publish'");	
+
+					$postids_mp = $wpdb->get_results(
+					"SELECT      *
+					FROM        $wpdb->posts
+					WHERE       post_type = 'sn-glossary' AND (".substr($mp_chars, 2).")
+					AND post_status = 'publish'");	
+
+					$postids_qt = $wpdb->get_results(
+					"SELECT      *
+					FROM        $wpdb->posts
+					WHERE       post_type = 'sn-glossary' AND (".substr($qt_chars, 2).")
+					AND post_status = 'publish'");	
+
+					$postids_uz = $wpdb->get_results(
+					"SELECT      *
+					FROM        $wpdb->posts
+					WHERE       post_type = 'sn-glossary' AND (".substr($uz_chars, 2).")
+					AND post_status = 'publish'");	
+					
+					
+
+
+				?>				
+	
+    
+    		<ul class="clearfix">
+				<?php if(!empty($postids_af)){?>		
+				<li>
+					<a href="#tabs-1">A &ndash; F</a>
+				</li>
+				<?php } if(!empty($postids_gl)){?>		
+				<li>
+					<a href="#tabs-2">G &ndash; L</a>
+				</li>
+				<?php } if(!empty($postids_mp)){?>					
+				<li>
+					<a href="#tabs-3">M &ndash; P</a>
+				</li>
+				<?php } if(!empty($postids_qt)){?>				
+				<li>
+					<a href="#tabs-4">Q &ndash; T</a>
+				</li>
+				<?php } if(!empty($postids_uz)){?>					
+				<li>
+					<a href="#tabs-5">U &ndash; Z</a>
+				</li>
+				<?php }?>				
+			</ul>
+
+
+
+
+			<?php if (count($postids_af) > 0){?>				
+			<div id="tabs-1">
+				<div class="contentdiv">
+					<?php
+					
+					foreach ($postids_af as $item) { ?>
+						
+                        <h2><?= $item->post_title ?></h2>
+                        <? $content = apply_filters('the_content', $item->post_content);
+						echo $content = str_replace(']]>', ']]&gt;', $content);
+                        
+                  	} ?>
+				</div>
+			</div>
+			<?php } ?>
+            
+
+			<?php if (count($postids_gl) > 0){?>				
+			<div id="tabs-2">
+				<div class="contentdiv">
+					<?php
+					
+					foreach ($postids_gl as $item) { ?>
+						
+                        <h2><?= $item->post_title ?></h2>
+                        <? $content = apply_filters('the_content', $item->post_content);
+						echo $content = str_replace(']]>', ']]&gt;', $content);
+                        
+                  	} ?>
+				</div>
+			</div>
+			<?php } ?>
+
+			<?php if (count($postids_mp) > 0){?>				
+			<div id="tabs-3">
+				<div class="contentdiv">
+					<?php
+					
+					foreach ($postids_mp as $item) { ?>
+						
+                        <h2><?= $item->post_title ?></h2>
+                        <? $content = apply_filters('the_content', $item->post_content);
+						echo $content = str_replace(']]>', ']]&gt;', $content);
+                        
+                  	} ?>
+				</div>
+			</div>
+			<?php } ?>
+
+			<?php if (count($postids_qt) > 0){?>				
+			<div id="tabs-4">
+				<div class="contentdiv">
+					<?php
+					
+					foreach ($postids_qt as $item) { ?>
+						
+                        <h2><?= $item->post_title ?></h2>
+                        <? $content = apply_filters('the_content', $item->post_content);
+						echo $content = str_replace(']]>', ']]&gt;', $content);
+                        
+                  	} ?>
+				</div>
+			</div>
+			<?php } ?>
+
+			<?php if (count($postids_uz) > 0){?>				
+			<div id="tabs-5">
+				<div class="contentdiv">
+					<?php
+					
+					foreach ($postids_uz as $item) { ?>
+						
+                        <h2><?= $item->post_title ?></h2>
+                        <? $content = apply_filters('the_content', $item->post_content);
+						echo $content = str_replace(']]>', ']]&gt;', $content);
+                        
+                  	} ?>
+				</div>
+			</div>
+			<?php } ?>
+
+            
+
+
+
+
+		</div>
+	</article>
+	<div class="list-side-bg"></div>	
+</section>
+<?php get_footer();?>

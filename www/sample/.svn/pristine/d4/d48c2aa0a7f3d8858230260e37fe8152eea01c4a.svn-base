@@ -1,0 +1,66 @@
+<?php
+/**
+ * Swiss Natural functions and definitions
+ *
+ * @package Swiss Natural
+ * @since Swiss Natural 1.0
+ * CUSTOM FUNCTIONS FOR SWISS NATURAL
+ */
+require( get_template_directory() . '/inc/custom-post-types/cpt-events.php');
+require( get_template_directory() . '/inc/custom-post-types/cpt-products.php');
+require( get_template_directory() . '/inc/custom-post-types/cpt-support.php');
+require( get_template_directory() . '/inc/custom-post-types/cpt-glossary.php');
+require( get_template_directory() . '/inc/custom-post-types/cpt-careers.php');
+require( get_template_directory() . '/inc/custom-post-types/cpt-slides.php' );
+require( get_template_directory() . '/inc/theme-options/theme-options.php' );
+
+require( get_template_directory() . '/inc/plupload_head.php' );
+
+
+
+function remove_menus () {
+global $menu;
+	$restricted = array(__('Posts'),__('Links'),__('Comments'));
+	//$restricted = array(__('Dashboard'), __('Posts'), __('Media'), __('Links'), __('Pages'), __('Appearance'), __('Tools'), __('Users'), __('Settings'), __('Comments'), __('Plugins'));	
+	end ($menu);
+	while (prev($menu)){
+		$value = explode(' ',$menu[key($menu)][0]);
+		if(in_array($value[0] != NULL?$value[0]:"" , $restricted)){unset($menu[key($menu)]);}
+	}
+}
+add_action('admin_menu', 'remove_menus');
+
+add_filter( 'user_can_richedit', 'disable_for_cpt' );
+function disable_for_cpt( $default ) {
+    global $post;
+    if ( 'sn-glossary' == get_post_type( $post ) )
+        return false;
+    return $default;
+}
+
+function myformatTinyMCE($in)
+	{
+		$in['remove_linebreaks']=false;
+		$in['gecko_spellcheck']=false;
+		$in['keep_styles']=true;
+		$in['accessibility_focus']=true;
+		$in['tabfocus_elements']='major-publishing-actions';
+		$in['media_strict']=false;
+		$in['paste_remove_styles']=false;
+		$in['paste_remove_spans']=false;
+		$in['paste_strip_class_attributes']='none';
+		$in['paste_text_use_dialog']=true;
+		$in['wpeditimage_disable_captions']=true;
+		$in['plugins']='inlinepopups,tabfocus,paste,media,fullscreen,wordpress,wpeditimage,wpgallery,wplink,wpdialogs,wpfullscreen';
+		$in['content_css']=get_template_directory_uri() . "/editor-style.css";
+		$in['wpautop']=true;
+		$in['apply_source_formatting']=false;
+		$in['theme_advanced_buttons1']='formatselect,forecolor,|,bold,italic,underline,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,justifyfull,|,link,unlink,|,wp_fullscreen,wp_adv';
+		$in['theme_advanced_buttons2']='pastetext,pasteword,removeformat,|outdent,indent,|,undo,redo';
+		$in['theme_advanced_buttons3']='';
+		$in['theme_advanced_buttons4']='';
+	 return $in;
+	}
+add_filter('tiny_mce_before_init', 'myformatTinyMCE' );
+//http://wplift.com/how-to-add-custom-styles-to-the-wordpress-visual-post-editor
+?>

@@ -1,0 +1,140 @@
+<?php
+/*
+ Template Name: Support
+*/
+?>
+<?php get_header();?>
+
+<script type="text/javascript">
+
+jQuery(document).ready(function () {
+
+
+	$("#supportBtn1").click(function(){
+		
+		$(this).slideUp();
+		$("#support_second").slideDown();		
+		
+	});
+
+	$("#supportBtn2").click(function(){
+
+		$(this).slideUp();		
+		$("#support_third").slideDown();		
+		
+	});
+
+
+});
+
+</script>
+<section class="content-static-pages clearfix">
+	<aside>
+		<div id="submenu" class="subNav subNavAccordion">
+			<ul>
+				<?php
+				if($post->post_parent)
+				$children = wp_list_pages("title_li=&child_of=".$post->post_parent."&echo=0");
+				else
+				$children = wp_list_pages("title_li=&child_of=".$post->ID."&echo=0");
+				if ($children) {
+				?>
+
+				<?php echo $children; ?>
+
+				<?php } ?>
+			</ul>
+		</div><!-- close menu -->
+	</aside>
+	<article class="contentstwrapdiv contentsupport">
+		<div class="latest-news-views">
+			<div class="contentdiv">
+				<h1>KEEP UP-TO-DATE WITH THE LATEST NEWS & VIEWS</h1>
+				<ol>
+	
+<?
+
+$args = array(
+	
+	'post_type' => 'sn-support',
+	'posts_per_page' => "5",
+	'order' => 'DESC',
+	'orderby' => 'meta_value_num',
+	'meta_key' => 'visitors'
+
+);
+
+$articleQuery = new WP_Query($args);
+
+foreach ($articleQuery->posts as $post) {
+
+//var_dump($post);
+
+?>    
+
+    				<li>
+						<a href="<?= get_permalink($post->ID) ?>"><?= $post->post_title ?></a>
+					</li>
+
+
+<? } ?>
+    
+				</ol>
+				<div class="clearfix">
+					<a class="button1 right" href="#" id="supportBtn1">I didn’t find my answer</a>
+				</div>
+			</div>
+		</div>
+		<div class="latest-news-views askquestion" id="support_second">
+			<div class="supportSectionHeader">
+				<input class="supportaskyourquestionshere" type="text" placeholder="ask your questions here">
+			</div>
+			<div class="contentdiv">
+				<ol id="ajax">
+                
+                	Placeholder.
+                    <!--
+					<li>
+						Non-medicinal ingredients and additives lorem ipsum
+					</li>
+					<li>
+						Dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
+					</li>
+					<li>
+						Labore et dolore magna aliqua.
+					</li>
+					<li>
+						Enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+					</li>
+					<li>
+						Dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor inci
+					</li>-->
+				</ol>
+				<div class="clearfix">
+					<a class="button1 right" href="#" id="supportBtn2">I didn’t find my answer</a>
+				</div>				
+			</div>
+		</div>
+		<div class="latest-news-views askquestion" id="support_third">
+			<div class="supportSectionHeader">
+				<input class="supportaskyourquestionshere" type="text" placeholder="ask our experts here">
+			</div>
+			<div class="contentdiv clearfix">
+				<div class="left">
+					<from class="formSupport">
+					<select><option>Select One</option></select>
+					<input type="text" value="your name">
+					<input type="text" value="your email">
+					</from>
+				</div>
+				<div class="right">
+					<a class="button1" href="#">Send Email</a>
+				</div>					
+			</div>
+		</div>
+	</article>
+    
+    
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer(); ?>

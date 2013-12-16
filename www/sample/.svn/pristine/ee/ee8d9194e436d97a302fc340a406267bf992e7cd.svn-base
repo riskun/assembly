@@ -1,0 +1,113 @@
+<?php
+// Custom Post Type Registration (Tmeline Section)
+add_action( 'init', 'create_timeline_postype' );
+function create_timeline_postype() {
+$labels = array(
+    'name' => _x('Timeline', 'post type general name'),
+    'singular_name' => _x('Timeline', 'post type singular name'),
+    'add_new' => __('Add a new Snippet', 'Sniipet'),
+	'add_new_item' => __('Add a new Snippet'),
+	'edit_item' => __('Edit Timeline Snippet'),
+    'view_item' => __('View Timeline Snippet'),
+    'search_items' => __('Search Timeline Index'),
+    'not_found' =>  __('No matching snippet found'),
+    'not_found_in_trash' => __('No snippet found in trash'),
+    'parent_item_colon' => '',
+);
+$args = array(
+    'label' => __('Timeline'),
+    'labels' => $labels,
+    'public' => true,
+	'menu_position' => 11,
+    'can_export' => true,
+    'show_ui' => true,
+    '_builtin' => false,
+    '_edit_link' => 'post.php?post=%d', // ?
+    'capability_type' => 'post',
+    'menu_icon' => get_bloginfo('stylesheet_directory').'/assets/images/admin/icon_timeline.png',
+    'hierarchical' => false,
+    'rewrite' => array( "slug" => "timeline" ),
+    'supports'=> array('title','editor'),
+    'show_in_nav_menus' => true,
+);
+register_post_type( 'sn-timeline', $args);
+}
+function create_timeline_category_taxonomy() {
+    $labels = array(
+        'name' => _x( 'Categories', 'taxonomy general name' ),
+        'singular_name' => _x( 'Category', 'taxonomy singular name' ),
+        'search_items' =>  __( 'Search Categories' ),
+        'popular_items' => __( 'Popular Categories' ),
+        'all_items' => __( 'All Categories' ),
+        'parent_item' => null,
+        'parent_item_colon' => null,
+        'edit_item' => __( 'Edit Category' ),
+        'update_item' => __( 'Update Category' ),
+        'add_new_item' => __( 'Add New Category' ),
+        'new_item_name' => __( 'New Category Name' ),
+        'separate_items_with_commas' => __( 'Separate categories with commas' ),
+        'add_or_remove_items' => __( 'Add or remove categories' ),
+        'choose_from_most_used' => __( 'Choose from the most used categories' ),
+    );
+    register_taxonomy('sn-timeline','sn-timeline', array(
+        'label' => __('Timeline Category'),
+        'labels' => $labels,
+        'hierarchical' => true,
+        'show_ui' => true,
+        'query_var' => true,
+        'rewrite' => array( 'slug' => 'timeline-category' ),
+    ));
+}
+add_action( 'init', 'create_timeline_category_taxonomy', 0 );
+
+add_action( 'add_meta_boxes', 'sn_timeline_metabox_add' );
+function sn_timeline_metabox_add()
+{
+	add_meta_box('sn_timeline_image', 'Timeline Snippet Image', 'sn_timeline_image', 'sn-timeline', 'normal', 'default');
+}
+
+function sn_timeline_image() {
+global $post;
+// adjust values here
+$id = "img1"; // this will be the name of form field. Image url(s) will be submitted in $_POST using this key. So if $id == “img1” then $_POST["img1"] will have all the image urls
+$svalue = ""; // this will be initial value of the above form field. Image urls.
+$multiple = false; // allow multiple files upload
+$width = null; // If you want to automatically resize all uploaded images then provide width here (in pixels)
+$height = null; // If you want to automatically resize all uploaded images then provide height here (in pixels)
+?>
+<input type="hidden" name="<?php echo $id; ?>" id="<?php echo $id; ?>" value="<?php echo get_post_meta($post -> ID, 'sn_timeline_image', true); ?>" />
+<div class="plupload-upload-uic hide-if-no-js <?php if ($multiple): ?>plupload-upload-uic-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-upload-ui">
+	<input id="<?php echo $id; ?>plupload-browse-button" type="button" value="<?php esc_attr_e('Select A File'); ?>" class="button" />
+	<span class="ajaxnonceplu" id="ajaxnonceplu<?php echo wp_create_nonce($id . 'pluploadan'); ?>"></span>
+	<?php if ($width && $height): ?>
+	<span class="plupload-resize"></span><span class="plupload-width" id="plupload-width<?php echo $width; ?>"></span>
+	<span class="plupload-height" id="plupload-height<?php echo $height; ?>"></span>
+	<?php endif; ?>
+	<div class="filelist"></div>
+</div>
+<div class="plupload-thumbs <?php if ($multiple): ?>plupload-thumbs-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-thumbs"></div>
+<div class="clear"></div>
+<?
+}
+
+add_action( 'save_post', 'sn_timeline_save' );
+function sn_timeline_save($post_id)
+{
+if ($_POST['post_type'] == "sn-timeline") {
+global $post;
+update_post_meta($post->ID, 'url', $_POST['url']);
+update_post_meta($post->ID, 'sn_timeline_image', trim($_POST['img1']));
+$imageArray = explode(",", trim($_POST['img1']));
+$imageArray2 = array();
+foreach ($imageArray as $item) {
+$output = parse_url($item);
+parse_str($output['query'], $output2);
+array_push($imageArray2, $output2['id']);
+}
+$attachmentIds = implode(",", $imageArray2);
+update_post_meta($post->ID, 'sn_timeline_image2', $attachmentIds);
+update_post_meta($post->ID, 'sn_timeline_imagehover', trim($_POST['img2']));
+
+}
+}
+?>

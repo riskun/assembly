@@ -1,0 +1,80 @@
+<?php
+/**
+ * The template for displaying the footer.
+ *
+ * Contains the closing of the id=main div and all content after
+ *
+ * @package Swiss Natural
+ * @since Swiss Natural 1.0
+ */
+ $options = get_option('swiss_natural_theme_options');
+?>
+
+			</div>
+			<footer>
+				<div class="shadow">
+					<div class="grid1 clearfix">
+						<div class="navFooter fontsize1">
+							<?php wp_nav_menu( array( 'theme_location' => 'footer' ) ); ?>
+						</div>
+						<div class="footer-sm clearfix">
+							<ul>
+								<li><a target="_blank" href="<?php echo $options['sm_facebook_input'];?>"></a></li>
+								<li><a target="_blank" class="icon-twitter" href="<?php echo $options['sm_twitter_input'];?>"></a></li>
+								<li><a target="_blank" class="icon-youtube" href="<?php echo $options['sm_youtube_input'];?>"></a></li>							
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="widget-wrap">
+					<a href="javascript:void(0);" class="widget-randowmMessages"></a>
+					<div class="widget-speechBubbleWrap">
+						<div class="widget-speechBubble">
+							<div class="widget-speechBubbleTxtWrap">
+								<div class="widget-speechBubbleTxt">
+									<?php query_posts('post_type=sn-tips&showposts=1&orderby=rand');					
+									if ( have_posts() ) : while ( have_posts() ) : the_post();
+										$content = get_the_content();
+										$content = strip_tags($content);
+										echo substr($content, 0, 156);
+									endwhile;
+									endif; ?>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="copyright">
+					<p>
+						<?php echo $options['copyright_input'];?>
+					</p>
+				</div>
+			</footer>
+			<div class="widget-left">
+			<a class="arrow" href="#"></a>	
+				<div class="pannel">
+					<!--
+					<ul>
+						<li><a href="#" class="widget-left-contests"><div></div><span>Contests</span></a></li>
+						<li><a href="#" class="widget-left-askanexpert"><div></div><span>Ask An Expert</span></a></li>						
+						<li><a href="#" class="widget-left-whatsnew"><div></div><span>What's New</span></a></li>
+						<li><a href="#" class="widget-left-category"><div></div><span>Categories</span></a></li>
+						<li><a href="#" class="widget-left-forums"><div></div><span>Forums</span></a></li>		
+					</ul>	
+					-->
+					<?php wp_nav_menu( array( 'theme_location' => 'widget', 'link_before' => '<span>', 'link_after' => '</span>' ) ); ?>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.22/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/jquery.easing.1.3.js"></script>		
+		<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/jquery.royalslider.min.js"></script>	
+		<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/custom.js"></script>	
+		<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+		<!-- google analytics code -->
+		<script type="text/javascript"><?php echo $options['googleanalytics_textarea'];?></script>
+		<?php wp_footer(); ?>
+	</body>
+</html>

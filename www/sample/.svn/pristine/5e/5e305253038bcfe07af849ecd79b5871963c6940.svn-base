@@ -1,0 +1,34 @@
+<?php
+/*
+ Template Name: Homepage
+*/
+?>
+<?php get_header(); ?>
+<?php 
+	query_posts('post_type=sn-slides');
+	$id='img1';
+	$slide = get_post_meta($post->ID, 'sn_slides_image', true);
+?>
+<section class="content-static-pages clearfix">
+	<div class="sliderContainer fullWidth clearfix">
+		<div id="full-width-slider" class="royalSlider heroSlider rsMinW">
+			<?php while ( have_posts() ) : the_post();?>	
+	  		<div class="rsContent">
+				<?php $url = get_post_meta($post->ID, 'url', true);
+				if($url!='') { 
+					echo '<a href="'.$url.'">';
+					echo '<div id="'.$id.'">'.$slide.'</div>';
+					echo '</a>';
+				} else {
+					echo $slide;
+				} ?>
+	    	</div>
+			<?php endwhile; ?>
+		</div>
+	</div>
+</section>
+<?php get_footer(); ?>
+
+
+
+

@@ -1,0 +1,22 @@
+/* Columns CPT Events */
+
+th#sn_col_ev_date, th#sn_col_ev_cat {width:150px}
+td.sn_col_ev_date em{color:gray;}
+th#sn_col_ev_times{width:150px}
+th#sn_col_ev_thumb{width:100px}
+
+th#sn_col_menu_order{width:60px}
+td.sn_col_menu_id{color:gray;text-align:right;}
+td.sn_col_menu_order{color:#219b38;text-align:right;}
+th#sn_col_menu_thumb{width:100px}
+td.sn_col_menu_thumb img{border:1px solid #d8d8d8}
+th#sn_col_menu_cat,th#sn_col_menu_title,th#sn_col_menu_size{width:150px}
+
+/* Metabox */
+
+.sn-meta {  }
+.sn-meta ul li { height: 20px; clear:both; margin: 0 0 15px 0;}
+.sn-meta ul li label { width: 100px; display:block; float:left; padding-top:4px; }
+.sn-meta ul li input { width:125px; display:block; float:left;border:1px solid #eee }
+.sn-meta ul li textarea {display:block; float:left;border:1px solid #eee;margin-bottom: 14px; width: 133px; }
+.sn-meta ul li em { width: 200px; display:block; float:left; color:gray; margin-left:10px; padding-top: 4px}

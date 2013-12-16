@@ -1,0 +1,166 @@
+<?php
+/*
+ Template Name: About Us
+ */
+?>
+<?php get_header();?>
+	<section class="content-static-pages clearfix">
+		<aside class="hashed">
+			<div id="submenu" class="subNav subNavAccordion">
+				<ul>
+					<?php 
+					$pageid = 34;
+					$subpages = new WP_Query("post_parent=$pageid&post_type='page'");
+					if($subpages->have_posts()) : while($subpages->have_posts()) : $subpages->the_post(); ?>					
+					<li>
+						<a href="#<?php global $post; echo $post -> post_name;?>"><?php echo get_the_title(); ?></a>
+					</li>
+					<?php endwhile; endif; ?>					
+				</ul>
+			</div>
+		</aside>
+		<section class="accordionWrapper hashed">
+			<?php if (have_posts()) : while (have_posts()) : the_post();?>
+			<div class="contentwrapdiv noTopPad">
+			<div class="contentdiv">
+			<?php the_content();
+			endwhile; endif;?></div></div>
+			<article class="accordion">
+			<?php 
+			$pageid = 34;
+			$subpages = new WP_Query("post_parent=$pageid&post_type='page'");
+			if($subpages->have_posts()) : while($subpages->have_posts()) : $subpages->the_post(); ?>			
+				<h6 id="<?php global $post; echo $post -> post_name;?>"><a href="#<?php global $post; echo $post -> post_name;?>"><?php echo get_the_title(); ?></a></h6>
+				<div>
+					<div class="contentwrapdiv">
+						<? if(get_the_title() == "Our History"){?>
+							<div class="clearfix">
+								<span class="historyNav">
+									<ul id="historyTabs">
+										<li class="ourHistory-cat1960"><a class="current" href="#"></a></li>
+										<li class="ourHistory-cat1980"><a href="#"></a></li>
+										<li class="ourHistory-cat1990"><a href="#"></a></li>
+										<li class="ourHistory-cat2000"><a href="#"></a></li>
+										<li class="ourHistory-cat2010"><a href="#"></a></li>
+									</ul>
+									<span id="indicator"></span>
+								</span>
+								<article id="historyContent">
+									<section>
+									<?php
+									$args = array('post_type' => 'sn-timeline','tax_query' => array(array('taxonomy' => 'sn-timeline','field' => 'slug','terms' => '1960s')));
+									$sntimeline = new WP_Query( $args );?>
+									<table cellpadding="0" cellspacing="0">
+										<?php
+										foreach($sntimeline->posts as $post){?>
+											<tr>
+												<td width="140">&nbsp;</td>
+												<td>
+													<strong><?php echo $post->post_title ?></strong> <?php  echo $post->post_content ?>
+												</td>
+											</tr>
+										<?php }?>
+									</table>
+									</section>
+									<section>
+									<?php
+									$args = array('post_type' => 'sn-timeline','tax_query' => array(array('taxonomy' => 'sn-timeline','field' => 'slug','terms' => '1980s')));
+									$sntimeline = new WP_Query( $args );?>
+									<table cellpadding="0" cellspacing="0">
+										<?php
+										foreach($sntimeline->posts as $post){?>
+											<tr>
+												<td width="140">&nbsp;</td>
+												<td>
+													<strong><?php echo $post->post_title ?></strong> <?php  echo $post->post_content ?>
+												</td>
+											</tr>
+										<?php }?>
+									</table>
+									</section>
+									<section>
+									<?php
+									$args = array('post_type' => 'sn-timeline','tax_query' => array(array('taxonomy' => 'sn-timeline','field' => 'slug','terms' => '1990s')));
+									$sntimeline = new WP_Query( $args );?>
+									<table cellpadding="0" cellspacing="0">
+										<?php
+										foreach($sntimeline->posts as $post){?>
+											<tr>
+												<td width="140">&nbsp;</td>
+												<td>
+													<strong><?php echo $post->post_title ?></strong> <?php  echo $post->post_content ?>
+												</td>
+											</tr>
+										<?php }?>
+									</table>
+									</section>
+									<section>
+									<?php
+									$args = array('post_type' => 'sn-timeline','tax_query' => array(array('taxonomy' => 'sn-timeline','field' => 'slug','terms' => '2000s')));
+									$sntimeline = new WP_Query( $args );?>
+									<table cellpadding="0" cellspacing="0">
+										<?php
+										foreach($sntimeline->posts as $post){?>
+											<tr>
+												<td width="140">&nbsp;</td>
+												<td>
+													<strong><?php echo $post->post_title ?></strong> <?php  echo $post->post_content ?>
+												</td>
+											</tr>
+										<?php }?>
+									</table>
+									</section>
+									<section>
+									<?php
+									$args = array('post_type' => 'sn-timeline','tax_query' => array(array('taxonomy' => 'sn-timeline','field' => 'slug','terms' => '2010s')));
+									$sntimeline = new WP_Query( $args );?>
+									<table cellpadding="0" cellspacing="0">
+										<?php
+										foreach($sntimeline->posts as $post){?>
+											<tr>
+												<td width="140">&nbsp;</td>
+												<td>
+													<strong><?php echo $post->post_title ?></strong> <?php  echo $post->post_content ?>
+												</td>
+											</tr>
+										<?php }?>
+									</table>
+									</section>
+								</article>
+							</div>
+						<?php
+						}else{
+							the_content();
+						}?>
+					</div>
+				</div>
+			<?php endwhile; endif; ?>						
+			</article>
+		</section>
+		<div class="list-side-bg"></div>
+	</section>
+	<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/assets/js/jquery.tools.min.js"></script>
+<?php 
+wp_enqueue_script('jquery-tools');
+get_footer();?>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+	//TIME LINE
+	jQuery(function() {
+		var indicator = jQuery('#indicator'),
+				indicatorHalfWidth = indicator.width()/2,
+				lis = jQuery('#historyTabs').children('li');
+
+		jQuery("#historyTabs").tabs("#historyContent section", {
+			effect: 'fade',
+			fadeOutSpeed: 0,
+			fadeInSpeed: 400,
+			onBeforeClick: function(event, index) {
+				var li = lis.eq(index),
+					newPos = li.position().left + (li.width()/2) - indicatorHalfWidth;
+				indicator.stop(true).animate({ left: newPos }, 600, 'easeInOutExpo');
+			}
+		});	
+	});	
+});	
+</script>

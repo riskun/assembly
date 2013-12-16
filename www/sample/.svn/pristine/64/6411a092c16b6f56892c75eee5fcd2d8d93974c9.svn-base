@@ -1,0 +1,56 @@
+<?php
+/*
+ Template Name: NPN
+ */
+?>
+
+<?php get_header();?>
+	<section class="content-static-pages clearfix">
+		<aside class="hashed">
+			<div id="submenu" class="subNav subNavAccordion">
+				<ul>
+				</ul>
+			</div><!-- close menu -->
+		</aside>
+		<article class="contentstwrapdiv contentsupport">
+
+<div class="latest-news-views" style="display: block; ">
+
+<?
+
+			$args = array(
+	
+				'post_type' => 'sn-product',
+				'posts_per_page' => "-1",
+				'order' => 'ASC',
+				'orderby' => 'meta_value_num',
+				'meta_key' => 'product_npn'
+
+			
+			);
+			
+			$productQuery = new WP_Query($args);
+
+			$productArray = array();
+
+			foreach ($productQuery->posts as $product) {
+			
+				//var_dump($product);?>
+                
+	<div><a cats="<?= $catString ?>" href="<?= get_permalink($product->ID) ?>"> <img src="http://lorempixel.com/170/170/food/<?= rand(1, 10) ?>"/><?= $product->post_title ?></a> (<?= get_post_meta($product->ID, 'product_npn', true); ?>)</div>
+                
+                <?
+
+			
+			}
+
+
+?>
+
+
+</div>
+
+	</article>
+		<div class="list-side-bg"></div>
+	</section>
+<?php get_footer();?>

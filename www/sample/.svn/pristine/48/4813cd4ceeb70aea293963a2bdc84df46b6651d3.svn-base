@@ -1,0 +1,192 @@
+<?php
+// Custom Post Type Registration (Homepage Slides)
+	add_action('init', 'create_homepage');
+	     function create_homepage() {
+	       $feature_args = array(
+	          'labels' => array(
+	           'name' => __( 'Homepage' ),
+	           'singular_name' => __( 'Featured Homepage Item' ),
+	           'add_new' => __( 'Add a new item' ),
+	           'add_new_item' => __( 'Add a new item' ),
+	           'edit_item' => __( 'Edit item' ),
+	           'new_item' => __( 'Add a new item' ),
+	           'view_item' => __( 'View Homepage Item' ),
+	           'search_items' => __( 'Search Homepage Items' ),
+	           'not_found' => __( 'No featured Homepage Items were found' ),
+	           'not_found_in_trash' => __( 'No featured Homepage Items found in trash' )
+	         ),
+	       'public' => true,
+	       'show_ui' => true,
+	       'capability_type' => 'post',
+	       'hierarchical' => true,
+	       'rewrite' => true,
+			'menu_position' => 8,
+    	   'menu_icon' => get_bloginfo('stylesheet_directory').'/assets/images/admin/icon_slides.png',	    	       
+	       'supports' => array('title','thumbnail','custom-fields')
+	     );
+	  register_post_type('sn-homepage',$feature_args);
+	}
+	
+	add_filter("manage_feature_edit_columns", "feature_edit_columns");
+	add_action( 'add_meta_boxes', 'sn_homepage_metabox_add' );
+	
+	function sn_homepage_metabox_add()
+	{
+//		add_meta_box('cd_meta_box_cb', 'Link this slide', 'cd_meta_box_cb', 'sn-homepage', 'normal', 'high' );
+	    add_meta_box('sn_homepage_image', 'Homepage initial image', 'sn_homepage_image', 'sn-homepage', 'normal', 'default');
+	    add_meta_box('sn_homepage_imagehover', 'Homepage image on hover', 'sn_homepage_imagehover', 'sn-homepage', 'normal', 'default');
+	    add_meta_box('sn_homepage_hyperlink', 'Homepage hyperlink', 'sn_homepage_hyperlink', 'sn-homepage', 'normal', 'default');
+
+	}
+	
+	
+
+
+	function sn_homepage_hyperlink($post)
+	{
+		$url = get_post_meta($post->ID, 'url', true);
+		wp_nonce_field( 'my_meta_box_nonce', 'meta_box_nonce' );
+?>
+
+<p>
+	<label for="url">External URL / Youtube</label>
+	<input type="text" name="url" id="url" value="<?php echo $url;?>" style="width:50%" placeholder="ex. http://www.youtube.com/watch?v=zre0u5XyNfY" />
+</p>
+<?php
+}
+	
+
+
+function sn_homepage_image() { 
+
+global $post;
+
+// adjust values here
+$id = "img1"; // this will be the name of form field. Image url(s) will be submitted in $_POST using this key. So if $id == “img1” then $_POST["img1"] will have all the image urls
+$svalue = ""; // this will be initial value of the above form field. Image urls.
+$multiple = false; // allow multiple files upload 
+$width = null; // If you want to automatically resize all uploaded images then provide width here (in pixels)
+$height = null; // If you want to automatically resize all uploaded images then provide height here (in pixels)
+
+?>
+
+<input type="hidden" name="<?php echo $id; ?>" id="<?php echo $id; ?>" value="<?php echo get_post_meta($post->ID, 'sn_homepage_image', true); ?>" />
+<div class="plupload-upload-uic hide-if-no-js <?php if ($multiple): ?>plupload-upload-uic-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-upload-ui">
+    <input id="<?php echo $id; ?>plupload-browse-button" type="button" value="<?php esc_attr_e('Select A File'); ?>" class="button" />
+    <span class="ajaxnonceplu" id="ajaxnonceplu<?php echo wp_create_nonce($id . 'pluploadan'); ?>"></span>
+    <?php if ($width && $height): ?>
+            <span class="plupload-resize"></span><span class="plupload-width" id="plupload-width<?php echo $width; ?>"></span>
+            <span class="plupload-height" id="plupload-height<?php echo $height; ?>"></span>
+    <?php endif; ?>
+    <div class="filelist"></div>
+</div>
+<div class="plupload-thumbs <?php if ($multiple): ?>plupload-thumbs-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-thumbs">
+</div>
+<div class="clear"></div>
+
+
+<?
+	
+}
+
+
+function sn_homepage_imagehover() { 
+
+global $post;
+
+// adjust values here
+$id = "img2"; // this will be the name of form field. Image url(s) will be submitted in $_POST using this key. So if $id == “img1” then $_POST["img1"] will have all the image urls
+$svalue = ""; // this will be initial value of the above form field. Image urls.
+$multiple = false; // allow multiple files upload 
+$width = null; // If you want to automatically resize all uploaded images then provide width here (in pixels)
+$height = null; // If you want to automatically resize all uploaded images then provide height here (in pixels)
+
+?>
+
+<input type="hidden" name="<?php echo $id; ?>" id="<?php echo $id; ?>" value="<?php echo get_post_meta($post->ID, 'sn_homepage_imagehover', true); ?>" />
+<div class="plupload-upload-uic hide-if-no-js <?php if ($multiple): ?>plupload-upload-uic-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-upload-ui">
+    <input id="<?php echo $id; ?>plupload-browse-button" type="button" value="<?php esc_attr_e('Select A File'); ?>" class="button" />
+    <span class="ajaxnonceplu" id="ajaxnonceplu<?php echo wp_create_nonce($id . 'pluploadan'); ?>"></span>
+    <?php if ($width && $height): ?>
+            <span class="plupload-resize"></span><span class="plupload-width" id="plupload-width<?php echo $width; ?>"></span>
+            <span class="plupload-height" id="plupload-height<?php echo $height; ?>"></span>
+    <?php endif; ?>
+    <div class="filelist"></div>
+</div>
+<div class="plupload-thumbs <?php if ($multiple): ?>plupload-thumbs-multiple<?php endif; ?>" id="<?php echo $id; ?>plupload-thumbs">
+</div>
+<div class="clear"></div>
+
+
+<?
+	
+}
+
+
+
+add_action( 'save_post', 'sn_homepage_save' );
+
+
+function sn_homepage_save($post_id)
+{
+	
+if ($_POST['post_type'] == "sn-homepage") {	
+	
+	global $post;
+
+
+	update_post_meta($post->ID, 'url', $_POST['url']);
+
+
+	update_post_meta($post->ID, 'sn_homepage_image', trim($_POST['img1']));
+
+	$imageArray = explode(",", trim($_POST['img1']));
+	$imageArray2 = array();
+		
+	foreach ($imageArray as $item) {
+	
+		$output = parse_url($item);
+		parse_str($output['query'], $output2);
+		
+		array_push($imageArray2, $output2['id']);
+		
+	}
+	
+	$attachmentIds = implode(",", $imageArray2);
+	update_post_meta($post->ID, 'sn_homepage_image2', $attachmentIds);
+
+
+
+	update_post_meta($post->ID, 'sn_homepage_imagehover', trim($_POST['img2']));
+
+	$imageArray = explode(",", trim($_POST['img2']));
+	$imageArray2 = array();
+		
+	foreach ($imageArray as $item) {
+	
+		$output = parse_url($item);
+		parse_str($output['query'], $output2);
+		
+		array_push($imageArray2, $output2['id']);
+		
+	}
+	
+	$attachmentIds = implode(",", $imageArray2);
+	update_post_meta($post->ID, 'sn_homepage_imagehover2', $attachmentIds);
+
+
+
+
+}
+
+}
+
+
+
+
+
+
+
+
+
+?>

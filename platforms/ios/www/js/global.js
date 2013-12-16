@@ -1,91 +1,328 @@
-$.event.special.tap = {
-  setup: function() {
-    var self = this,
-      $self = $(self);
 
-    $self.on('touchstart', function(startEvent) {
-      var target = startEvent.target;
+$(document).ready(function(){
 
-      $self.one('touchend', function(endEvent) {
-        if (target == endEvent.target) {
-          $.event.simulate('tap', self, endEvent);
-        }
-      });
+
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+ // some code..
+ 		//alert("PHONE");
+	    document.addEventListener("deviceready", onDeviceReady, false);
+
+	} else {
+
+		onDeviceReady();
+
+	}
+
+});
+
+
+var fs = null;
+
+function onDeviceReady() {
+
+    document.addEventListener("backbutton", onBackKeyDown, false);
+
+	function onBackKeyDown() {
+	    // Exit the app!
+	}
+
+    window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+
+	function errorHandler(e) {
+	  var msg = '';
+	  switch (e.code) {
+	    case FileError.QUOTA_EXCEEDED_ERR:
+	      msg = 'QUOTA_EXCEEDED_ERR';
+	      break;
+	    case FileError.NOT_FOUND_ERR:
+	      msg = 'NOT_FOUND_ERR';
+	      break;
+	    case FileError.SECURITY_ERR:
+	      msg = 'SECURITY_ERR';
+	      break;
+	    case FileError.INVALID_MODIFICATION_ERR:
+	      msg = 'INVALID_MODIFICATION_ERR';
+	      break;
+	    case FileError.INVALID_STATE_ERR:
+	      msg = 'INVALID_STATE_ERR';
+	      break;
+	    default:
+	      msg = 'Unknown Error';
+	      break;
+	  };
+	  alert(msg);
+	}
+
+	function initFS() {
+	  window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(filesystem) {
+	    fs = filesystem;
+	  }, errorHandler);
+	}
+
+    function download(url) {
+
+
+        var remoteFile = encodeURI(url);
+
+        alert("Starting download for " + remoteFile);
+
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (filesystem) {
+
+        	alert("Filesystem success");
+
+            filesystem.root.getFile("dummy.html", {
+                create: true,
+                exclusive: false
+            }, function (fileEntry) {
+
+                var localPathRoot = fileEntry.fullPath.replace("dummy.html", "");
+
+                var localPath = localPathRoot + "aotg_assembly/temp/" + remoteFile.substring(remoteFile.lastIndexOf('/') + 1);
+
+                alert(localPath);	            
+
+                var ft = new FileTransfer();
+                ft.download(remoteFile, localPath, function (entry) {
+
+                    alert("Download success for " + localPath);
+                    alert("Physical path is " + entry.fullPath);
+
+
+                    $.getJSON(entry.fullPath, function (data) {
+
+
+                        var downloads = data.downloads;
+
+                        alert("Total of " + downloads.length);
+
+                        var downloadSuccessCount = 0;
+
+                        var slug = data.slug;
+
+                        //alert("Slug name for issue is " + slug);
+
+		                var localContentPath = localPathRoot + "aotg_assembly/"+slug+"/" + remoteFile.substring(remoteFile.lastIndexOf('/') + 1);
+
+		                ft.download(remoteFile, localContentPath, function (entry) {
+
+                        	alert("Content download complete.");
+
+	                        $.each(downloads, function (i, o) {
+
+	                            var remoteAssetPath = "http://ckprototype.com/assembly/modules/downloads/" + slug + "/" + o;
+
+	                            //alert("Starting download for " + remoteAssetPath);
+
+	                            var localAssetPath = localPathRoot + "aotg_assembly/" + slug + "/" + o;
+
+	                            ft.download(remoteAssetPath, localAssetPath, function (assetEntry) {
+
+	                                downloadSuccessCount = downloadSuccessCount + 1;
+	                                //alert();
+	                                $("#status").html(downloadSuccessCount + "/" + downloads.length);
+
+	                                if (downloadSuccessCount == downloads.length) {
+
+	                                	alert("Asset download complete. Please restart the app.");
+									    navigator.app.exitApp();
+
+
+	                                }
+
+	                            }, fail);
+
+
+	                        });
+
+
+		                }, fail);
+
+
+
+                    });
+
+                }, fail);
+
+
+            }, fail);
+
+        }, errorHandler);
+
+    };
+    
+    function fail(error) {
+        alert(error.code);
+    }
+
+    $("#header").click(function(){
+
+    	//download("http://ckprototype.com/assembly/modules/downloads/spring-2014/content.json");
+
     });
-  }
-};
+
+	function checkDownload() {
+
+		var existingIssues = [];
+
+	    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fileSystem) {
+
+	        window.rootFullPath = fileSystem.root.fullPath;
+
+	        fileSystem.root.getDirectory("aotg_assembly", {
+                create: true,
+                exclusive: false
+            }, function (directory) {
+
+	            var directoryReader = directory.createReader();
+	            directoryReader.readEntries(function (entries) {
+
+	                for (i = 0; i < entries.length; i++) {
+
+	                	if (entries[i].name != "temp") {
+
+	                    	//alert(entries[i].name);
+	                    	existingIssues.push(entries[i].name);
+
+	                	}
+
+	                }
+
+	                //alert("existing issues loaded.");
+	                window.existingIssues = existingIssues;
+
+					loadPage("list");
+
+	            }, fail);
+
+	        });
+
+	    }, fail);
+
+	};
 
 
-function loadPage(page, number){
 
 
-	$("#status").addClass("loading");
-	$("#status").text('');  
+	if (window.requestFileSystem) {
 
-	//alert($(window).width());
-	$("#main").removeClass("notransition");
-
-	if (page == "") {
-
-		page = "list";
+	    //checkDownload();
 
 	}
 
 
 
+    FastClick.attach(document.body);
+
+	hashSplit = hash.split("-");
+
+	var url = "http://ckprototype.com/assembly/modules/generator.php?id=4&callback=?";
+
+	$.ajax({
+	   type: 'GET',
+	    url: url,
+	    async: false,
+	    jsonpCallback: 'jsonCallback',
+	    contentType: "application/json",
+	    dataType: 'jsonp',
+	    success: function(json) {
+
+	    	window.currentIssue = json;
+	    	loadPage("list");
+
+	    },
+	    error: function(e) {
+	       
+	    	alert("Error loading JSON");
+
+	    }
+	});
+
+
+
+	//loadPage("list");
+
+
+	$("body").stop().transition({opacity: 1});
+
+
+
+
+}
+
+
+function loadPage(page, number){
+
+	//alert("asdfdsa");
+
+	console.log(window.currentIssue);
+
+
+	$("#status").addClass("loading");
+	$("#status").text('');  
+
+	$("#main").removeClass("notransition");
+
 	$("#main").transition({x: -$(window).width(), opacity: 0}, function(){
 
 		$("#main").html("");
- 
-		$.ajax({
-			dataType: 'jsonp',
-			url: "http://ckprototype.com/assembly/modules/"+page+"_jsonp.php?id="+number+"&callback=?",
-			success: function(data){
 
-				//console.log(data);
+		if (page == "") {
 
-				var noLoaded = 0;
+			page = "list";
 
-				//$("#main").html(data);
+		}
 
-				if (number != undefined) {
+		$("body").scrollTop(0);
 
-					window.location.hash = page+"-"+number;
 
-				} else {
+		placeElements(page, number);
 
-					if (page != "list") {
-						window.location.hash = page;
+		currentPage = page;
+
+		//alert(currentPage);
+
+		$("#main").transition({x: 0, opacity: 1}, function(){
+
+			$("#main").addClass("notransition");
+
+		});
+
+
+	});
+	/*
+	$("#main").transition({x: -$(window).width(), opacity: 0}, function(){
+
+			$("#main").html("");
+	 
+			$.ajax({
+				dataType: 'jsonp',
+				url: "http://ckprototype.com/assembly/modules/"+page+"_jsonp.php?id="+number+"&callback=?",
+				success: function(data){
+
+
+					if (number != undefined) {
+
+						window.location.hash = page+"-"+number;
+
+					} else {
+
+						if (page != "list") {
+							window.location.hash = page;
+						}
+
 					}
+
 
 				}
 
- 				$("body").scrollTop(0);
+			})
 
- 
- 				placeElements(page, data);
-
-				currentPage = page;
-
-				resizeElements(currentPage);
-
-
-				$("#main").transition({x: 0, opacity: 1}, function(){
-
-
-					$("#main").addClass("notransition");
-			 
-					//var tocWidth = Math.floor(windowWidth * 0.5);					
-
-				});
+		});
+*/
 
 
 
-			}
 
-		})
-
-	});
 
 
 }
@@ -93,114 +330,59 @@ function loadPage(page, number){
 function placeElements(page, data){
 
 	$("#resource_container").remove();
+	var windowHeight = $(window).height();
+	var windowWidth = $(window).width();
 
 	if (page == "list") {
-
-		/*
-
-    	var existingIssues = [];
-
-
-		if (window.requestFileSystem) {
-
-			alert("exists!");
-
-		    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, gotFS, fail);
-
-			function gotFS(fileSystem) {
-			   fileSystem.root.getDirectory("data", {create: true}, gotDir);
-			}
-
-			function gotDir(dirEntry) {
-			    dirEntry.getFile("lockfile.txt", {create: true, exclusive: true}, gotFile);
-			}
-
-			function gotFile(fileEntry) {
-			    // Do something with fileEntry here
-			}
-
-			window.requestFileSystem(window.PERSISTENT, 0, function(fileSystem) {
-
-			   fileSystem.root.getDirectory("", {
-			           create: true
-			       },
-
-			       function(directory) {
-
-				        var directoryReader = directory.createReader();
-				        directoryReader.readEntries(function(entries) {
-				            
-				            var i;
-
-				            for (i=0; i<entries.length; i++) {
-
-				                existingIssues.push(entries[i].name);
-
-				            }
-
-				        }, function (error) {
-
-				            alert(error.code);
-
-				        });
-
-			       });
-
-			}, function(error) {
-			   alert("can't even get the file system: " + error.code);
-			});
-
-			console.log(existingIssues);
-
-			$.each(existingIssues, function(i,o){
-
-				alert(o);
-
-			});
-
-
-
-		}
-
-			*/	
-
-
 
 		$("#main").append('<div id="magazine-list-container"></div>');
 		$("#magazine-list-container").append('<ul id="magazine-list"></ul>');
 
-		$.each(data, function(i,o){
+    	var thumbnailPath = "sample/images/"+$.md5(window.currentIssue.id)+'_thumbnail.jpg';
 
-			var format = '\
-				<li issue="'+o.issue+'">\
-					<div class="magazine-list-image" style="background-image:url('+o.image+')">\
-					</div>\
-					<div class="magazine-list-cover">\
-						<h1>'+o.title+'</h1>\
-						<ul class="magazine-list-button-container">\
-								<li><i class="fa fa-download"></i> DOWNLOAD</li><li><i class="fa fa-eye"></i> VIEW</li>\
-						</ul>\
-					</div>\
-				</li>';
+		var format = '\
+			<li location="toc" issue="'+window.currentIssue.id+'">\
+				<div class="magazine-list-image" style="background-image:url('+thumbnailPath+')">\
+				</div>\
+				<div class="magazine-list-cover">\
+					<h1>'+window.currentIssue.name+'</h1>\
+					<ul class="magazine-list-button-container">\
+							<!--<li><i class="fa fa-download"></i> DOWNLOAD</li>-->\
+							<li><i class="fa fa-eye"></i> VIEW</li>\
+					</ul>\
+				</div>\
+			</li>';
 
-			$("#magazine-list").append(format);
+		$("#magazine-list").append(format);
 
-		});
+		resizeElements(page);				
 
 
 	} else if (page == "toc") {
 
 		$("#main").append('<div id="toc"></div>');
 
-		$.each(data, function(i,o){
+		var articles = window.currentIssue.articles;
+		
+		$.each(articles, function(i,o){
 
 			//alert(o.excerpt);
 
+			if (windowWidth > 640) {
+
+	    	var thumbnailPath = "sample/images/"+$.md5(o.id)+'_medium.jpg';
+
+	    	} else {
+
+	    	var thumbnailPath = "sample/images/"+$.md5(o.id)+'_thumbnail.jpg';
+
+	    	}
+
 			var format = '\
-			<div class="toc-item" article="'+o.article+'">\
+			<div class="toc-item" article="'+o.id+'">\
 				<div class="toc-item-cover">\
 				</div>\
-				<div class="toc-item-image" style="background-image:url('+o.image+')">\
+				<div class="toc-item-image" style="background-image:url('+thumbnailPath+')">\
 				</div>\
 				<div class="toc-item-text">\
 					<h1>'+o.title+'</h1>\
@@ -212,11 +394,32 @@ function placeElements(page, data){
 
 		});
 
+		resizeElements(page);
+
 
 		
-	} else if (page == "detail") {
+	}  else if (page == "detail") {
 
-		console.log(data);
+
+		var articles = window.currentIssue.articles;
+		var article = null;
+
+		$.each(articles, function(i,o) {
+
+			//console.log(articles);
+			//alert(data);
+
+			if (o.id == parseInt(data)) {
+
+				//alert("Hello!");
+				article = o;
+				return;
+
+			}
+
+		});
+
+		console.log(article);
 
 		//$.each(data, function(i,o){
 
@@ -228,17 +431,27 @@ function placeElements(page, data){
 
 		$("#article").append(format);		
 
+		if (windowWidth > 640) {
+
+	   	var articleImagePath = "sample/images/"+$.md5(article.id)+'_large.jpg';
+
+    	} else {
+
+	   	var articleImagePath = "sample/images/"+$.md5(article.id)+'_medium.jpg';
+
+    	}
+
 		var articleImage = '\
 			<li>\
-				<div class="article_image" style="background-image:url('+data.image+')">\
+				<div class="article_image" style="background-image:url('+articleImagePath+')">\
 					<div class="article_image_slide">Slide left to begin</div>\
 					<div class="article_title">\
-						'+data.title+'\
+						'+article.title+'\
 					</div>\
 				</div>\
 				<!--\
 				<div id="article_text">\
-						'+data.content+'\
+						'+article.content+'\
 				</div>\
 				-->\
 			</li>';
@@ -250,7 +463,7 @@ function placeElements(page, data){
 		
 
 
-		if (data.sections.length > 0) {
+		if (article.chapters.length > 0) {
 
 			/*
 			$("body").append('<div id="resource_container">\
@@ -260,23 +473,49 @@ function placeElements(page, data){
 			*/
 
 
-			$.each(data.sections, function(i,o){
+			$.each(article.chapters, function(i,o){
 
+				if (windowWidth > 640) {
+
+					   	var chapterImagePath = "sample/images/"+$.md5(o.id)+'_large.jpg';
+
+		    	} else {
+
+					   	var chapterImagePath = "sample/images/"+$.md5(o.id)+'_large.jpg';
+
+		    	}
+
+			   	if (o.title == "[ADVERTISEMENT]") {
 				var articleText = '\
-					<li>\
-						<div class="section_image" style="background-image:url('+o.image+')">\
-							<div class="section_title">\
-								'+o.title+'\
+						<li>\
+							<div class="article_ad">\
+									<img src="'+chapterImagePath+'"/>\
 							</div>\
-						</div>\
-						<div class="article_text">\
-							<div class="article_text_content">\
-								'+o.content+'\
+							<ul class="article_adjacent" rel="'+i+'">\
+							</ul>\
+						</li>';
+
+
+
+			   	} else {
+
+					var articleText = '\
+						<li>\
+							<div class="section_image" style="background-image:url('+chapterImagePath+')">\
+								<div class="section_title">\
+									'+o.title+'\
+								</div>\
 							</div>\
-						</div>\
-						<ul class="article_adjacent" rel="'+i+'">\
-						</ul>\
-					</li>';
+							<div class="article_text">\
+								<div class="article_text_content">\
+									'+o.content+'\
+								</div>\
+							</div>\
+							<ul class="article_adjacent" rel="'+i+'">\
+							</ul>\
+						</li>';
+
+				}
 
 				$("#article_pages").append(articleText);			
 
@@ -285,7 +524,7 @@ function placeElements(page, data){
 				var articleAdjacentText = '\
 					<li class="next full">Next <i class="fa fa-angle-double-right"></i></li>';
 
-				} else if (i == data.sections.length - 1) {
+				} else if (i == article.chapters.length - 1) {
 
 				var articleAdjacentText = '\
 					<li class="prev full"><i class="fa fa-angle-double-left"></i> Previous</li>';
@@ -330,20 +569,25 @@ function placeElements(page, data){
 
 		}
 
-		/*
-		if (data.resource.length > 0) {
+		
+		if (article.resources.length > 0) {
 
 			$("body").append('<div id="resource_container">\
-				<div id="resource_container_button"><i class="fa fa-bookmark" id="open-bottom-bar"></i><span>Resources</span></div>\
+				<!--<div id="resource_container_button"></div>-->\
+				<h1><i class="fa fa-bookmark"></i> Resources</h1>\
 				<div id="bottom-bar"></div>\
 			</div>');
 			//$("#bottom-bar").append('<h1>Additional Resources</h1>');
 
-			$.each(data.resource, function(i,o){
+
+
+			$.each(article.resources, function(i,o){
+
+			   	var resourceImagePath = "sample/images/"+$.md5(o.id)+'_thumbnail.jpg';
 
 				var format = '\
 				<div class="resource">\
-					<div class="resource_image" style="background-image:url('+o.image+')">\
+					<div class="resource_image" style="background-image:url('+resourceImagePath+')">\
 					</div>\
 					<h1>'+o.title+'</h1>\
 					'+o.content+'\
@@ -354,9 +598,10 @@ function placeElements(page, data){
 			});
 
 		}
-		*/
+		
 
 		//});
+		resizeElements(page);
 
 
 		
@@ -426,6 +671,7 @@ function resizeElements(page){
 			$("#magazine-list div.magazine-list-image").css("width", magazineWidth +"px"); 
 			$("#magazine-list>li").css("width", "50%"); 
 			$("#magazine-list>li").css("float", "left"); 		
+			$("#magazine-list>li").css("margin-bottom", magazineUnit + "px"); 				
 			//$("#magazine-list li").css("padding-left", (magazineMargin + "px"));
 			//$("#magazine-list li").css("padding-right", (magazineMargin + "px"));
 			//$("#magazine-list li").css("padding-top", (magazineMargin + "px"));
@@ -488,7 +734,7 @@ function resizeElements(page){
 
 
 
-	} else if (page == "toc") {
+	} else if (page == "toc" || page == "localtoc") {
 
 		$("#back_button").attr("destination", "list");
 		$("#status").text("Contents");
@@ -521,12 +767,16 @@ function resizeElements(page){
 		
 	} else if (page == "detail") {
 
+		//alert(windowWidth);
+		//console.log(windowWidth);
+
 		
 		$(".article_image_slide").stop().delay(0).transition({opacity: 1}, 400, function(){
 
 
 		});
 		
+		closeResource();
 
 		$("#back_button").attr("destination", "toc-"+currentToc);
 		$("#status").text("");
@@ -558,7 +808,6 @@ function resizeElements(page){
 		$(".article_image_slide").css("padding", magazineUnit + "px");
 		$(".article_image_slide").css("top", magazineUnit*2 + "px");
 
-		$(".article_text").css("padding-top", magazineUnit*2 + "px");
 
 		$(".article_text, .article_text_content").css("margin-left", magazineUnit*2 + "px");
 		$(".article_text, .article_text_content").css("margin-right", magazineUnit*2 + "px");
@@ -568,31 +817,75 @@ function resizeElements(page){
 		var adjacentNavHeight = $(".article_adjacent").outerHeight();
 
 		$(".article_text").css("min-height", (windowHeight - headerHeight) / 3 * 2 - magazineUnit*4 - adjacentNavHeight + "px");
-
 		$(".article_text").css("padding-bottom", magazineUnit*2 + "px");
+		$(".article_text").css("padding-top", magazineUnit*2 + "px");
+
+		$(".article_ad").css("min-height", (windowHeight - headerHeight) - adjacentNavHeight + "px");
+
+		/* RESOURCE TIME */
+
+		closeResource();
+
+		//console.log(resourceData);
+		//$("body").append(resourceData);
 
 		var resourceBtnHeight = $("#resource_container_button").outerHeight();
+		var resourceBtnWidth = $("#resource_container_button").outerWidth();
+
 		var resourceHeight = $("#resource_container").outerHeight();
 
-		$("#resource_container").css("bottom", -resourceHeight + resourceBtnHeight);
-		$("#resource_container, #resource_container_button").removeAttr("active");
-
-		//$("#article").css("padding-bottom", (resourceBtnHeight + "px"));
-		$(".article_text").css("padding-bottom", magazineUnit*2 + resourceBtnHeight + "px");
-		$(".article_title, .section_title").css("bottom", magazineUnit*2 + resourceBtnHeight + "px");
+		//$("#resource_container").transition({x: -resourceWidth/2+"px"});
 
 
-		if (windowWidth > 640) { 
+		if (windowWidth > windowHeight) { 
 
-	
+			$("#resource_container").css("width", windowWidth / 2);
 
 		} else {
+
+			$("#resource_container").css("width", windowWidth);
 
 			$(".article_text").css("margin-left", 0);
 			$(".article_text").css("margin-right", 0);
 		}
 
 
+
+		//$("#resource_container").css("bottom", -resourceHeight + resourceBtnHeight);
+		$("#resource_container, #resource_container_button").removeAttr("active");
+		$("#resource_container").css("height", windowHeight - headerHeight + "px");		
+		$("#resource_container").css("top", headerHeight + "px");		
+
+		//$("#resource_container_button").css({ transformOrigin: $("#resource_container_button").outerWidth()+'px 0' }).transition({rotate: "90deg", y: -resourceBtnWidth+"px"});
+
+		//$("#article").css("padding-bottom", (resourceBtnHeight + "px"));
+		//$(".article_text").css("padding-bottom", magazineUnit*2 + resourceBtnHeight + "px");
+		$(".article_title, .section_title").css("bottom", magazineUnit*2 + "px");
+
+		//alert($("#resource_container").height());
+
+		$("#bottom-bar").css("height", $("#resource_container").height() - $("#resource_container>h1").outerHeight(true) + "px");		
+		$("#bottom-bar").css("overflow-y", "auto");		
+		$("#bottom-bar").css("-webkit-overflow-scrolling", "touch");				
+
+		var resourceWidth = $("#resource_container").outerWidth();
+
+		var resourceData = $("#resource_container").wrap('<p/>').parent().html();
+		$("#resource_container").remove();
+		$("body").append(resourceData);
+
+		//alert($("#bottom-bar").height());
+
+
+		//$("#resource_container_button").css({ transformOrigin: resourceBtnWidth+'px ' + 0 + 'px' }).transition({x: resourceBtnWidth+"px", y: 0+"px", rotate: "0deg"}, 0);
+
+
+		//alert(resourceWidth);
+
+		//$("#resource_container").stop().transition({x: -resourceWidth +"px"}, 300);
+		
+
+		//closeResource();
 		
 		var IMG_WIDTH = windowWidth,
 		currentImg=0,
@@ -634,31 +927,118 @@ function resizeElements(page){
 
 		//$("").
 
+		$(document).off(onHandler, "#open-bottom-bar");
+
+		$(document).on(onHandler, "#open-bottom-bar", function(e) {
+
+			e.preventDefault();
+
+			var barActive = $("#resource_container").attr("active");
+
+			if (barActive == "on" ) {
+
+				//$("#resource_container").removeAttr("active");
+				//console.log("closing");
+				closeResource();
+
+			} else if (barActive != "on") {
+
+				openResource();
+
+			}	
+
+
+		});	
+
+		function openResource(elem){
+
+			$(".article_image").swipe("destroy");
+
+			var bottomHeight = $("#resource_container").outerHeight();
+
+			$("#resource_container").remove();
+			$("body").append(resourceData);
+
+			$(document).off(onHandler, ".article_navigation");
+			$("#status").stop().fadeTo("fast", 0.2);
+
+			//$("#resource_container").css("bottom", -bottomHeight+"px");
+			//$("#main").css("padding-bottom", bottomHeight+"px");
+			$("#resource_container").attr("active", "on");
+
+			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){	
+
+
+				$("body").css("overflow-y", "hidden");
+				$("body").css("margin-top", -$("body").scrollTop() + "px");
+				$("body").height($(window).height());
+
+				//$("#bottom-bar").html("AOTG Additional Reading "+ elem.text());
+
+				$("#resource_container").stop().transition({x: 0+"px"}, function(){
+
+
+				});
+
+
+			});
+
+
+
+
+
+
+		}
+
+		function closeResource(){
+
+
+			var resourceBtnHeight = $("#resource_container_button").outerHeight();
+			var resourceWidth = $("#resource_container").outerWidth();
+
+			$(".article_image").swipe({
+				triggerOnTouchEnd : true,
+				swipeStatus : swipeStatus,
+				allowPageScroll:"vertical",
+				threshold: 50
+			});
+
+			$(document).on(onHandler, ".article_navigation", navigationChapter);
+			$("#status").fadeTo(0, 1);
+
+			$("body").css("overflow-y", "");
+			$("body").css("margin-top", "");
+			$("body").height("");
+			
+			$("#resource_container").stop().transition({x: -resourceWidth +"px"}, 300);
+			$("#resource_container").removeAttr("active");
+
+
+		}
+
+
+
+
 		$(document).off(onHandler, ".article_navigation");
-		$(document).off(onHandler, ".article_adjacent>li", adjacentChapter);
-		$(document).on(onHandler, ".article_adjacent>li", adjacentChapter);
+		$(document).on(onHandler, ".article_navigation", navigationChapter);
+
+		$(document).off(onHandler, "ul.article_adjacent>li");
+		$(document).on(onHandler, "ul.article_adjacent>li", adjacentChapter);
 
 
-		$(document).on(onHandler, ".article_navigation", function(e) {
-
-			$(document).off(onHandler, ".article_adjacent>li", adjacentChapter);
+		function navigationChapter(e){
 
 			e.preventDefault();
 			var index = $(this).attr("index");
-			//$(window).scrollTop(0);
-			//$("html, body").animate({ scrollTop: "0" });
-
-
-			//currentImg = parseInt(index);
 
 			particularImage(parseInt(index));
 
 
-		});
-
+		}
 
 		function adjacentChapter(){
 
+			//alert("Clicked");
 
 			if ($(this).hasClass("next") == true) {
 
@@ -751,7 +1131,7 @@ function resizeElements(page){
 
 				var currentLi = $("#article_pages>li:eq("+index+")");
 				$("#main").height(currentLi.height());
-				$('body').unbind('touchmove');
+				//$('body').unbind('touchmove');
 
 
 		}
@@ -763,7 +1143,7 @@ function resizeElements(page){
 
 			if ($("body").scrollTop() > 0) {
 
-				$('body').bind('touchmove', function(e){e.preventDefault()})
+				//$('body').bind('touchmove', function(e){e.preventDefault()})
 
 				$("body").stop().animate({ scrollTop: "0" }, "fast", function(){
 
@@ -784,7 +1164,6 @@ function resizeElements(page){
 
 			}
 
-			$(document).on(onHandler, ".article_adjacent>li", adjacentChapter);
 
 
 
@@ -890,156 +1269,6 @@ $(window).on('hashchange', function(){
 
 
 
-$(document).ready(function(){
-
-
-    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
- // some code..
- 		//alert("PHONE");
-	    document.addEventListener("deviceready", onDeviceReady, false);
-
-	} else {
-
-		onDeviceReady();
-
-	}
-
-});
-
-
-var fs = null;
-
-function onDeviceReady() {
-
-	function errorHandler(e) {
-	  var msg = '';
-	  switch (e.code) {
-	    case FileError.QUOTA_EXCEEDED_ERR:
-	      msg = 'QUOTA_EXCEEDED_ERR';
-	      break;
-	    case FileError.NOT_FOUND_ERR:
-	      msg = 'NOT_FOUND_ERR';
-	      break;
-	    case FileError.SECURITY_ERR:
-	      msg = 'SECURITY_ERR';
-	      break;
-	    case FileError.INVALID_MODIFICATION_ERR:
-	      msg = 'INVALID_MODIFICATION_ERR';
-	      break;
-	    case FileError.INVALID_STATE_ERR:
-	      msg = 'INVALID_STATE_ERR';
-	      break;
-	    default:
-	      msg = 'Unknown Error';
-	      break;
-	  };
-	  alert(msg);
-	}
-
-	function initFS() {
-	  window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(filesystem) {
-	    fs = filesystem;
-	  }, errorHandler);
-	}
-
-    function download(url) {
-        var remoteFile = encodeURI(url);
-        var localFileName = "temp/"+remoteFile.substring(remoteFile.lastIndexOf('/')+1);
-        console.log(localFileName);
-
-		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(filesystem) {
-
-	        filesystem.root.getFile("dummy.html", {create: true, exclusive: false}, function(fileEntry) {
-	            
-	            console.log(fileEntry);
-	            var localPath = fileEntry.fullPath;
-		        var ft = new FileTransfer();
-		        ft.download(remoteFile, localPath, function(entry) {
-
-		        		//alert("Success");
-		        		//alert(entry.fullPath);
-		            	$("body").append("<img src='"+entry.fullPath+"'/>")
-
-		            }, fail);
-
-	            localPathRootTemp = localPath.replace(localFileName, "");
-
-	        }, fail);
-
-		}, errorHandler);
-
-    };
-    
-    
-    function fail(error) {
-        alert(error.code);
-    }
-
-
-	console.log("Hello");
-
-	var localPathRoot = "";
-
-	if (window.requestFileSystem) {
-
-    	download("http://www.nicenicejpg.com/600/400");
-
-	}
-
-    FastClick.attach(document.body);
-
-	hashSplit = hash.split("-");
-	//loadPage(hashSplit[0], hashSplit[1]);
-
-	/*
-
-	if (hashSplit[0] == "toc") {
-
-		//$(window).trigger("hashchange");
-
-
-	} else if (hashSplit[0] == "detail") {
-
-		//window.location.hash = "list";
-		//$(window).trigger("hashchange");
-
-	} else {
-
-		//window.location.hash = "list";
-		//$(window).trigger("hashchange");
-		//$(window).trigger("hashchange");
-
-		//loadPage("list");
-
-		$.ajax({
-
-			url: "modules/list.php",
-			success: function(data){
-
-				//alert("Hello");
-				currentPage = "list";			
-				$("#main").html(data);
-				resizeElements(currentPage);
-
-
-			}
-
-		})
-
-	}
-		*/
-
-	//$(window).trigger("hashchange");
-
-	loadPage("list");
-
-	$("body").stop().transition({opacity: 1});
-
-
-
-
-}
-
 
 
 
@@ -1071,9 +1300,14 @@ $(window).resize(function(){
 })
 
 
-$(window).scroll(function(){
+$(window).scroll(function(e){
 
-	//alert("Scroll!");
+
+	//console.log("Scroll! " + scrollTop);
+
+	//e.preventDefault();
+
+
 
 })
 
@@ -1095,6 +1329,7 @@ $(document).on(onHandler, "#magazine-list>li", function(e) {
 
 	e.preventDefault();
 
+	//var location = $(this).attr("location");
 	var issue = $(this).attr("issue");
 	currentToc = issue;
 	window.location.hash = "toc-"+issue;
@@ -1175,7 +1410,28 @@ $(document).on(onHandler, ".article_text_content a", function(e) {
 
 	e.preventDefault();
 	var href = $(this).attr("href");
-	window.open(href, '_blank', 'location=yes');
+	window.open(href, '_blank', 'location=no');
+
+
+	/*	
+	var confirm = window.confirm("Would you like to leave the app and open AOTG?");
+
+
+
+	if (confirm == true) {
+
+		//window.location.href = "http://aotg.com";
+		window.open('http://aotg.com', '_blank', 'location=yes');
+	}
+	*/
+
+});	
+
+$(document).on(onHandler, ".resource", function(e) {
+
+	e.preventDefault();
+	//var href = $(this).attr("href");
+	window.open("http://aotg.com", '_blank', 'location=no');
 
 
 	/*	
@@ -1194,58 +1450,6 @@ $(document).on(onHandler, ".article_text_content a", function(e) {
 
 
 
-function openResource(elem){
-
-	//var windowHeight = $(window).height();
-	//var windowWidth = $(window).width();
-	var bottomHeight = $("#resource_container").outerHeight();
-	//var headerHeight = $("#header").outerHeight();
-
-	//alert(windowHeight);
-
-	//$("#resource_container").css("height", bottomHeight+"px");
-
-//	alert($("#bottom-bar").height());
-
-	//$("#resource_container").css("bottom", -bottomHeight+"px");
-	//$("#main").css("padding-bottom", bottomHeight+"px");
-	$("#resource_container").attr("active", "on");
-	//$("#bottom-bar").html("AOTG Additional Reading "+ elem.text());
-
-	$("#resource_container").stop().transition({bottom: 0+"px"}, function(){
-
-		/*
-		var slidePos = (windowHeight / 3) + headerHeight - elem.height();
-
-	     $('html, body').animate({
-	         scrollTop: elem.offset().top - slidePos
-	     }, "fast");
-		*/
-
-	});
-
-
-
-
-
-}
-
-function closeResource(){
-
-	//var windowHeight = $(window).height();
-	//var windowWidth = $(window).width();
-	//var bottomHeight = $("#resource_container").outerHeight();
-	
-	var resourceBtnHeight = $("#resource_container_button").outerHeight();
-	var resourceHeight = $("#resource_container").outerHeight();
-
-	//$("#resource_container").css("bottom", -resourceHeight + resourceBtnHeight);
-
-	$("#resource_container").stop().transition({bottom: -resourceHeight + resourceBtnHeight +"px"}, 300);
-	$("#resource_container, #resource_container_button").removeAttr("active");
-
-}
-
 
 function swapResource(elem){
 
@@ -1255,41 +1459,7 @@ function swapResource(elem){
 
 }
 
-$(document).on(onHandler, ".article_text .highlight, #open-bottom-bar, #resource_container_button", function(e) {
 
-	e.preventDefault();
-
-	var barActive = $("#resource_container").attr("active");
-	var linkActive = $(this).attr("active");
-
-
-
-
-	
-
-	if (barActive == "on" && linkActive == "on") {
-
-		closeResource();
-		$(this).removeAttr("active");
-
-	} else if (barActive == "on" && linkActive != "on") {
-
-		swapResource($(this));
-		$(this).attr("active", "on");
-		$(".highlight").not(this).removeAttr("active");
-
-
-	} else if (barActive != "on" && linkActive != "on") {
-
-		openResource($(this));
-		$(this).attr("active", "on");
-
-
-
-	}	
-
-
-});	
 
 /*
 $(document).on(onHandler, "#bottom-bar", function(e) {

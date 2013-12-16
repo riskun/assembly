@@ -1,0 +1,43 @@
+<?php
+/*
+ Template Name: Meet the Experts
+ */
+?>
+
+<?php get_header();?>
+	<section class="content-static-pages clearfix">
+		<aside class="hashed">
+			<div id="submenu" class="subNav subNavAccordion">
+				<ul>
+				<?php
+				if($post->post_parent)
+				$children = wp_list_pages("title_li=&child_of=".$post->post_parent."&echo=0");
+				else
+				$children = wp_list_pages("title_li=&child_of=".$post->ID."&echo=0");
+				if ($children) {
+				?>
+				<?php echo $children; ?>
+				<?php } ?>		
+				</ul>
+			</div><!-- close menu -->
+		</aside>
+		<section class="accordionWrapper hashed">
+			<article class="accordion">
+			<?php 
+			$pageid = 8843;
+			$subpages = new WP_Query("post_parent=$pageid&post_type='page'&orderby=title&order=ASC");
+			if($subpages->have_posts()) : while($subpages->have_posts()) : $subpages->the_post(); ?>			
+				<h6 id="<?php global $post; echo $post -> post_name;?>"><a href="javascript:void(0);"><?php echo get_the_title(); ?></a></h6>
+				<div>
+					<div class="contentwrapdiv">
+						<div class="contentdiv">
+							<?php the_content(); ?>
+						</div>
+					</div>
+				</div>
+			<?php endwhile; endif; ?>							
+			</article>
+		</section>
+		<div class="list-side-bg"></div>
+	</section>
+<?php get_footer();?>

@@ -1,0 +1,82 @@
+<?php get_header(); ?>
+	<section class="content-static-pages clearfix">
+	<aside>
+
+	</aside>
+	<?php query_posts('post_type=sn-events');
+		// - declare fresh day -
+		$daycheck = null;
+		$sd = get_post_meta($post -> ID, 'sn_events_startdate', true);
+		$ed = get_post_meta($post -> ID, 'sn_events_enddate', true);
+		$loc = get_post_meta($post -> ID, 'sn_events_location', true);
+		$images = get_post_meta($post -> ID, 'sn_events_images', true);
+		$images = explode(',',$images);	
+		//print_r($images);
+	?>	
+
+	<article class="contentstwrapdiv">
+		<div class="contentdiv">
+			<h1><?php the_title(); ?></h1>
+		</div>
+		<table class="table-events table-events-details">
+			<tbody>
+				<tr>
+					<th>DATE</th>
+					<td><?php $longdate = date("l, F j, Y", $sd);
+						$longdatee = date("l, F j, Y", $ed);
+						if ($daycheck == null) { echo $longdate;
+						}
+						if ($daycheck != $longdate && $daycheck != null) { echo $longdate;
+						}
+					?> - <?php
+							if ($daycheck != $longdatee && $daycheck != null) {echo $longdatee;
+							}
+							$time_format = get_option('time_format');
+							$stime = date($time_format, $sd);
+							$etime = date($time_format, $ed);
+						?></td>
+				</tr>
+				<tr>
+					<th>Time</th>
+					<td><?php echo $stime . ' - ' . $etime; ?></td>
+				</tr>
+				<tr>
+					<th>LOCATION</th>
+					<td><?php echo $loc ?></td>
+				</tr>
+				<tr>
+					<th>Org Name</th>
+					<td>N/A</td>
+				</tr>
+			</tbody>
+		</table>
+		<hr class="noMarginTop">	
+		<div class="clearfix">
+			<div class="events-details-colleft clearfix">
+			<!-- Events gallery begin -->			
+			<div id="gallery-1" class="royalSlider rsDefault fwImage col span_4">
+					<?php 
+					if ( have_posts() ) : while ( have_posts() ) : the_post();	
+						foreach($images as $src){?>
+							<a class="rsImg"  data-rsDelay="1000" data-rsBigImg="<?php echo trim($src) ?>" href="<?php echo trim($src) ?>"><img width="96" height="72" class="rsTmb" src="<?php echo $src ?>" /></a>
+					<?php } endwhile;
+					else:?>
+						&nbsp;
+					<?php endif; ?>	
+			</div>			
+			<!-- Events gallery end -->
+			</div>
+			<div class="events-details-colright">
+				<?php 
+					if ( have_posts() ) : while ( have_posts() ) : the_post();
+						the_content();
+					endwhile;
+					else:?>
+						<?php _e('Sorry, no posts matched your criteria.'); ?></p>
+					<?php endif; ?>	
+			</div>
+		</div>
+	</article>
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer(); ?>

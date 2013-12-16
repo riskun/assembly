@@ -1,0 +1,591 @@
+<? 	require('../../../../../wp-load.php');
+
+
+
+
+function categoriesPrep($totalPosts) {
+
+
+	global $wpdb;
+	
+	$currentCatArray = array();
+	
+	foreach ($totalPosts as $item) {
+	
+		$item_id = $item->ID;
+		$rows = $wpdb->get_results( 
+			"
+		SELECT term_id
+		FROM wp_term_relationships
+		INNER JOIN wp_term_taxonomy ON wp_term_relationships.term_taxonomy_id = wp_term_taxonomy.term_taxonomy_id
+		WHERE wp_term_relationships.object_id = $item_id AND taxonomy = 'category'
+			"
+		);
+			
+		foreach ($rows as $object) {
+		
+			array_push($currentCatArray, $object->term_id);
+			
+		}
+		
+		$currentCatArray = array_unique($currentCatArray);
+			
+	}
+	
+	
+	return $currentCatArray;
+	
+	
+};
+
+function postsPrep($totalPosts) {
+
+
+	$postidArray = array();
+	
+	foreach ($totalPosts as $item) {
+	
+		$item_id = $item->ID;
+		array_push($postidArray, $item_id);
+			
+	}
+	
+	return $postidArray;
+	
+};
+
+
+function parseKeywords($keyword) {
+
+
+	$searchTerm = $keyword;
+	$searchTermArray = explode(" ", $keyword); //SPLIT BY SPACE
+	$searchTermArray = array_unique($searchTermArray); //NO DUPLICATES
+	$searchTermArray = array_filter($searchTermArray); //REMOVE EMPTY ARRAY ITEMS
+	$searchTermArray = array_merge($searchTermArray); //REMOVE EMPTY ARRAY ITEMS
+	
+	$i = 0;
+	
+	$searchTermArrayCount = count($searchTermArray);
+	
+	$searchTermArray_temp = array();
+	
+	$searchTermArrayCount_temp = count($searchTermArray) - 1;
+
+
+
+	foreach ($searchTermArray as $key=>$value) {
+
+		for ($i = $key; $i <= $searchTermArrayCount - 1; $i++) {
+		
+
+		$z_temp = "";
+		
+			for ($z = $key; $z <= $i; $z++) {
+
+				$z_temp;					
+				$z_temp = $z_temp." ".$searchTermArray[$z];
+				
+
+
+			};
+
+		$z_temp = preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', $z_temp);
+
+		array_push($searchTermArray_temp, trim($z_temp));			
+			
+		
+		};
+		
+		
+		
+		
+		
+	
+	}
+
+//	var_dump($searchTermArray_temp);
+	return($searchTermArray_temp);
+	
+	
+};
+
+
+function pertainingCats($keywordArray) {
+
+
+
+	$autoArray = array();
+	$termArray = array();
+
+
+	global $wpdb;
+
+	foreach ($keywordArray as $searchTermItem) {
+
+			$rows = $wpdb->get_results( 
+				"
+			SELECT name, slug, parent, wp_terms.term_id, taxonomy, count, term_taxonomy_id
+			FROM wp_terms
+			INNER JOIN wp_term_taxonomy ON wp_terms.term_id = wp_term_taxonomy.term_id
+			WHERE (name LIKE '%".rtrim(strtolower($searchTermItem))."%') AND (count > 0)
+				"
+			);
+			
+			foreach ($rows as $item) 
+			{
+
+				//array_push($autoArray, $item->term_taxonomy_id);
+				//ADDING ALL THE "PARENT-CHILD / EXISTENCE INSTANCES"
+				array_push($autoArray, $item->term_id/*.": ".$item->name*/);
+				//ADDING ALL THE DISCRETE TAXONOMY "TERMS"
+				
+			}
+			
+			$autoArray = array_unique($autoArray);
+	
+	};
+	
+//	var_dump($autoArray);
+	
+	return $autoArray;
+	
+	
+}
+
+
+
+	function accuracy($a,$b)
+	{ 
+	  return ($a->accuracy > $b->accuracy) ? 1 : -1;
+	} 
+
+	function relevance($a,$b)
+	{ 
+	  return ($a->relevance > $b->relevance) ? 1 : -1;
+	} 
+
+
+
+function osort(&$array, $prop)
+{
+
+	usort($array,$prop);
+	
+}
+
+
+function matchbyString($idArray, $termArray) {
+	
+	global $wpdb;
+
+	$matchedArray = array();
+	
+	$termArray_bk = $termArray;
+	
+	
+	foreach ($termArray as $key=>$value) 
+	{
+		
+		if (!is_numeric($value))
+
+		$termArray[$key] = "post_title LIKE '%$value%' OR post_content LIKE '%$value%'";
+//		$termArray[$key] = "post_title LIKE '%$value%'";
+
+	}
+	
+	
+	
+	
+	
+	
+	$termArraySQL = implode(" OR ", $termArray);
+
+	//return $termArraySQL;
+//	var_dump($termArraySQL);
+		
+	foreach ($idArray as $item) 
+	{
+		
+
+//		var_dump($item);
+
+		$prodObj = new StdClass;
+		$prodObj->ID = $item;
+
+		$relevance = 0;
+
+
+		$postidArray_rows = $wpdb->get_results( 
+		"
+		SELECT post_id, meta_key, meta_value, post_title, post_content
+		FROM wp_postmeta
+		INNER JOIN wp_posts ON wp_postmeta.post_id = wp_posts.ID
+		WHERE (post_id = ".$item.")
+		LIMIT 0, 999
+		"
+		);
+		
+//	 AND (".$termArraySQL.")		
+//		var_dump($postidArray_rows);
+		
+		if (count($postidArray_rows) > 0) {
+		
+	/*		
+			return $termArraySQL;
+			
+			foreach ($postidArray_rows as $item) {
+						
+				$relevance = $relevance + $item->meta_value;
+	
+			}
+	
+			$prodObj->relevance = $relevance;
+	*/
+	
+	//		var_dump($postidArray_rows);
+			
+			
+			$accuracy = 0;
+
+			$prodObj->post_title = get_the_title($prodObj->ID);
+
+
+//			var_dump($prodObj->post_title);
+			
+			
+			
+			
+			foreach ($termArray_bk as $termArray_bk_item) {
+
+//				var_dump($termArray_bk_item);
+//				var_dump(strtolower($prodObj->post_title));
+	
+			$searchTitle = strtolower(preg_replace("/&#?[a-z0-9]{2,8};/i","",$prodObj->post_title));
+			$searchQuery = strtolower(preg_replace("/&#?[a-z0-9]{2,8};/i","",$termArray_bk_item));
+	
+	//		echo "ORIGINAL: ".$prodObj->post_title."<br/>";
+	//		echo "TITLE: ".$searchTitle."<br/>";
+	//		echo "QUERY: ".$searchQuery."<br/>";
+//			echo "REPLACE:".str_replace($searchQuery, "", $searchTitle)."<br/><br/>";
+				
+				
+				// RESULTS IN BROKEN HTML ENTITY FOR NOW
+				
+//				$prodObj->post_title = wptexturize($prodObj->post_title);
+//				$termArray_bk_item = wptexturize($termArray_bk_item);
+//				echo str_replace("'", '', preg_replace("/[^A-Za-z0-9]/"," ",$prodObj->post_title));
+
+//				echo $text = str_replace("'","", html_entity_decode($prodObj->post_title, ENT_QUOTES)); 
+
+
+//					var_dump(preg_replace("/[^A-Za-z0-9]/"," ",$prodObj->post_title))." / ".preg_replace("/[^A-Za-z0-9]/"," ",$termArray_bk_item);
+
+				
+				
+				if (strpos(strtolower(preg_replace("/&#?[a-z0-9]{2,8};/i","",$prodObj->post_title)),strtolower(preg_replace("/&#?[a-z0-9]{2,8};/i","",$termArray_bk_item))) !== false) {
+					
+					$accuracy = $accuracy + 100;
+					
+				} else {
+					
+				
+//					echo "FALSE";	
+					
+				}
+			};
+			
+			$prodObj->accuracy = $accuracy;
+//			$prodObj->accuracy_details = ($postidArray_rows);
+			$prodObj->relevance = $accuracy*1000;
+	
+			
+	/*		
+			if ($relevance > 0) {
+			
+			$prodObj->string = true;
+			
+			} else {
+				
+			$prodObj->string = false;
+	
+				
+			}
+	*/
+	
+			array_push($matchedArray, $prodObj);
+
+		};
+
+	}
+
+
+	osort($matchedArray, "accuracy");
+	$matchedArray = array_reverse($matchedArray);
+
+
+	return $matchedArray;
+		
+	
+}
+
+
+
+function ounique($obj) {
+
+
+	static $idList = array();
+	if(in_array($obj->ID,$idList)) {
+		return false;
+	}
+	$idList []= $obj->ID;
+	return true;
+
+
+}
+
+
+
+function removeDuplicates($totalArray) {
+
+
+	$totalArray2 = array();
+
+	foreach ($totalArray as $item) {
+	
+		$item_id = $item->ID;
+		array_push($totalArray2, $item_id);
+	}
+			
+			
+	$totalArray2_count = array_count_values($totalArray2);			
+
+	$totalArray3 = array();
+
+			
+	foreach ($totalArray2_count as $key=>$value) {
+	
+		if ($value > 1) {
+			
+			$totalArray3[] = $key;
+			
+		}
+
+
+	}
+
+
+	foreach ($totalArray as $key => $item) {
+	
+		$item_id = $item->ID;	
+		array_push($totalArray2, $item_id);
+		
+		
+		if (in_array($item->ID, $totalArray3) && ($item->string === false)) {
+		
+//			unset($totalArr
+	//		var_dump($key);	
+//			var_dump($item);
+			unset($totalArray[$key]);	
+		
+			
+		}
+		
+	
+	
+	}
+	
+	
+	return $totalArray;
+	
+	
+	
+}
+
+
+$search_q = $_POST['search_q'];
+
+$postidArray = array();
+$args = array(
+	
+	'post_type' => 'sn-support',
+	'posts_per_page' => "-1",
+	'order' => 'DESC',
+	's' => $search_q,
+	"meta_key" => "visitors",
+	"orderby" => "meta_value_num"
+
+
+);
+
+$productQuery = new WP_Query($args);
+
+
+//var_dump($productQuery->posts);
+
+if (count($_POST['categories']) > 0) {
+
+$categoriesStr = implode(",", $_POST['categories']);
+
+};
+
+
+$totalCount = $productQuery->post_count;
+$totalPosts = array();
+
+
+foreach ($productQuery->posts as $post) {
+
+	$articleObj = new StdClass;
+	$articleObj->permalink = get_permalink($post->ID);
+	$articleObj->title = get_the_title($post->ID);
+	$articleObj->visitors = (int)get_post_meta($post->ID, "visitors", true);
+	$articleObj->ID = $post->ID;
+
+	array_push($totalPosts, $articleObj);
+
+}
+
+
+//var_dump($totalPosts);
+
+
+
+if (!empty($search_q)) {
+	
+	$currentCatArray = categoriesPrep($totalPosts);	
+	$postidArray = postsPrep($totalPosts);
+	
+	$searchTermArray = parseKeywords($_POST['search_q']);
+
+	for ($i = 0; $i <= count($searchTermArray) - 1; $i++) {
+
+		if (strlen($searchTermArray[$i]) < 3) {
+
+		//	REMOVE 'ORPHAN" ARRAY ITEM WHOSE LENGTH IS SHORTER THAN 3 CHARACTERS
+		unset($searchTermArray[$i]);
+		
+
+		}
+
+	}
+
+
+	$autoArray = pertainingCats($searchTermArray);
+	
+//	var_dump($autoArray);
+	
+	if (count($autoArray) > 0) {
+	
+		$args = array(
+			
+			'category__in' => $autoArray,
+			'post_type' => 'sn-support',
+			'posts_per_page' => "-1",
+			'paged' => $_POST['page'],
+			'order' => 'DESC',
+			"meta_key" => "visitors",
+			"orderby" => "meta_value_num"
+		
+		
+		);
+	
+		$productCatQuery = new WP_Query($args);
+		
+		
+		$pertainingPosts = array();
+		
+		foreach ($productCatQuery->posts as $post) {
+
+			$articleObj = new StdClass;
+			$articleObj->permalink = get_permalink($post->ID);
+			$articleObj->title = get_the_title($post->ID);
+			$articleObj->visitors = (int)get_post_meta($post->ID, "visitors", true);
+			$articleObj->ID = $post->ID;
+
+			array_push($totalPosts, $articleObj);
+
+		}
+
+//		var_dump($pertainingPosts);
+
+
+	}
+	
+	
+}
+	//$termArray = array_unique($termArray);
+	
+
+//};
+
+//ounique($totalPosts);
+$totalPosts = array_filter($totalPosts,'ounique');
+//osort($totalPosts, "visitors");
+
+function cmp($a, $b)
+{
+    if ($a->visitors == $b->visitors) {
+        return 0;
+    }
+    return ($a->visitors < $b->visitors) ? 1 : -1;
+}
+
+usort($totalPosts, "cmp");
+
+//array_reverse($totalPosts);
+
+//var_dump($totalPosts);
+?>
+
+
+
+<?
+
+
+//SPLITTING PAGES
+
+
+$pagedPosts = array_slice($totalPosts, 0, 10);
+
+//var_dump($page);
+
+
+?>
+
+<h1 id="count" style="display:none;"><?= $totalCount ?></h1>
+
+<?
+
+//var_dump($totalPosts);
+
+if (count($pagedPosts) == 0) {
+	
+	echo "<div>No support article available.</div>";	
+	
+}
+
+
+foreach ($pagedPosts as $post) {
+
+?>
+
+
+
+	<?
+	
+	
+	
+	
+	?>
+
+	<div><a href="<?= get_permalink($post->ID) ?>"><?= $post->title ?> (<?= get_post_meta($post->ID, "visitors", true); ?>)</a></div>
+   
+
+<?
+
+
+}
+
+
+?>

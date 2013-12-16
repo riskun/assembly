@@ -1,0 +1,27 @@
+jQuery(window).load(function() {
+    jQuery(document).ajaxComplete(function(e, r, o) {
+        if (plupload_posttype  == "sn-slides")  {
+            jQuery('input[id^=imgedit-crop-width]').val("1280");
+            jQuery('input[id^=imgedit-crop-height]').val("720");
+            jQuery('p[id^=imgedit-crop-sel]').before("<p style='color:#21759B'>SLIDE IMAGE</p>");
+        } else if (plupload_posttype  == "sn-events")  {
+            jQuery('input[id^=imgedit-crop-width]').val("500");
+            jQuery('input[id^=imgedit-crop-height]').val("500");
+            jQuery('p[id^=imgedit-crop-sel]').before("<p style='color:#21759B'>EVENT IMAGE</p>");
+        } else if (plupload_posttype  == "sn-product")  {
+            jQuery('input[id^=imgedit-crop-width]').val("500");
+            jQuery('input[id^=imgedit-crop-height]').val("200");
+            jQuery('p[id^=imgedit-crop-sel]').before("<p style='color:#21759B'>PRODUCT IMAGE</p>");
+        } else if (plupload_posttype  == "sn-homepage")  {
+            jQuery('input[id^=imgedit-crop-width]').val("1080");
+            jQuery('input[id^=imgedit-crop-height]').val("1020");
+            jQuery('p[id^=imgedit-crop-sel]').before("<p style='color:#21759B'>HOMEPAGE</p>");
+        }
+        var widthRatio  = jQuery('input[id^=imgedit-crop-width]').attr("onkeyup");
+        var heightRatio  = jQuery('input[id^=imgedit-crop-height]').attr("onkeyup");
+        jQuery('input[id^=imgedit-crop-width]')[widthRatio];
+        jQuery('input[id^=imgedit-crop-height]')[heightRatio];
+        jQuery('p[id^=imgedit-crop-sel]').before("<p style='color:#f33'>Hold <strong>SHIFT</strong> to lock ratio</p>");
+        jQuery("input[id^=imgedit-crop-height], input[id^=imgedit-crop-width]").attr("disabled", "disabled");
+    });
+});

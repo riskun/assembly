@@ -1,0 +1,9 @@
+<?
+require ("../../../../wp-load.php");
+header("Content-type: image/jpeg");
+$id = $_GET["id"];
+$size = $_GET["size"];
+if ($size == "") { $size = "full"; };
+$imageURL = wp_get_attachment_image_src($id, $size, false);
+echo file_get_contents($imageURL[0]);
+?>

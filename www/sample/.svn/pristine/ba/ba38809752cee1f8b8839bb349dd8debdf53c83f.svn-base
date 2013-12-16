@@ -1,0 +1,31 @@
+<?php
+/**
+ * The template for displaying Search Results pages.
+ *
+ * @package Swiss Natural
+ * @since Swiss Natural 1.0
+ */
+get_header(); ?>
+<section class="content-static-pages clearfix">
+	<aside>&nbsp;</aside>
+	<article class="media-list left">
+		<h1 class="page-title"><?php printf( __( 'Search Results for: %s', 'swiss_natural' ), '<span>' . get_search_query() . '</span>' ); ?></h1>
+		<?php if ( have_posts() ) : ?>
+			<?php while ( have_posts() ) : the_post(); ?>
+				<section class="media-list-wrap">
+					<div class="media-list-container">
+						<div class="media-list-content clearfix">
+							<?php get_template_part( 'content', 'search' ); ?>
+						</div>
+					</div>
+				</section>
+			<?php endwhile; ?>
+		<?php else : ?>
+			<article class="contentstwrapdiv">
+			<?php get_template_part( 'no-results', 'search' ); ?>
+			</article>
+		<?php endif; ?>						
+	</article>
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer(); ?>

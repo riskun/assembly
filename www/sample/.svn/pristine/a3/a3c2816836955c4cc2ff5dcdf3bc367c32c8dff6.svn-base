@@ -1,0 +1,227 @@
+<?php
+/**
+ * Swiss Natural Site Options
+ *
+ * @package Swiss Natural
+ * @since Swiss Natural 1.0
+ */
+
+/**
+ * Register the form setting for our swiss_natural_options array.
+ *
+ * This function is attached to the admin_init action hook.
+ *
+ * This call to register_setting() registers a validation callback, swiss_natural_theme_options_validate(),
+ * which is used when the option is saved, to ensure that our option values are properly
+ * formatted, and safe.
+ *
+ * @since Swiss Natural 1.0
+ */
+function swiss_natural_theme_options_init() {
+	register_setting(
+		'swiss_natural_options', // Options group, see settings_fields() call in swiss_natural_theme_options_render_page()
+		'swiss_natural_theme_options', // Database option, see swiss_natural_get_theme_options()
+		'swiss_natural_theme_options_validate' // The sanitization callback, see swiss_natural_theme_options_validate()
+	);
+
+	// Register our settings field group
+	add_settings_section(
+		'general', // Unique identifier for the settings section
+		'', // Section title (we don't want one)
+		'__return_false', // Section callback (we don't want anything)
+		'theme_options' // Menu slug, used to uniquely identify the page; see swiss_natural_theme_options_add_page()
+	);
+
+	// Register our individual settings fields
+	add_settings_field(
+		'sample_checkbox', // Unique identifier for the field for this section
+		__( 'Sample Checkbox', 'swiss_natural' ), // Setting field label
+		//'swiss_natural_settings_field_sample_checkbox', // Function that renders the settings field
+		'theme_options', // Menu slug, used to uniquely identify the page; see swiss_natural_theme_options_add_page()
+		'general' // Settings section. Same as the first argument in the add_settings_section() above
+	);
+	add_settings_field( 'sm_facebook_text_input', __( 'Facebook URL', 'swiss_natural' ), 'swiss_natural_settings_field_sm_facebook_input', 'theme_options', 'general' );
+	add_settings_field( 'sm_twitter_text_input', __( 'Twitter URL', 'swiss_natural' ), 'swiss_natural_settings_field_sm_twitter_input', 'theme_options', 'general' );
+	add_settings_field( 'sm_youtube_text_input', __( 'Youtube URL', 'swiss_natural' ), 'swiss_natural_settings_field_sm_youtube_input', 'theme_options', 'general' );	
+	add_settings_field( 'googleanalytics_textarea', __( 'Google Analytics Tracking', 'swiss_natural' ), 'swiss_natural_settings_field_googleanalytics_textarea', 'theme_options', 'general' );
+	add_settings_field( 'addthis_textarea', __( 'Addthis Script', 'swiss_natural' ), 'swiss_natural_settings_field_addthis_textarea', 'theme_options', 'general' );
+	add_settings_field( 'copyright_text_input', __( 'Copyright Text', 'swiss_natural' ), 'swiss_natural_settings_field_copyright_input', 'theme_options', 'general' );
+}
+add_action( 'admin_init', 'swiss_natural_theme_options_init' );
+/**
+ * Change the capability required to save the 'swiss_natural_options' options group.
+ * @see swiss_natural_theme_options_init() First parameter to register_setting() is the name of the options group.
+ * @see swiss_natural_theme_options_add_page() The edit_theme_options capability is used for viewing the page.
+ * @param string $capability The capability used for the page, which is manage_options by default.
+ * @return string The capability to actually use.
+ */
+function swiss_natural_option_page_capability( $capability ) {
+	return 'edit_theme_options';
+}
+add_filter( 'option_page_capability_swiss_natural_options', 'swiss_natural_option_page_capability' );
+/**
+ * Add our Site Options page to the admin menu.
+ * This function is attached to the admin_menu action hook.
+ * @since Swiss Natural 1.0
+*/
+function swiss_natural_theme_options_add_page() {
+	$theme_page = add_theme_page(
+		__( 'Site Options', 'swiss_natural' ),   // Name of page
+		__( 'Site Options', 'swiss_natural' ),   // Label in menu
+		'edit_theme_options',          // Capability required
+		'theme_options',               // Menu slug, used to uniquely identify the page
+		'swiss_natural_theme_options_render_page' // Function that renders the options page
+	);
+}
+add_action( 'admin_menu', 'swiss_natural_theme_options_add_page' );
+/**
+ * Returns the options array for Swiss Natural.
+ *
+ * @since Swiss Natural 1.0
+ */
+function swiss_natural_get_theme_options() {
+	$saved = (array) get_option( 'swiss_natural_theme_options' );
+	$defaults = array(
+		'sm_facebook_input'     	=> '',
+		'sm_twitter_input'     		=> '',
+		'sm_youtube_input'     		=> '',				
+		'googleanalytics_textarea'  => '',
+		'addthis_textarea'       	=> '',	
+		'copyright_input'  			=> '',			
+	);
+
+	$defaults = apply_filters( 'swiss_natural_default_theme_options', $defaults );
+
+	$options = wp_parse_args( $saved, $defaults );
+	$options = array_intersect_key( $options, $defaults );
+
+	return $options;
+}
+
+/* Social Media Meta Boxes */
+
+
+/* facebook */
+function swiss_natural_settings_field_sm_facebook_input() {
+$options = swiss_natural_get_theme_options();
+?>
+<input type="text" name="swiss_natural_theme_options[sm_facebook_input]" id="sm-facebook-input" value="<?php echo esc_attr($options['sm_facebook_input']);?>" />
+<label class="description" for="sm-facebook-input"><?php _e('Facebook URL', 'swiss_natural');?></label>
+<?php
+}
+
+/* twitter */
+function swiss_natural_settings_field_sm_twitter_input() {
+$options = swiss_natural_get_theme_options();
+?>
+<input type="text" name="swiss_natural_theme_options[sm_twitter_input]" id="sm-twitter-input" value="<?php echo esc_attr($options['sm_twitter_input']);?>" />
+<label class="description" for="sm-twitter-input"><?php _e('Twitter URL', 'swiss_natural');?></label>
+<?php
+}
+
+/* youtube */
+function swiss_natural_settings_field_sm_youtube_input() {
+$options = swiss_natural_get_theme_options();
+?>
+<input type="text" name="swiss_natural_theme_options[sm_youtube_input]" id="sm-youtube-input" value="<?php echo esc_attr($options['sm_youtube_input']);?>" />
+<label class="description" for="sm-youtube-input"><?php _e('Youtube URL', 'swiss_natural');?></label>
+<?php
+}
+
+/**
+* Renders the google analytics textarea setting field.
+*/
+function swiss_natural_settings_field_googleanalytics_textarea() {
+$options = swiss_natural_get_theme_options();
+?>
+<textarea class="large-text" type="text" name="swiss_natural_theme_options[googleanalytics_textarea]" id="googleanalytics-textarea" cols="50" rows="10" />
+<?php echo esc_textarea($options['googleanalytics_textarea']);?></textarea>
+<label class="description" for="googleanalytics-textarea"><?php _e('Google Analytics Tracking Code', 'swiss_natural');?></label>
+<?php
+}
+/**
+* Renders the addthis script code textarea setting field.
+*/
+function swiss_natural_settings_field_addthis_textarea() {
+$options = swiss_natural_get_theme_options();
+?>
+<textarea class="large-text" type="text" name="swiss_natural_theme_options[addthis_textarea]" id="addthis-textarea" cols="50" rows="10" />
+<?php echo esc_textarea($options['addthis_textarea']);?></textarea>
+<label class="description" for="addthis-textarea"><?php _e('Addthis Script Code', 'swiss_natural');?></label>
+<?php
+}
+
+/* copyright text */
+function swiss_natural_settings_field_copyright_input() {
+$options = swiss_natural_get_theme_options();
+?>
+<input type="text" name="swiss_natural_theme_options[copyright_input]" id="copyright-input" value="<?php echo esc_attr($options['copyright_input']);?>" />
+<label class="description" for="copyright-input"><?php _e('Copyright Text', 'swiss_natural');?></label>
+<?php
+}
+
+
+/**
+* Renders the Site Options administration screen.
+*
+* @since Swiss Natural 1.0
+*/
+function swiss_natural_theme_options_render_page() {
+?>
+<div class="wrap">
+	<?php screen_icon();?>
+	<?php $theme_name = function_exists('wp_get_theme') ? wp_get_theme() : get_current_theme();?>
+	<h2><?php printf(__('%s Site Options', 'swiss_natural'), $theme_name);?></h2>
+	<?php settings_errors();?>
+
+	<form method="post" action="options.php">
+		<?php
+		settings_fields('swiss_natural_options');
+		do_settings_sections('theme_options');
+		submit_button();
+		?>
+	</form>
+</div>
+<?php
+}
+
+/**
+* Sanitize and validate form input. Accepts an array, return a sanitized array.
+*
+* @see swiss_natural_theme_options_init()
+* @todo set up Reset Options action
+*
+* @param array $input Unknown values.
+* @return array Sanitized Site Options ready to be stored in the database.
+*
+* @since Swiss Natural 1.0
+*/
+function swiss_natural_theme_options_validate( $input ) {
+$output = array();
+
+// facebook URL
+if ( isset( $input['sm_facebook_input'] ) && ! empty( $input['sm_facebook_input'] ) )
+$output['sm_facebook_input'] = wp_filter_nohtml_kses( $input['sm_facebook_input'] );
+
+// twitter URL
+if ( isset( $input['sm_twitter_input'] ) && ! empty( $input['sm_twitter_input'] ) )
+$output['sm_twitter_input'] = wp_filter_nohtml_kses( $input['sm_twitter_input'] );
+
+// youtube URL
+if ( isset( $input['sm_youtube_input'] ) && ! empty( $input['sm_youtube_input'] ) )
+$output['sm_youtube_input'] = wp_filter_nohtml_kses( $input['sm_youtube_input'] );
+
+// google analytics
+if ( isset( $input['googleanalytics_textarea'] ) && ! empty( $input['googleanalytics_textarea'] ) )
+$output['googleanalytics_textarea'] = wp_filter_post_kses( $input['googleanalytics_textarea'] );
+
+// addthis script code
+if ( isset( $input['addthis_textarea'] ) && ! empty( $input['addthis_textarea'] ) )
+$output['addthis_textarea'] = wp_filter_post_kses( $input['addthis_textarea'] );
+
+// copyright text
+if ( isset( $input['copyright_input'] ) && ! empty( $input['copyright_input'] ) )
+$output['copyright_input'] = wp_filter_nohtml_kses( $input['copyright_input'] );
+
+return apply_filters( 'swiss_natural_theme_options_validate', $output, $input );
+}

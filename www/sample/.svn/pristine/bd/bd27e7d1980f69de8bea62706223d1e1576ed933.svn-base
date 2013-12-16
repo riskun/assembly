@@ -1,0 +1,107 @@
+<?php get_header();
+query_posts('post_type=sn-support');
+?>
+
+<script type="text/javascript">
+jQuery(document).ready(function () {
+    $('a.glossaryPopupCloseBtn').click(function () {
+        $(this).parent('.glossaryPopup').slideUp('fast', function () {});
+    });
+    jQuery(".glossaryItem").click(function () {
+	//alert("Hello world " + jQuery(this).attr("href"));
+	var glossaryId = jQuery(this).attr("rel").substring(1);
+	var glossaryTitle = jQuery(this).html();
+	//alert(glossaryId);
+	jQuery.ajax({
+		url: "<?= get_stylesheet_directory_uri() . '/assets/ajax/' ?>
+		support_glossary.php",
+		type: "POST",
+		cache: true,
+		data: {'glossaryId': glossaryId},
+		dataType: "html",
+		success: function (data, status, xhr) {
+			jQuery("#suppportGlossary .glossaryPopupContent").html(data);
+			jQuery("#suppportGlossary .glossaryPopupContent").prepend("<h1>" + glossaryTitle + "</h1>");
+			$('.glossaryPopup').slideToggle('fast', function () {});
+		},
+		complete: function (xhr, status) {
+		}
+	})
+  });
+});
+</script>
+
+<div class="glossaryPopup" id="suppportGlossary">
+	<a href="javascript:void(0);" class="glossaryPopupCloseBtn"></a>
+	<div class="glossaryPopupContent">
+		<h1></h1>
+		<p></p>
+	</div>
+</div>
+
+<section class="content-static-pages clearfix">
+	<aside>
+		&nbsp;
+	</aside>
+	<?
+	$oldVisitors = get_post_meta(get_the_ID(), 'visitors', true);
+	$newVisitors = (int)$oldVisitors + 1;
+	update_post_meta(get_the_ID(), 'visitors', $newVisitors);
+	?>
+	<article class="contentstwrapdiv">
+		<div class="contentdiv media-details">
+			<h1><?php the_title(); ?></h1>
+			<? //$keywords = array('vitamin','protects','metabolic');
+				$args = array('post_type' => 'sn-glossary', 'posts_per_page' => "-1", 'order' => 'DESC', );
+				$glossaryQuery = new WP_Query($args);
+				$glossaryArray = array();
+				foreach ($glossaryQuery->posts as $glossary) {
+					$glossaryArray[strtolower($glossary -> post_title)] = $glossary -> ID;
+				}
+				//var_dump($glossaryArray);
+				$supportContent = $post -> post_content;
+				foreach ($glossaryArray as $key => $value) {
+					$supportContent = preg_replace("/\b($key)\b/i", "<a class='glossaryItem' rel='#$value' style='cursor:pointer'>$1</a>", $supportContent);
+				}
+			?>
+			<?php echo apply_filters("the_content", $supportContent); ?>
+		</div>
+		<hr class="hrblue">
+		<div class="contentdiv clearfix">
+			<div class="left">
+				<?php
+				include 'inc/include-addthis-compact.php';
+			?>
+			</div>
+			<div class="right">
+				<div class="productDetailsCatWrap clearfix">
+					<h3>Categories</h3>
+					<div class="productDetailsCat">
+
+						<? 	$currentCats_active = array(get_post_meta(get_the_ID(), 'categories_1', true), get_post_meta(get_the_ID(), 'categories_2', true), get_post_meta(get_the_ID(), 'categories_3', true)); ?>
+
+						<ul>
+							<?
+							foreach ($currentCats_active as $cat) {
+
+								$catobj = get_term_by('id', $cat, 'category');
+								$description = $catobj -> description;
+								$description_array = explode("\r\n\r\n", $description);
+
+								echo '<li class="cat-' . $cat . '" style="color:#' . $description_array[0] . '"><span style="hello:#868686"><a href="../../products#'.$cat.'" style="color:#' . $description_array[0].'">' . ucwords($catobj -> name) . '</span></li>';
+
+							}
+
+							reset($currentCats_active);
+							// make sure array pointer is at first element
+							$topKey = key($currentCats_active);
+							?>
+						</ul>
+
+					</div>
+				</div>
+			</div>
+	</article>
+	<div class="list-side-bg"></div>
+</section>
+<?php get_footer(); ?>

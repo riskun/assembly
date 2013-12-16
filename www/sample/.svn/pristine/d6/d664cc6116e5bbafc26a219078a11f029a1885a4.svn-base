@@ -1,0 +1,55 @@
+<?php
+// Custom Post Type Registration (Careers Section)
+add_action( 'init', 'create_careers_postype' );
+function create_careers_postype() {
+$labels = array(
+    'name' => _x('Careers', 'post type general name'),
+    'singular_name' => _x('Job', 'post type singular name'),
+    'add_new' => __('Add a new Job', 'Job'),
+	'add_new_item' => __('Add a new Job'),
+	'edit_item' => __('Edit Job'),
+    'view_item' => __('View Job'),
+    'search_items' => __('Search Careers Index'),
+    'not_found' =>  __('No matching term found'),
+    'not_found_in_trash' => __('No term found in trash'),
+    'parent_item_colon' => '',
+);
+$args = array(
+    'label' => __('Careers'),
+    'labels' => $labels,
+    'public' => true,
+    'can_export' => true,
+    'show_ui' => true,
+    '_builtin' => false,
+    '_edit_link' => 'post.php?post=%d', // ?
+    'capability_type' => 'post',
+    'menu_icon' => get_bloginfo('stylesheet_directory').'/assets/images/admin/icon_careers.png',
+	'hierarchical' => true,
+	'rewrite' => true,
+	'menu_position' => 9,
+    'supports'=> array('title','editor','revisions'),
+    'show_in_nav_menus' => true,
+);
+register_post_type( 'sn-careers', $args);
+}
+add_filter ("manage_edit-careers_columns", "careers_edit_columns");
+add_action ("manage_posts_custom_column", "careers_custom_columns");
+
+function careers_edit_columns($columns) {
+    $columns = array(
+        "title" => "Job Title",
+        "sn_col_cr_desc" => "Description",
+        );
+    return $columns;
+}
+function careers_custom_columns($column) {
+    global $post;
+    $custom = get_post_custom();
+    switch ($column)
+	{
+		case "sn_col_cr_desc";
+			the_excerpt();
+		break;
+	}
+} 
+?>

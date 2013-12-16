@@ -1,0 +1,228 @@
+// Put all your lovely jQuery / Javascript goodies right down here.
+$(document).ready(function() {
+
+	//ACORDIONS
+   //Get the selected accordion index, based on the URL hash.
+    var index = $('.accordion h6').index(
+                $('.accordion h6 a[href="'+window.location.hash+'"]')
+                .parent());
+    //The index will be -1 if there is no hash in the URL.  This is necessary if we want the first section expanded by default.
+    if (index < 0){
+        index = 0;
+    }
+    //The change event handler will add the hash to the URL when a section is selected.
+    var change = function(event, ui){
+        window.location.hash = ui.newHeader.children('a').attr('href');
+    }
+    //Build the accordion, using the URL hash selection and the change event handler.
+    $('.accordion').accordion({active: index,
+                               change: change,
+			collapsible : true,
+			autoHeight : false,
+			navigation : true,
+			header : 'h6'
+	});
+	//TIME LINE
+	$(function() {
+		var indicator = $('#indicator'),
+				indicatorHalfWidth = indicator.width()/2,
+				lis = $('#historyTabs').children('li');
+
+		$("#historyTabs").tabs("#historyContent section", {
+			effect: 'fade',
+			fadeOutSpeed: 0,
+			fadeInSpeed: 400,
+			onBeforeClick: function(event, index) {
+				var li = lis.eq(index),
+					newPos = li.position().left + (li.width()/2) - indicatorHalfWidth;
+				indicator.stop(true).animate({ left: newPos }, 600, 'easeInOutExpo');
+			}
+		});	
+	});	
+	//EMPTYING PLACEHOLDER WHEN FOCUSED
+	var inputTemp = "";
+	$("input").focus(function(){ inputTemp = $(this).attr("placeholder"); $(this).attr("placeholder", ""); })
+	$("input").focusout(function(){ $(this).attr("placeholder", inputTemp); })
+	
+	//WIDGET MENU 
+    // the div that will be hidden/shown
+
+	var panel = $(".pannel");
+    //the button that will toggle the panel
+    var button = $(".arrow");
+    // do you want the panel to start off collapsed or expanded?
+    var initialState = "collapsed"; // "expanded" OR "collapsed"
+    // the class added when the panel is hidden
+    var activeClass = "arrowclose";
+    var block = "block";
+    var hide = "hidee";
+    // the text of the button when the panel's expanded
+    //---------------------------
+    // don't    edit    below    this    line,<
+    // unless you really know what you're doing
+    //---------------------------</p>
+    if($.cookie("panelState") == undefined) {
+        $.cookie("panelState", initialState);
+    }
+    var state = $.cookie("panelState");
+    if(state == "collapsed") {
+		button.removeClass(activeClass);
+		panel.removeClass(block);
+    }
+    if(state == "expanded") {
+		button.addClass(activeClass);
+		panel.addClass(block);
+    }
+    button.click(function(){
+        if($.cookie("panelState") == "collapsed") {
+			$.cookie("panelState", "expanded");
+            button.addClass(activeClass);
+            panel.addClass(block);
+        } else if($.cookie("panelState") == "expanded") {
+            $.cookie("panelState", "collapsed");
+            button.removeClass(activeClass);
+            panel.removeClass(block);
+        }
+		//panel.show();
+       //panel.slideToggle("slow");
+		//panel.toggle('slide',{direction: 'left' }, 50 );
+		//panel.toggleClass(block);
+		return false;
+    });
+
+
+
+	//TABS & Accordion 2 for products details page
+	$(function() {
+		$('#tabs').tabs();
+		$('.accordion2').accordion({
+			collapsible : true,
+			autoHeight : false,
+			navigation : true,
+			header : 'h6',
+			active : true,
+			/*disabled:true*/
+		});
+	});
+    
+	//SUB NAV ACCORDION 	
+	$('.hashed .subNavAccordion li a').click(function() {
+		$('.subNavAccordion li a').removeClass('current-page');	
+		$(this).addClass('current-page');			
+		var sectionId = $(this).attr("href");
+		window.location.hash = this.hash;
+		$(".accordion").accordion("activate", sectionId);		
+		return false;
+	});
+	$('a.footerLink').click(function() {
+		$('a.footerLink').removeClass('current-page');	
+		$(this).addClass('current-page');			
+		var sectionId = $(this).attr("href");
+		window.location.hash = this.hash;
+		$(".accordion").accordion("activate", sectionId);		
+		return false;
+	});	
+	$(function() {
+		var menu = $('#submenu'), pos = menu.offset();
+		$(window).scroll(function() {
+			if($(this).scrollTop() > pos.top + menu.height() && menu.hasClass('subNav')) {
+				menu.fadeOut('fast', function() {
+					$(this).addClass('fixed').fadeIn('fast');
+				});
+			} else if($(this).scrollTop() <= pos.top && menu.hasClass('fixed')) {
+				menu.fadeOut('fast', function() {
+					$(this).removeClass('fixed').fadeIn('fast');
+				});
+			}
+		});
+	});
+	/* HOMEPAGE SLIDER */
+	$('#full-width-slider').royalSlider({
+		arrowsNav: true,
+		loop: false,
+		keyboardNavEnabled: true,
+		controlsInside: false,
+		imageScaleMode: 'fill',
+		arrowsNavAutoHide: false,
+		autoScaleSliderWidth: 1020,     
+		autoScaleSliderHeight: 394,
+		controlNavigation: 'bullets',
+		thumbsFitInViewport: false,
+		navigateByClick: true,
+		startSlideId: 0,
+    	autoScaleSlider: true,
+    	autoPlay: {
+    		// autoplay options go gere
+    		enabled: true,
+    		pauseOnHover: true,
+			stopAtAction:false,
+			delay:5000,
+    	},
+		transitionType:'move',
+		globalCaption: true
+	});
+		$('#gallery-1').royalSlider({
+		fullscreen: {
+		  enabled: false,
+		  nativeFS: false
+		},
+		controlNavigation: 'thumbnails',
+		autoScaleSlider: true, 
+		autoScaleSliderWidth: 292,     
+		autoScaleSliderHeight: 400,
+		loop: false,
+		numImagesToPreload:4,
+		arrowsNavAutohide: true,
+		arrowsNavHideOnTouch: true,
+		keyboardNavEnabled: true
+	});	
+	//WIDGET FLOWER
+	$('a.widget-randowmMessages').click(function() {
+		$(this).next('.widget-speechBubbleWrap').toggle("scale", {}, 150);
+		$('.widget-speechBubbleTxt').stop(true, false).delay(130).fadeToggle('slow');
+
+	});
+	/* FEATURED BOXES */
+	$.each($('.featuredBox'), function(i,v){
+	  if(i == 0){
+		$(v).css('left', '0');
+	  }else{
+		var prevDiv = $(this).prev('.featuredBox');
+		var pWidth = prevDiv.width();
+		var pleft = prevDiv.position().left;
+		  $(v).css({'left' : pWidth + pleft + 0 +"px"});
+	  }        
+	});
+	$('.featuredBox').hover(function() {
+		$(this).stop(true, false).animate({
+			width:'342px',
+			height: '192px'
+		}, 300);
+		$(this).find('.featuredcopy').show();
+		$(this).find('.featuredicon').show();
+	},function() {
+		$(this).stop(true, false).animate({
+			width:'342px',	
+			height: '96px',
+		}, 300);
+		$(this).find('.featuredcopy').hide();
+		$(this).find('.featuredicon').hide();
+	});	
+	/* BANNERS BOX */
+	$('.bannersBox').hover(function() {
+		$(this).find('.bannersContent').stop(true, false).animate({
+			width:'239px',
+			height: '239px'
+		}, 300);
+		$(this).find('.bannerstitle').show();
+		$(this).find('.bannersCopy').show();
+	},function() {
+		$(this).find('.bannersContent').stop(true, false).animate({
+			width:'239px',	
+			height:'0px',
+		}, 300);
+		$(this).find('.bannerstitle').hide();
+		$(this).find('.bannersCopy').hide();
+	});	
+
+});

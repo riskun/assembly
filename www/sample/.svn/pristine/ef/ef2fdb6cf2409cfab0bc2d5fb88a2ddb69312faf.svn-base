@@ -1,0 +1,58 @@
+<?php
+/*
+ Template Name: Homepage
+*/
+?>
+<?php get_header(); ?>
+<?php 
+	query_posts('post_type=sn-slides');
+?>
+<section class="content-static-pages clearfix">
+	<div class="sliderContainer fullWidth clearfix">
+		<div id="full-width-slider" class="royalSlider heroSlider rsMinW">		
+			<?php while ( have_posts() ) : the_post();	
+			$slide = get_post_meta($post->ID, 'sn_slides_image', true);?>
+			
+	  		<div class="rsContent">
+				<?php $url = get_post_meta($post->ID, 'url', true);
+				if($url!='') { 
+					echo '<a href="'.$url.'">';
+					echo '<img src="'.$slide.'" alt="" />';
+					echo '</a>';
+				} else {
+					echo '<img src="'.$slide.'" alt="" />';
+				} ?>
+	    	</div>
+			<?php endwhile; ?>
+		</div>
+	</div>
+ 
+	<?php query_posts( array( 
+							 'post_type' => 'sn-featured',
+							 'posts_per_page' => 3, ) 
+		  ); 
+	?>
+
+	<div class="featuredWrap clearfix">
+		<?php while ( have_posts() ) : the_post(); 
+		$featured = get_post_meta($post->ID, 'sn_homepage_image', true);
+		$featuredurl = get_post_meta($post->ID, 'url', true);
+		?>
+		<div class="featuredBox">
+			<?php
+			if($featuredurl!='') { 			
+				echo '<a href="'.$featuredurl.'">';	
+				echo '<img src="'.$featured.'" alt="" />';
+				echo '</a>';
+			} else {
+				echo '<img src="'.$featured.'" alt="" />';
+			} ?>			
+		</div>
+		<?php endwhile; ?>	
+	</div>	
+</section>
+<?php get_footer(); ?>
+
+
+
+

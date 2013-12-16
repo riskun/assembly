@@ -90,7 +90,7 @@ a
 #header-toolbar-right
 {
 	position:absolute;
-	right:0.33333em;
+	right:0;
 	top:0em;
 	z-index: 100;
 
@@ -108,7 +108,7 @@ a
 #header-toolbar-right>i
 {
 	font-size:1.5em;
-	padding:0.66666em 0.33333em;
+	padding:0.66666em;
 
 }
 
