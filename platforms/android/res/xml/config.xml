@@ -15,9 +15,6 @@
     <feature name="FileTransfer">
         <param name="android-package" value="org.apache.cordova.filetransfer.FileTransfer" />
     </feature>
-    <feature name="InAppBrowser">
-        <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser" />
-    </feature>
     <name>Assembly</name>
     <description>
         Hello World sample application that responds to the deviceready event.
@@ -67,4 +64,10 @@
     <gap:splash gap:platform="ios" height="768" src="res/screen/ios/screen-ipad-landscape.png" width="1024" />
     <gap:splash gap:platform="winphone" src="res/screen/windows-phone/screen-portrait.jpg" />
     <access origin="*" />
+    <feature name="InAppBrowser">
+        <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser" />
+    </feature>
+    <feature name="Media">
+        <param name="android-package" value="org.apache.cordova.media.AudioHandler" />
+    </feature>
 </widget>

@@ -13,8 +13,8 @@ body
 	color:#333;
 	position: relative;
 	font-size:medium;
-	background-color: #eee;
-	background-image: url(../images/aotg_bg.png);
+	background-color: #fff;
+	/*background-image: url(../images/aotg_bg.png);*/
 }
 
 .loading
@@ -36,7 +36,7 @@ a
 {
 	
 	text-align: center;
-	background-color: #0e72ba;
+	background-color: #333;
 	padding-top:1em;
 	padding-bottom: 1em;
 	/*padding-left:10px;*/
@@ -101,6 +101,7 @@ a
 	margin-right: 0.5em;
 	padding:0.66666em;
 	font-size:1.5em;
+	cursor: pointer;
 
 }
 
@@ -109,12 +110,18 @@ a
 {
 	font-size:1.5em;
 	padding:0.66666em;
+	cursor: pointer;
 
 }
 
 .header-toolbar-touch
 {
-	background-color: #094b7b;
+	background-color: #094b7b !important;
+}
+
+.backbutton-toolbar-touch
+{
+	background-color:#000 !important;
 }
 
 #main

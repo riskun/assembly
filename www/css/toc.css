@@ -13,6 +13,7 @@
 #toc
 {
 	overflow: hidden;
+	opacity:0;
 }
 
 .toc-item

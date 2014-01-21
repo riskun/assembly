@@ -69,6 +69,8 @@
 	height:1em;
 	overflow: hidden;
 	display:inline-block;
+	display:none;
+
 }
 
 a.navigation_highlight
@@ -162,7 +164,7 @@ a.navigation_highlight
 {
 	position:fixed;
 	z-index: 101;
-	opacity:1;
+	opacity:0;
 	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
 	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
 	box-sizing: border-box;         /* Opera/IE 8+ */
@@ -203,8 +205,14 @@ a.navigation_highlight
 	font-size:1.5em;
 	font-family:'HelveticaNeueW01-77BdCn 692722';
 	text-transform: uppercase;
-	margin-bottom: 0.66666em;		
+	margin-bottom: 0.66666em;
+	overflow: hidden;
+}
 
+#close-bottom-bar
+{
+	float:right;
+	cursor:pointer;
 }
 
 #bottom-bar

@@ -1,4 +1,3 @@
-
 $(document).ready(function(){
 
 
@@ -26,7 +25,7 @@ function onDeviceReady() {
 	    // Exit the app!
 	}
 
-    window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+    //window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
 
 	function errorHandler(e) {
 	  var msg = '';
@@ -215,12 +214,20 @@ function onDeviceReady() {
 
 	hashSplit = hash.split("-");
 
-	var url = "http://ckprototype.com/assembly/modules/generator.php?id=4&callback=?";
+	if (window.requestFileSystem) {
+
+		var url = "sample/content.json";
+
+	} else {
+
+			var url = "http://ckprototype.com/assembly/modules/generator.php?id=4&callback=?";
+	}
 
 	$.ajax({
 	   type: 'GET',
 	    url: url,
 	    async: false,
+	    cache: false,
 	    jsonpCallback: 'jsonCallback',
 	    contentType: "application/json",
 	    dataType: 'jsonp',
@@ -378,19 +385,23 @@ function placeElements(page, data){
 
 	    	}
 
-			var format = '\
-			<div class="toc-item" article="'+o.id+'">\
-				<div class="toc-item-cover">\
-				</div>\
-				<div class="toc-item-image" style="background-image:url('+thumbnailPath+')">\
-				</div>\
-				<div class="toc-item-text">\
-					<h1>'+o.title+'</h1>\
-					<p>'+o.excerpt+'</p>\
-				</div>\
-			</div>';
+	    	if (o.ad == false) {
 
-			$("#toc").append(format);
+				var format = '\
+				<div class="toc-item" article="'+o.id+'">\
+					<div class="toc-item-cover">\
+					</div>\
+					<div class="toc-item-image" style="background-image:url('+thumbnailPath+')">\
+					</div>\
+					<div class="toc-item-text">\
+						<h1>'+o.title+'</h1>\
+						<p>'+o.excerpt+'</p>\
+					</div>\
+				</div>';
+
+				$("#toc").append(format);
+
+			}
 
 		});
 
@@ -404,10 +415,13 @@ function placeElements(page, data){
 		var articles = window.currentIssue.articles;
 		var article = null;
 
+		var articleNumber = [];
+
 		$.each(articles, function(i,o) {
 
 			//console.log(articles);
 			//alert(data);
+			articleNumber.push(o.id);
 
 			if (o.id == parseInt(data)) {
 
@@ -418,6 +432,13 @@ function placeElements(page, data){
 			}
 
 		});
+
+		function arraySearch(arr,val) {
+		    for (var i=0; i<arr.length; i++)
+		        if (arr[i] == val)                    
+		            return i;
+		    return false;
+		}
 
 		console.log(article);
 
@@ -441,144 +462,376 @@ function placeElements(page, data){
 
     	}
 
-		var articleImage = '\
-			<li>\
-				<div class="article_image" style="background-image:url('+articleImagePath+')">\
-					<div class="article_image_slide">Slide left to begin</div>\
-					<div class="article_title">\
-						'+article.title+'\
-					</div>\
-				</div>\
-				<!--\
-				<div id="article_text">\
-						'+article.content+'\
-				</div>\
-				-->\
-			</li>';
 
-		$("#article_pages").append(articleImage);
+    	function articleNavGenerator() {
+
+			if (article.id == articleNumber[0]) {
+
+			var articleAdjacentText = '\
+				<li class="jump full" rel="'+articleNumber[1]+'">Next Article <i class="fa fa-angle-double-right"></i></li>';
+
+			} else if (article.id == articleNumber[articleNumber.length - 1]) {
+
+			var articleAdjacentText = '\
+				<li class="jump full" rel="'+articleNumber[articleNumber.length - 2]+'"><i class="fa fa-angle-double-left"></i> Previous Article</li>';
+
+			} else {
+
+			var currentKey = arraySearch(articleNumber, article.id);
+
+			var articleAdjacentText = '\
+				<li class="jump" rel="'+articleNumber[currentKey - 1]+'"><i class="fa fa-angle-double-left"></i> Previous Article</li>\
+				<li class="jump" rel="'+articleNumber[currentKey + 1]+'">Next Article <i class="fa fa-angle-double-right"></i></li>';
+			}
+
+			$(".article_adjacent[rel='"+article.id+"']").append(articleAdjacentText);						
+
+
+    	}
+
+	   	if (article.ad == false) {
+
+			var articleImage = '\
+				<li>\
+					<div class="article_image" style="background-image:url('+articleImagePath+')">\
+						<div class="article_image_slide">Slide left to begin</div>\
+						<div class="article_title">\
+							'+article.title+'\
+						</div>\
+					</div>\
+					<!--\
+					<div id="article_text">\
+							'+article.content+'\
+					</div>\
+					-->\
+					<ul class="article_adjacent" rel="'+article.id+'">\
+					</ul>\
+				</li>';
+
+			$("#article_pages").append(articleImage);
+			
+			articleNavGenerator();
+
+
+
+	   	} else {
+
+
+
+
+	   	}
+
 
 		
 		//$("#header").append('<div id="swipe_bar">SWIPE HERE</div>');
-		
 
 
-		if (article.chapters.length > 0) {
+		/*
+		if (windowWidth > 640) {
 
-			/*
-			$("body").append('<div id="resource_container">\
-				<div id="resource_container_button"><i class="fa fa-bookmark" id="open-bottom-bar"></i><span>Resources</span></div>\
-				<div id="bottom-bar"></div>\
-			</div>');
-			*/
+			   	var chapterImagePath = "sample/images/"+$.md5(article.id)+'_large.jpg';
 
+    	} else {
 
-			$.each(article.chapters, function(i,o){
+			   	var chapterImagePath = "sample/images/"+$.md5(article.id)+'_large.jpg';
 
-				if (windowWidth > 640) {
-
-					   	var chapterImagePath = "sample/images/"+$.md5(o.id)+'_large.jpg';
-
-		    	} else {
-
-					   	var chapterImagePath = "sample/images/"+$.md5(o.id)+'_large.jpg';
-
-		    	}
-
-			   	if (o.title == "[ADVERTISEMENT]") {
-				var articleText = '\
-						<li>\
-							<div class="article_ad">\
-									<img src="'+chapterImagePath+'"/>\
-							</div>\
-							<ul class="article_adjacent" rel="'+i+'">\
-							</ul>\
-						</li>';
+    	}
+    	*/
 
 
 
-			   	} else {
 
-					var articleText = '\
-						<li>\
-							<div class="section_image" style="background-image:url('+chapterImagePath+')">\
-								<div class="section_title">\
-									'+o.title+'\
-								</div>\
-							</div>\
-							<div class="article_text">\
-								<div class="article_text_content">\
-									'+o.content+'\
-								</div>\
-							</div>\
-							<ul class="article_adjacent" rel="'+i+'">\
-							</ul>\
-						</li>';
+	   	var horizontalImagePath = "sample/images/"+$.md5(article.horizontal)+'_large_ad.jpg';
+	   	var verticalImagePath = "sample/images/"+$.md5(article.vertical)+'_large_ad.jpg';
 
-				}
 
-				$("#article_pages").append(articleText);			
 
-				if (i == 0) {
 
-				var articleAdjacentText = '\
-					<li class="next full">Next <i class="fa fa-angle-double-right"></i></li>';
+	   	if (article.ad == true) {
 
-				} else if (i == article.chapters.length - 1) {
+			var articleText = '\
+					<li>\
+						<ul class="article_ad_links" rel="'+article.id+'">\
+						</ul>\
+						<a class="article_ad_href" href="'+article.href+'" target="_blank">\
+						<div class="article_ad">\
+								<img v="'+verticalImagePath+'" h="'+horizontalImagePath+'"/>\
+						</div>\
+						</a>\
+						<ul class="article_adjacent" rel="'+article.id+'">\
+						</ul>\
+					</li>';
 
-				var articleAdjacentText = '\
-					<li class="prev full"><i class="fa fa-angle-double-left"></i> Previous</li>';
+			$("#article_pages").append(articleText);
 
-				} else {
+			var links = article.links.split("\r\n");
 
-				var articleAdjacentText = '\
-					<li class="prev"><i class="fa fa-angle-double-left"></i> Previous</li>\
-					<li class="next">Next <i class="fa fa-angle-double-right"></i></li>';
+			console.log(links);
 
-				}
 
-				$(".article_adjacent[rel='"+i+"']").append(articleAdjacentText);
+			$.each(links, function(i,link) {
 
-		
+				//console.log(articles);
+				//alert(data);
+				var linkArray = link.split("---");
 
+				var linkText ='<li href="'+linkArray[1]+'">'+linkArray[0]+'</li>';
+
+				$("ul.article_ad_links[rel='"+article.id+"']").append(linkText);
 
 				/*
-				var format = '\
-				<div class="resource">\
-					<div class="resource_image" style="background-image:url('+o.image+')">\
-					</div>\
-					<h1>'+o.title+'</h1>\
-					'+o.content+'\
-				</div>';
 
-				$("#bottom-bar").append(format);
+				if (o.id == parseInt(data)) {
+
+					article = o;
+					return;
+
+				}
 				*/
 
 			});
 
-		$(".article_text_content a").each(function(i,o){
 
-			if ($(this).find("img").size() == 0) {
+			articleNavGenerator();
+					
 
-				$(this).prepend('<i class="fa fa-file"></i> ');
+	   	} else {
 
-				
-			}
+
+
+
+			if (article.chapters && (article.chapters.length > 0)) {
+
+		   		//alert(article.chapters.length);
+
+				/*
+				$("body").append('<div id="resource_container">\
+					<div id="resource_container_button"><i class="fa fa-bookmark" id="open-bottom-bar"></i><span>Resources</span></div>\
+					<div id="bottom-bar"></div>\
+				</div>');
+				*/
+
+				var chapterNumber = [];
+
+
+				$.each(article.chapters, function(i,chapter) {
+
+					//console.log(articles);
+					//alert(data);
+					chapterNumber.push(chapter.id);
+
+					/*
+
+					if (o.id == parseInt(data)) {
+
+						article = o;
+						return;
+
+					}
+					*/
+
+				});
+
+
+				$.each(article.chapters, function(i,chapter){
+
+
+					var articleText = '\
+						<li rel="'+chapter.id+'">\
+							<!--<div class="section_image" style="background-image:url()">\
+								<div class="section_title">\
+									'+chapter.title+'\
+								</div>\
+							</div>-->\
+							<div class="article_text">\
+								<div class="article_text_content">\
+									'+chapter.content+'\
+								</div>\
+							</div>\
+							<ul class="article_adjacent" rel="'+chapter.id+'">\
+							</ul>\
+						</li>';
+
+					$("#article_pages").append(articleText);
+
+
+
+
+
+					if (article.chapters.length > 1) {
+
+
+						if (chapter.id == chapterNumber[0]) {
+
+							if (article.id != articleNumber[0]) {
+
+							var currentKey = arraySearch(articleNumber, article.id);
+
+							var articleAdjacentText = '\
+								<li class="jump" rel="'+articleNumber[currentKey - 1]+'"><i class="fa fa-angle-double-left"></i> Previous Article</li>\
+								<li class="next" rel="'+chapterNumber[1]+'">Next Page <i class="fa fa-angle-double-right"></i></li>';
+
+							} else {
+
+							var articleAdjacentText = '\
+								<li class="next full" rel="'+chapterNumber[1]+'">Next Page <i class="fa fa-angle-double-right"></i></li>';
+
+							}							
+
+
+						} else if (chapter.id == chapterNumber[chapterNumber.length - 1]) {
+
+							//alert(chapter.id);
+
+							if (article.id != articleNumber[articleNumber.length - 1]) {
+
+							var currentKey = arraySearch(articleNumber, article.id);
+
+							var articleAdjacentText = '\
+								<li class="prev" rel="'+chapterNumber[chapterNumber.length - 2]+'"><i class="fa fa-angle-double-left"></i> Previous Page</li>\
+								<li class="jump" rel="'+articleNumber[currentKey + 1]+'">Next Article <i class="fa fa-angle-double-right"></i></li>';
+
+							} else {
+
+							var articleAdjacentText = '\
+								<li class="prev full" rel="'+chapterNumber[chapterNumber.length - 2]+'"><i class="fa fa-angle-double-left"></i> Previous Page</li>';
+
+							}
+
+
+						} else {
+
+							var currentKey = arraySearch(chapterNumber, chapter.id);
+
+							var articleAdjacentText = '\
+								<li class="prev" rel="'+chapterNumber[currentKey - 1]+'"><i class="fa fa-angle-double-left"></i> Previous Page</li>\
+								<li class="next" rel="'+chapterNumber[currentKey + 1]+'">Next Page <i class="fa fa-angle-double-right"></i></li>';
+						}
+
+						$(".article_adjacent[rel='"+chapter.id+"']").append(articleAdjacentText);	
+
+
+
+
+					} else {
+
+
+						if (article.id == articleNumber[0]) {
+
+						var articleAdjacentText = '\
+							<li class="jump full" rel="'+articleNumber[1]+'">Next Article <i class="fa fa-angle-double-right"></i></li>';
+
+						} else if (article.id == articleNumber[articleNumber.length - 1]) {
+
+						var articleAdjacentText = '\
+							<li class="jump full" rel="'+articleNumber[articleNumber.length - 2]+'"><i class="fa fa-angle-double-left"></i> Previous Article</li>';
+
+						} else {
+
+						var currentKey = arraySearch(articleNumber, article.id);
+
+						var articleAdjacentText = '\
+							<li class="jump" rel="'+articleNumber[currentKey - 1]+'"><i class="fa fa-angle-double-left"></i> Previous Article</li>\
+							<li class="jump" rel="'+articleNumber[currentKey + 1]+'">Next Article <i class="fa fa-angle-double-right"></i></li>';
+						}
+
+						$(".article_adjacent[rel='"+chapter.id+"']").append(articleAdjacentText);						
+
+
+					}
+
+					if (chapter.gallery) {
+
+						$.each(chapter.gallery, function(gi, gallery){
+
+						   	var galleryImagePath = "sample/images/"+$.md5(gallery.id)+'_thumbnail.jpg';
+						   	var galleryImagePathLarge = "sample/images/"+$.md5(gallery.id)+'_large.jpg';
+
+							var format = '\
+								<a class="gallery_href" href="'+galleryImagePathLarge+'"><div class="gallery_image" style="background-image:url('+galleryImagePath+')"></div></a>';
+
+
+							$("#article_pages>li[rel='"+chapter.id+"']").find(".article_text_content").append(format);
+
+
+
+						});
+
+
+					}
+
+
+
+
+				});
+
+
+				if (article.id == 98) {
+
+				var articleIntroBoxText = '\
+					<div class="article_intro_text">\
+						<div class="article_intro_text_content">\
+							<h1>'+article.title+'</h1>\
+							<h2>Written by '+article.author+'</h2>\
+							<ul>\
+								<h1>Editors</h1>\
+								<li><a href="http://ckprototype.com/assembly/modules/profile.php?id=215" target="_blank">Michael Doherty, C.C.E.</a></li>\
+								<li><a href="http://ckprototype.com/assembly/modules/profile.php?id=211" target="_blank">Roger Mattiussi C.C.E.</a></li>\
+								<li><a href="http://ckprototype.com/assembly/modules/profile.php?id=213" target="_blank">Stephen Phillipson</a></li>\
+								<li><a href="http://ckprototype.com/assembly/modules/profile.php?id=208" target="_blank">Ben Wilkinson C.C.E.</a></li>\
+								<!--<li><a href="http://ckprototype.com/assembly/modules/profile.php?id=208" target="_blank">Bryan Fuller</a></li>-->\
+							</ul>\
+						</div>\
+						<div class="article_intro_share"><i class="fa fa-share"></i>  Share this</div>\
+						<a href="http://www.aotg.com/download_files/hannibal.mp3"><div class="article_intro_podcast"><i class="fa fa-music"></i> Listen to audio from this event</div></a>\
+						<a href="http://www.youtube.com/watch?v=2HW9rtFYsEw"><div class="article_intro_podcast"><i class="fa fa-film"></i> Watch video from this event</div></a>\
+					</div>\
+				';
+
+				$(".article_text_content:first").prepend(articleIntroBoxText);
+
+				}
+
+
+			};
+
+			$(".article_text_content>p a").each(function(i,o){
+
+				if ($(this).find("img").size() == 0) {
+
+					$(this).prepend('<i class="fa fa-file"></i> ');
+
+					
+				}
+
+			});
+		
+
+		};
+
+
+		//var i = 0;
+
+
+
+		$("#article_pages").children("li").each(function(i,o){
+
+			$("#status").append("<a class='article_navigation' index='"+i+"'><i class='fa fa-circle' /></a>");
 
 		});
 
-		}
+
+		$(".article_navigation:first").addClass("navigation_highlight");
 
 		
-		if (article.resources.length > 0) {
+		if (article.resources) {
 
 			$("body").append('<div id="resource_container">\
 				<!--<div id="resource_container_button"></div>-->\
-				<h1><i class="fa fa-bookmark"></i> Resources</h1>\
+				<h1><i class="fa fa-bookmark"></i> Resources <i class="fa fa-arrow-left" id="close-bottom-bar"></i></h1>\
 				<div id="bottom-bar"></div>\
 			</div>');
 			//$("#bottom-bar").append('<h1>Additional Resources</h1>');
-
 
 
 			$.each(article.resources, function(i,o){
@@ -586,7 +839,7 @@ function placeElements(page, data){
 			   	var resourceImagePath = "sample/images/"+$.md5(o.id)+'_thumbnail.jpg';
 
 				var format = '\
-				<div class="resource">\
+				<div class="resource" rel="'+o.href+'">\
 					<div class="resource_image" style="background-image:url('+resourceImagePath+')">\
 					</div>\
 					<h1>'+o.title+'</h1>\
@@ -596,6 +849,10 @@ function placeElements(page, data){
 				$("#bottom-bar").append(format);
 
 			});
+
+		} else {
+
+
 
 		}
 		
@@ -616,8 +873,9 @@ function removeTransit(elem) {
 
 function resizeElements(page){
 
-
+	//$.colorbox.remove();
 	$("#main").height("");
+
 
 
 	var windowHeight = $(window).height();
@@ -631,7 +889,8 @@ function resizeElements(page){
 
 	var magazineUnit = magazineMargin;
 
-	$("#back_button").show();
+	$("#back_button").hide();
+	$("#open-bottom-bar").hide();
 
 	$("#status").removeClass("loading");
 	//$(window).transition({x: 0})
@@ -648,7 +907,6 @@ function resizeElements(page){
 
 	if (page == "list") {
 
-		$("#back_button").hide();
 		$("#status").text("Home");
 
 		$("#main").css("margin-top", headerHeight+"px");
@@ -736,6 +994,13 @@ function resizeElements(page){
 
 	} else if (page == "toc" || page == "localtoc") {
 
+		$("#back_button").show();
+
+		$("#toc").stop().delay(400).transition({opacity: 1}, 400, function(){
+
+
+		});
+
 		$("#back_button").attr("destination", "list");
 		$("#status").text("Contents");
 
@@ -770,16 +1035,91 @@ function resizeElements(page){
 		//alert(windowWidth);
 		//console.log(windowWidth);
 
+		/*
+		if (typeof Media != "undefined") {
+
+			if (myMedia) {
+
+				//myMedia.stop();
+
+			} else {
+
+				//var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3");
+				//myMedia.play({ playAudioWhenScreenIsLocked : true });
+
+			}
+
+
+
+		}
+		*/
+
+
+		$(document).off(onHandler, ".article_text_content>p a, .article_intro_text a, a.article_ad_href, ul.article_ad_links>li");
+		$(document).on(onHandler, ".article_text_content>p a, .article_intro_text a, a.article_ad_href, ul.article_ad_links>li", function(e) {
+
+			//alert("Hello");
+
+			e.preventDefault();
+
+			var confirm = window.confirm("This requires internet connection. Would you still like to proceed with this selection?");
+
+			if (confirm == true) {
+
+					var href = $(this).attr("href");
+					window.open(href, '_blank', 'location=no');
+
+			}
+			
+
+
+
+		});			
 		
-		$(".article_image_slide").stop().delay(0).transition({opacity: 1}, 400, function(){
+		$(document).off(onHandler, "a.gallery_href");
+		$(document).on(onHandler, "a.gallery_href", function(e) {
+
+			//alert("Hello");
+
+			e.preventDefault();
+
+				var href = $(this).attr("href");
+				window.open(href, '_blank', 'location=no');
+
+
+		});			
+		
+
+
+
+			$(".article_ad").each(function(i,o) {
+
+				if (windowWidth > windowHeight) { 
+
+					var path = $(this).find("img").attr("h");
+
+				} else {
+
+					var path = $(this).find("img").attr("v");
+
+				}
+
+				$(this).find("img").attr("src", path)
+
+			});
+
+
+
+		$("#article_pages, .article_image_slide").stop().delay(400).transition({opacity: 1}, 400, function(){
 
 
 		});
 		
 		closeResource();
+		$("#back_button").show();
 
 		$("#back_button").attr("destination", "toc-"+currentToc);
-		$("#status").text("");
+		//$("#status").text("");
 
 
 		var articleNo = $("#article_pages>li").size();
@@ -799,7 +1139,10 @@ function resizeElements(page){
 		var tocWidth = windowWidth;
 		//var tocMargin = Math.floor(tocWidth * 0.08);
 
-		$(".article_image").height(windowHeight - headerHeight);
+		var adjacentNavHeight = $(".article_adjacent").outerHeight();
+
+
+		$(".article_image").height(windowHeight - headerHeight - adjacentNavHeight);
 		$(".section_image").height((windowHeight - headerHeight) / 3);
 
 
@@ -809,18 +1152,32 @@ function resizeElements(page){
 		$(".article_image_slide").css("top", magazineUnit*2 + "px");
 
 
-		$(".article_text, .article_text_content").css("margin-left", magazineUnit*2 + "px");
-		$(".article_text, .article_text_content").css("margin-right", magazineUnit*2 + "px");
+		$(".article_text_content").css("margin-left", magazineUnit*2 + "px");
+		$(".article_text_content").css("margin-right", magazineUnit*2 + "px");
 
 
+		var galleryWidth = $(".gallery_image").width();
+		$(".gallery_image").height(galleryWidth);
 		
-		var adjacentNavHeight = $(".article_adjacent").outerHeight();
-
-		$(".article_text").css("min-height", (windowHeight - headerHeight) / 3 * 2 - magazineUnit*4 - adjacentNavHeight + "px");
+		$(".article_text").css("min-height", (windowHeight - headerHeight) /* / 3 * 2*/ - magazineUnit*4 - adjacentNavHeight + "px");
 		$(".article_text").css("padding-bottom", magazineUnit*2 + "px");
 		$(".article_text").css("padding-top", magazineUnit*2 + "px");
 
-		$(".article_ad").css("min-height", (windowHeight - headerHeight) - adjacentNavHeight + "px");
+		$(".article_ad").css("min-height", (windowHeight - headerHeight) - adjacentNavHeight - $(".article_ad_links").outerHeight() + "px");
+
+		/*
+		$('a.gallery_href').colorbox({
+			rel:'gal',
+			maxWidth: '80%',
+			maxHeight: '80%',
+			onClosed: function(){
+
+				resizeElements(currentPage);
+
+			}
+
+		});
+		*/
 
 		/* RESOURCE TIME */
 
@@ -853,8 +1210,8 @@ function resizeElements(page){
 
 		//$("#resource_container").css("bottom", -resourceHeight + resourceBtnHeight);
 		$("#resource_container, #resource_container_button").removeAttr("active");
-		$("#resource_container").css("height", windowHeight - headerHeight + "px");		
-		$("#resource_container").css("top", headerHeight + "px");		
+		$("#resource_container").css("height", windowHeight + "px");		
+		//$("#resource_container").css("top", headerHeight + "px");		
 
 		//$("#resource_container_button").css({ transformOrigin: $("#resource_container_button").outerWidth()+'px 0' }).transition({rotate: "90deg", y: -resourceBtnWidth+"px"});
 
@@ -874,6 +1231,9 @@ function resizeElements(page){
 		$("#resource_container").remove();
 		$("body").append(resourceData);
 
+		var resourceWidth = $("#resource_container").outerWidth();		
+		$("#resource_container").stop().transition({x: -resourceWidth +"px"}, 300);
+		$("#resource_container").removeAttr("active");
 		//alert($("#bottom-bar").height());
 
 
@@ -905,18 +1265,13 @@ function resizeElements(page){
 			threshold: 50
 		});
 
-		imgs.children("li").each(function(i,o){
 
-			$("#status").append("<a class='article_navigation' index='"+i+"'><i class='fa fa-circle' /></a>");
-
-		});
-
-
-		$(".article_navigation:first").addClass("navigation_highlight");
 
 		resizeContainer(currentImg);
 		imgs.addClass("notransition");
 		$("#article_pages").addClass("swiped");
+
+		$("a.navigation_highlight").click();
 
 		/**
 		* Catch each phase of the swipe.
@@ -927,7 +1282,14 @@ function resizeElements(page){
 
 		//$("").
 
+		if ($(".resource").size() > 0) {
+
+			$("#open-bottom-bar").show();
+
+		}
+
 		$(document).off(onHandler, "#open-bottom-bar");
+		$(document).off(onHandler, "#close-bottom-bar");
 
 		$(document).on(onHandler, "#open-bottom-bar", function(e) {
 
@@ -950,6 +1312,26 @@ function resizeElements(page){
 
 		});	
 
+		$(document).on(onHandler, "#close-bottom-bar", function(e) {
+
+			e.preventDefault();
+
+			var barActive = $("#resource_container").attr("active");
+
+			if (barActive == "on" ) {
+
+				//$("#resource_container").removeAttr("active");
+				//console.log("closing");
+				closeResource();
+
+			} else if (barActive != "on") {
+
+
+			}	
+
+
+		});			
+
 		function openResource(elem){
 
 			$(".article_image").swipe("destroy");
@@ -965,23 +1347,29 @@ function resizeElements(page){
 			//$("#resource_container").css("bottom", -bottomHeight+"px");
 			//$("#main").css("padding-bottom", bottomHeight+"px");
 			$("#resource_container").attr("active", "on");
+			$("#resource_container").fadeTo(0, 0);
 
-			$("body").stop().animate({ scrollTop: "0" }, "fast", function(){	
+			$("#resource_container").stop().transition({x: -$("#resource_container").outerWidth()+"px"}, 0, function(){
+
+				$("body").stop().animate({ scrollTop: "0" }, "fast", function(){	
 
 
-				$("body").css("overflow-y", "hidden");
-				$("body").css("margin-top", -$("body").scrollTop() + "px");
-				$("body").height($(window).height());
+					$("body").css("overflow-y", "hidden");
+					$("body").css("margin-top", -$("body").scrollTop() + "px");
+					$("body").height($(window).height());
 
-				//$("#bottom-bar").html("AOTG Additional Reading "+ elem.text());
+					//$("#bottom-bar").html("AOTG Additional Reading "+ elem.text());
 
-				$("#resource_container").stop().transition({x: 0+"px"}, function(){
+					$("#resource_container").stop().transition({x: 0+"px", opacity: 1}, function(){
+
+
+					});
 
 
 				});
 
-
 			});
+
 
 
 
@@ -1047,6 +1435,11 @@ function resizeElements(page){
 			} else if ($(this).hasClass("prev") == true) {
 
 				$(".navigation_highlight").prev().click();
+
+			} else if ($(this).hasClass("jump") == true) {
+
+				var chapterId = $(this).attr("rel");
+				window.location.hash = "detail-"+chapterId;
 
 			}
 
@@ -1130,7 +1523,21 @@ function resizeElements(page){
 
 
 				var currentLi = $("#article_pages>li:eq("+index+")");
-				$("#main").height(currentLi.height());
+
+				console.log(currentLi);
+				//alert(currentLi.height());
+
+				//alert(currentLi.find(".article_ad").size());
+
+				if (currentLi.find(".article_ad").size() == 0) {
+
+					$("#main").height(currentLi.height());
+
+				} else {
+
+					$("#main").height("");
+
+				}
 				//$('body').unbind('touchmove');
 
 
@@ -1210,6 +1617,7 @@ function resizeElements(page){
 
 
 		}
+
 
 
 
@@ -1319,7 +1727,7 @@ $(window).bind('orientationchange', _orientationHandler);
 function _orientationHandler(){
 
 	//alert("Orientation");
-	resizeElements(currentPage);
+	//resizeElements(currentPage);
 
 }
 
@@ -1348,7 +1756,7 @@ $(document).on(onHandler, "#back_button", function(e) {
 
 });	
 
-$(document).on("touchstart", ".article_adjacent>li", function(e) {
+$(document).on("touchstart", ".article_adjacent>li, .article_intro_share, .article_intro_podcast", function(e) {
 
 
 	e.preventDefault();
@@ -1356,7 +1764,7 @@ $(document).on("touchstart", ".article_adjacent>li", function(e) {
 
 });	
 
-$(document).on("touchend", ".article_adjacent>li", function(e) {
+$(document).on("touchend", ".article_adjacent>li, .article_intro_share, .article_intro_podcast", function(e) {
 
 
 	e.preventDefault();
@@ -1364,24 +1772,21 @@ $(document).on("touchend", ".article_adjacent>li", function(e) {
 
 });	
 
-$(document).on("touchstart", "#back_button", function(e) {
+$(document).on("touchstart", "#back_button, #open-bottom-bar, ul.article_ad_links>li", function(e) {
 
 
 	e.preventDefault();
 
-	$(this).addClass("header-toolbar-touch");
+	$(this).addClass("backbutton-toolbar-touch");
 
 });	
 
-
-
-
-$(document).on("touchend", "#back_button", function(e) {
+$(document).on("touchend", "#back_button, #open-bottom-bar, ul.article_ad_links>li", function(e) {
 
 
 	e.preventDefault();
 
-	$(this).removeClass("header-toolbar-touch");
+	$(this).removeClass("backbutton-toolbar-touch");
 
 });	
 
@@ -1406,32 +1811,36 @@ $(document).on(onHandler, ".toc-item", function(e) {
 });	
 
 
-$(document).on(onHandler, ".article_text_content a", function(e) {
-
-	e.preventDefault();
-	var href = $(this).attr("href");
-	window.open(href, '_blank', 'location=no');
-
-
-	/*	
-	var confirm = window.confirm("Would you like to leave the app and open AOTG?");
-
-
-
-	if (confirm == true) {
-
-		//window.location.href = "http://aotg.com";
-		window.open('http://aotg.com', '_blank', 'location=yes');
-	}
-	*/
-
-});	
 
 $(document).on(onHandler, ".resource", function(e) {
 
+	//alert("Hello");
+
 	e.preventDefault();
-	//var href = $(this).attr("href");
-	window.open("http://aotg.com", '_blank', 'location=no');
+	//alert(href);
+
+
+	var confirm = window.confirm("This requires internet connection. Would you still like to proceed with this selection?");
+
+	if (confirm == true) {
+
+
+		var href = $(this).attr("rel");
+
+		if (href == "") {
+
+			window.open("http://aotg.com", '_blank', 'location=no');
+
+		} else {
+
+			window.open(href, '_blank', 'location=no');
+
+		}
+
+
+	}
+
+
 
 
 	/*	

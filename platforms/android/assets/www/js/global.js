@@ -228,6 +228,7 @@ function onDeviceReady() {
 	   type: 'GET',
 	    url: url,
 	    async: false,
+	    cache: false,
 	    jsonpCallback: 'jsonCallback',
 	    contentType: "application/json",
 	    dataType: 'jsonp',
@@ -385,19 +386,23 @@ function placeElements(page, data){
 
 	    	}
 
-			var format = '\
-			<div class="toc-item" article="'+o.id+'">\
-				<div class="toc-item-cover">\
-				</div>\
-				<div class="toc-item-image" style="background-image:url('+thumbnailPath+')">\
-				</div>\
-				<div class="toc-item-text">\
-					<h1>'+o.title+'</h1>\
-					<p>'+o.excerpt+'</p>\
-				</div>\
-			</div>';
+	    	if (o.ad == false) {
 
-			$("#toc").append(format);
+				var format = '\
+				<div class="toc-item" article="'+o.id+'">\
+					<div class="toc-item-cover">\
+					</div>\
+					<div class="toc-item-image" style="background-image:url('+thumbnailPath+')">\
+					</div>\
+					<div class="toc-item-text">\
+						<h1>'+o.title+'</h1>\
+						<p>'+o.excerpt+'</p>\
+					</div>\
+				</div>';
+
+				$("#toc").append(format);
+
+			}
 
 		});
 
@@ -411,10 +416,13 @@ function placeElements(page, data){
 		var articles = window.currentIssue.articles;
 		var article = null;
 
+		var articleNumber = [];
+
 		$.each(articles, function(i,o) {
 
 			//console.log(articles);
 			//alert(data);
+			articleNumber.push(o.id);
 
 			if (o.id == parseInt(data)) {
 
@@ -448,29 +456,124 @@ function placeElements(page, data){
 
     	}
 
-		var articleImage = '\
-			<li>\
-				<div class="article_image" style="background-image:url('+articleImagePath+')">\
-					<div class="article_image_slide">Slide left to begin</div>\
-					<div class="article_title">\
-						'+article.title+'\
-					</div>\
-				</div>\
-				<!--\
-				<div id="article_text">\
-						'+article.content+'\
-				</div>\
-				-->\
-			</li>';
 
-		$("#article_pages").append(articleImage);
+
+	   	if (article.ad == false) {
+
+			var articleImage = '\
+				<li>\
+					<div class="article_image" style="background-image:url('+articleImagePath+')">\
+						<div class="article_image_slide">Slide left to begin</div>\
+						<div class="article_title">\
+							'+article.title+'\
+						</div>\
+					</div>\
+					<!--\
+					<div id="article_text">\
+							'+article.content+'\
+					</div>\
+					-->\
+					<ul class="article_adjacent" rel="'+article.id+'">\
+					</ul>\
+				</li>';
+
+			$("#article_pages").append(articleImage);
+
+
+	   	} else {
+
+
+
+
+	   	}
+
 
 		
 		//$("#header").append('<div id="swipe_bar">SWIPE HERE</div>');
+
+
+		if (windowWidth > 640) {
+
+			   	var chapterImagePath = "sample/images/"+$.md5(article.id)+'_large.jpg';
+
+    	} else {
+
+			   	var chapterImagePath = "sample/images/"+$.md5(article.id)+'_large.jpg';
+
+    	}
+
+
+	   	if (article.ad == true) {
+
+			var articleText = '\
+					<li>\
+						<div class="article_ad">\
+								<img src="'+chapterImagePath+'"/>\
+						</div>\
+						<ul class="article_adjacent" rel="'+article.id+'">\
+						</ul>\
+					</li>';
+
+	   	} else {
+
+			var articleText = '\
+				<li>\
+					<div class="section_image" style="background-image:url('+chapterImagePath+')">\
+						<div class="section_title">\
+							'+article.title+'\
+						</div>\
+					</div>\
+					<div class="article_text">\
+						<div class="article_text_content">\
+							'+article.content+'\
+						</div>\
+					</div>\
+					<ul class="article_adjacent" rel="'+article.id+'">\
+					</ul>\
+				</li>';
+
+		}
+
+		$("#article_pages").append(articleText);
+
+		//var i = 0;
+
+		function arraySearch(arr,val) {
+		    for (var i=0; i<arr.length; i++)
+		        if (arr[i] == val)                    
+		            return i;
+		    return false;
+		  }
+
+
+		if (article.id == articleNumber[0]) {
+
+		var articleAdjacentText = '\
+			<li class="next full" rel="'+articleNumber[1]+'">Next <i class="fa fa-angle-double-right"></i></li>';
+
+		} else if (article.id == articleNumber[articleNumber.length - 1]) {
+
+		var articleAdjacentText = '\
+			<li class="prev full" rel="'+articleNumber[articleNumber.length - 2]+'"><i class="fa fa-angle-double-left"></i> Previous</li>';
+
+		} else {
+
+		var currentKey = arraySearch(articleNumber, article.id);
+
+		var articleAdjacentText = '\
+			<li class="prev" rel="'+articleNumber[currentKey - 1]+'"><i class="fa fa-angle-double-left"></i> Previous</li>\
+			<li class="next" rel="'+articleNumber[currentKey + 1]+'">Next <i class="fa fa-angle-double-right"></i></li>';
+
+		}
+
+		$(".article_adjacent[rel='"+article.id+"']").append(articleAdjacentText);
 		
 
 
-		if (article.chapters.length > 0) {
+
+
+
+		//if (article.chapters.length > 0) {
 
 			/*
 			$("body").append('<div id="resource_container">\
@@ -480,73 +583,9 @@ function placeElements(page, data){
 			*/
 
 
-			$.each(article.chapters, function(i,o){
 
-				if (windowWidth > 640) {
+			//$.each(article.chapters, function(i,o){
 
-					   	var chapterImagePath = "sample/images/"+$.md5(o.id)+'_large.jpg';
-
-		    	} else {
-
-					   	var chapterImagePath = "sample/images/"+$.md5(o.id)+'_large.jpg';
-
-		    	}
-
-			   	if (o.title == "[ADVERTISEMENT]") {
-				var articleText = '\
-						<li>\
-							<div class="article_ad">\
-									<img src="'+chapterImagePath+'"/>\
-							</div>\
-							<ul class="article_adjacent" rel="'+i+'">\
-							</ul>\
-						</li>';
-
-
-
-			   	} else {
-
-					var articleText = '\
-						<li>\
-							<div class="section_image" style="background-image:url('+chapterImagePath+')">\
-								<div class="section_title">\
-									'+o.title+'\
-								</div>\
-							</div>\
-							<div class="article_text">\
-								<div class="article_text_content">\
-									'+o.content+'\
-								</div>\
-							</div>\
-							<ul class="article_adjacent" rel="'+i+'">\
-							</ul>\
-						</li>';
-
-				}
-
-				$("#article_pages").append(articleText);			
-
-				if (i == 0) {
-
-				var articleAdjacentText = '\
-					<li class="next full">Next <i class="fa fa-angle-double-right"></i></li>';
-
-				} else if (i == article.chapters.length - 1) {
-
-				var articleAdjacentText = '\
-					<li class="prev full"><i class="fa fa-angle-double-left"></i> Previous</li>';
-
-				} else {
-
-				var articleAdjacentText = '\
-					<li class="prev"><i class="fa fa-angle-double-left"></i> Previous</li>\
-					<li class="next">Next <i class="fa fa-angle-double-right"></i></li>';
-
-				}
-
-				$(".article_adjacent[rel='"+i+"']").append(articleAdjacentText);
-
-		
 
 
 				/*
@@ -561,7 +600,7 @@ function placeElements(page, data){
 				$("#bottom-bar").append(format);
 				*/
 
-			});
+			//});
 
 		$(".article_text_content a").each(function(i,o){
 
@@ -574,18 +613,18 @@ function placeElements(page, data){
 
 		});
 
-		}
+		//}
+
 
 		
-		if (article.resources.length > 0) {
+		if (article.resources) {
 
 			$("body").append('<div id="resource_container">\
 				<!--<div id="resource_container_button"></div>-->\
-				<h1><i class="fa fa-bookmark"></i> Resources</h1>\
+				<h1><i class="fa fa-bookmark"></i> Resources <i class="fa fa-arrow-left" id="close-bottom-bar"></i></h1>\
 				<div id="bottom-bar"></div>\
 			</div>');
 			//$("#bottom-bar").append('<h1>Additional Resources</h1>');
-
 
 
 			$.each(article.resources, function(i,o){
@@ -593,7 +632,7 @@ function placeElements(page, data){
 			   	var resourceImagePath = "sample/images/"+$.md5(o.id)+'_thumbnail.jpg';
 
 				var format = '\
-				<div class="resource">\
+				<div class="resource" rel="'+o.href+'">\
 					<div class="resource_image" style="background-image:url('+resourceImagePath+')">\
 					</div>\
 					<h1>'+o.title+'</h1>\
@@ -603,6 +642,10 @@ function placeElements(page, data){
 				$("#bottom-bar").append(format);
 
 			});
+
+		} else {
+
+
 
 		}
 		
@@ -639,6 +682,7 @@ function resizeElements(page){
 	var magazineUnit = magazineMargin;
 
 	$("#back_button").show();
+	$("#open-bottom-bar").hide();
 
 	$("#status").removeClass("loading");
 	//$(window).transition({x: 0})
@@ -806,7 +850,10 @@ function resizeElements(page){
 		var tocWidth = windowWidth;
 		//var tocMargin = Math.floor(tocWidth * 0.08);
 
-		$(".article_image").height(windowHeight - headerHeight);
+		var adjacentNavHeight = $(".article_adjacent").outerHeight();
+
+
+		$(".article_image").height(windowHeight - headerHeight - adjacentNavHeight);
 		$(".section_image").height((windowHeight - headerHeight) / 3);
 
 
@@ -821,7 +868,6 @@ function resizeElements(page){
 
 
 		
-		var adjacentNavHeight = $(".article_adjacent").outerHeight();
 
 		$(".article_text").css("min-height", (windowHeight - headerHeight) / 3 * 2 - magazineUnit*4 - adjacentNavHeight + "px");
 		$(".article_text").css("padding-bottom", magazineUnit*2 + "px");
@@ -860,8 +906,8 @@ function resizeElements(page){
 
 		//$("#resource_container").css("bottom", -resourceHeight + resourceBtnHeight);
 		$("#resource_container, #resource_container_button").removeAttr("active");
-		$("#resource_container").css("height", windowHeight - headerHeight + "px");		
-		$("#resource_container").css("top", headerHeight + "px");		
+		$("#resource_container").css("height", windowHeight + "px");		
+		//$("#resource_container").css("top", headerHeight + "px");		
 
 		//$("#resource_container_button").css({ transformOrigin: $("#resource_container_button").outerWidth()+'px 0' }).transition({rotate: "90deg", y: -resourceBtnWidth+"px"});
 
@@ -934,7 +980,14 @@ function resizeElements(page){
 
 		//$("").
 
+		if ($(".resource").size() > 0) {
+
+			$("#open-bottom-bar").show();
+
+		}
+
 		$(document).off(onHandler, "#open-bottom-bar");
+		$(document).off(onHandler, "#close-bottom-bar");
 
 		$(document).on(onHandler, "#open-bottom-bar", function(e) {
 
@@ -956,6 +1009,26 @@ function resizeElements(page){
 
 
 		});	
+
+		$(document).on(onHandler, "#close-bottom-bar", function(e) {
+
+			e.preventDefault();
+
+			var barActive = $("#resource_container").attr("active");
+
+			if (barActive == "on" ) {
+
+				//$("#resource_container").removeAttr("active");
+				//console.log("closing");
+				closeResource();
+
+			} else if (barActive != "on") {
+
+
+			}	
+
+
+		});			
 
 		function openResource(elem){
 
@@ -982,7 +1055,7 @@ function resizeElements(page){
 
 				//$("#bottom-bar").html("AOTG Additional Reading "+ elem.text());
 
-				$("#resource_container").stop().transition({x: 0+"px"}, function(){
+				$("#resource_container").stop().transition({x: 0+"px", opacity: 1}, function(){
 
 
 				});
@@ -1047,13 +1120,17 @@ function resizeElements(page){
 
 			//alert("Clicked");
 
+			var chapterId = $(this).attr("rel");
+
+			window.location.hash = "detail-"+chapterId;
+
 			if ($(this).hasClass("next") == true) {
 
-				$(".navigation_highlight").next().click();
+				//$(".navigation_highlight").next().click();
 
 			} else if ($(this).hasClass("prev") == true) {
 
-				$(".navigation_highlight").prev().click();
+				//$(".navigation_highlight").prev().click();
 
 			}
 
@@ -1137,7 +1214,21 @@ function resizeElements(page){
 
 
 				var currentLi = $("#article_pages>li:eq("+index+")");
-				$("#main").height(currentLi.height());
+
+				console.log(currentLi);
+				//alert(currentLi.height());
+
+				//alert(currentLi.find(".article_ad").size());
+
+				if (currentLi.find(".article_ad").size() == 0) {
+
+					$("#main").height(currentLi.height());
+
+				} else {
+
+					$("#main").height("");
+
+				}
 				//$('body').unbind('touchmove');
 
 
@@ -1417,7 +1508,7 @@ $(document).on(onHandler, ".article_text_content a", function(e) {
 
 	e.preventDefault();
 	var href = $(this).attr("href");
-	window.open(href, '_blank', 'location=no');
+	window.open(href, '_blank', 'location=yes');
 
 
 	/*	
@@ -1437,8 +1528,19 @@ $(document).on(onHandler, ".article_text_content a", function(e) {
 $(document).on(onHandler, ".resource", function(e) {
 
 	e.preventDefault();
-	//var href = $(this).attr("href");
-	window.open("http://aotg.com", '_blank', 'location=no');
+	var href = $(this).attr("rel");
+	alert(href);
+
+	if (href == "") {
+
+		window.open("http://aotg.com", '_blank', 'location=yes');
+
+	} else {
+
+		window.open(href, '_blank', 'location=yes');
+
+	}
+
 
 
 	/*	
